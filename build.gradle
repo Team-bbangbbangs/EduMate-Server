@@ -72,10 +72,7 @@ tasks.named('asciidoctor') {
 
 tasks.register('copyDocument', Copy) {
     dependsOn asciidoctor
-    doFirst {
-        delete file("src/main/resources/static/docs")
-    }
-
+    from file("${asciidoctor.outputDir}")
     into file("src/main/resources/static/docs")
 }
 
