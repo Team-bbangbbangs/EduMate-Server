@@ -64,6 +64,10 @@ tasks.named('asciidoctor') {
     baseDirFollowsSourceFile()
 	inputs.dir snippetsDir
     dependsOn test
+
+    sources {
+        include("**/index.adoc")
+    }
 }
 
 tasks.register('copyDocument', Copy) {
@@ -72,7 +76,6 @@ tasks.register('copyDocument', Copy) {
         delete file("src/main/resources/static/docs")
     }
 
-    from asciidoctor.outputDir
     into file("src/main/resources/static/docs")
 }
 
