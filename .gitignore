@@ -156,3 +156,6 @@ Temporary Items
 
 ### yaml ###
 application-local.yml
+
+### index.html ###
+/src/main/resources/static/

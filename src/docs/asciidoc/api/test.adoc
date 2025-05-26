@@ -1,0 +1,24 @@
+== Test API
+
+=== Test Get (GET /test)
+
+==== REQUEST
+include::{snippets}/test-get/http-request.adoc[]
+
+
+==== RESPONSE
+include::{snippets}/test-get/http-response.adoc[]
+include::{snippets}/test-get/response-fields.adoc[]
+
+=== Test Get (POST /test)
+
+==== REQUEST
+include::{snippets}/test-post/http-request.adoc[]
+include::{snippets}/test-post/request-fields.adoc[]
+
+
+==== RESPONSE
+include::{snippets}/test-post/http-response.adoc[]
+include::{snippets}/test-post/response-fields.adoc[]
+
+
