@@ -26,18 +26,8 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Cache Gradle
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
       - name: Generate REST Docs with Gradle
         run: ./gradlew asciidoctor
