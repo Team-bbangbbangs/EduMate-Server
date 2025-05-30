@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: develop
+  pull_request:
+    branches: develop
 
 permissions:
   contents: write
@@ -29,6 +31,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          cache: gradle
 
       - name: Generate REST Docs with Gradle
         run: ./gradlew asciidoctor
