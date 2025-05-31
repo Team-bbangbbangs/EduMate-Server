@@ -9,5 +9,3 @@ endif::[]
 :toclevels: 2
 :sectlinks:
 
-
-include::api/test.adoc[]
