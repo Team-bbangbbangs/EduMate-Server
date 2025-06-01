@@ -1,5 +1,6 @@
 package com.edumate.eduserver.common.exception;
 
+import com.edumate.eduserver.common.code.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -7,10 +8,10 @@ import org.springframework.http.HttpStatus;
 public class EduMateCustomException extends RuntimeException {
 
     private final HttpStatus status;
-    private final String errorCode;
+    private final ErrorCode errorCode;
 
-    public EduMateCustomException(final String message, final HttpStatus status, final String errorCode) {
-        super(message);
+    public EduMateCustomException(final ErrorCode errorCode, final HttpStatus status) {
+        super(errorCode.getMessage());
         this.status = status;
         this.errorCode = errorCode;
     }

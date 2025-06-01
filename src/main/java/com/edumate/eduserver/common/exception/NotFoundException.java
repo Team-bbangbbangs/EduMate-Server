@@ -7,7 +7,10 @@ public class NotFoundException extends EduMateCustomException {
 
     private static final HttpStatus STATUS = HttpStatus.NOT_FOUND;
 
+    private final String code;
+
     public NotFoundException(final ErrorCode errorCode) {
-        super(errorCode.getMessage(), STATUS, errorCode.getCode());
+        super(errorCode, STATUS);
+        this.code = errorCode.getCode();
     }
 }

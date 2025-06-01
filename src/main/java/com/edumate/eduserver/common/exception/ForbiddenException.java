@@ -5,10 +5,12 @@ import org.springframework.http.HttpStatus;
 
 public class ForbiddenException extends EduMateCustomException {
 
-    private static final String MESSAGE = "접근 권한이 없습니다.";
     private static final HttpStatus STATUS = HttpStatus.FORBIDDEN;
 
+    private final String code;
+
     public ForbiddenException(final ErrorCode errorCode) {
-        super(MESSAGE, STATUS, errorCode.getCode());
+        super(errorCode, STATUS);
+        this.code = errorCode.getCode();
     }
 }

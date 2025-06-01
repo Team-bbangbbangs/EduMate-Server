@@ -1,4 +1,4 @@
-package com.edumate.eduserver.common.advice;
+package com.edumate.eduserver.common;
 
 import com.edumate.eduserver.common.code.ErrorCode;
 import com.edumate.eduserver.common.code.SuccessCode;
@@ -18,6 +18,7 @@ public class ApiResponse<T> {
     private final int status;
     private final String code;
     private final String message;
+    @JsonInclude(value = JsonInclude.Include.NON_NULL)
     private T data;
 
     public static <T> ApiResponse<T> success(final SuccessCode success) {
@@ -30,5 +31,9 @@ public class ApiResponse<T> {
 
     public static <T> ApiResponse<T> fail(final EduMateCustomException ex, final ErrorCode error) {
         return new ApiResponse<>(ex.getStatus().value(), error.getCode(), error.getMessage());
+    }
+
+    public static <T> ApiResponse<T> fail(final String code, final String message) {
+        return new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), code, message);
     }
 }
