@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - main
+      - feat/EDMT-78
 
 concurrency:
   group: ci-cd-${{ github.ref_name }}
