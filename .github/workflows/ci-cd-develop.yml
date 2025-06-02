@@ -45,8 +45,8 @@ jobs:
           fi
         shell: bash
 
-      - name: Gradle 빌드 (테스트 제외)
-        run: ./gradlew clean build -x test --no-daemon
+      - name: Gradle 빌드
+        run: ./gradlew clean build --no-daemon
 
       - name: DockerHub 로그인
         uses: docker/login-action@v3
