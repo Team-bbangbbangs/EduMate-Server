@@ -155,7 +155,7 @@ Temporary Items
 /src/main/generated
 
 ### yaml ###
-application-local.yml
+application-*.yml
 
 ### index.html ###
 /src/main/resources/static/
