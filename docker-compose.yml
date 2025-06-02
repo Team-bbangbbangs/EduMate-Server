@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  app:
+    image: ${DOCKER_IMAGE}
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    ports:
+      - "8080:8080"
+    restart: always
