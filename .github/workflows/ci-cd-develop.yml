@@ -116,6 +116,4 @@ jobs:
             sudo docker pull ${{ env.DOCKER_IMAGE }}
             
             # docker-compose 실행
-            export DOCKER_IMAGE="${{ env.DOCKER_IMAGE }}"
-            export SPRING_PROFILES_ACTIVE="${{ env.SPRING_PROFILES_ACTIVE }}"
-            sudo docker-compose up -d --force-recreate --remove-orphans
+            sudo -E docker-compose up -d --force-recreate --remove-orphans
