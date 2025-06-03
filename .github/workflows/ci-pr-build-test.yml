@@ -1,4 +1,4 @@
-name: DEV CI
+name: CI - Test Coverage 검증
 
 on:
   pull_request:
