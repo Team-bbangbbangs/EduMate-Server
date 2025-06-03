@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - develop
-  push:
-    branches:
-      - feat/EDMT-77
 
 permissions: write-all
 
