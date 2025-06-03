@@ -6,7 +6,7 @@ on:
       - develop
   push:
     branches:
-      - develop
+      - feat/EDMT-77
 
 permissions: write-all
 
