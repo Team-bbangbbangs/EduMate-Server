@@ -1,11 +1,10 @@
-name: CI/CD - Build and Deploy to EC2
+name: BE/CD - [DEV] Build & Deploy
 
 on:
   workflow_dispatch:
   push:
     branches:
       - develop
-      - feat/EDMT-78
 
 jobs:
   build:
@@ -96,6 +95,9 @@ jobs:
 
       - name: Stop and remove existing application container
         run: sudo docker-compose -f docker-compose.dev.yml down --rmi all
+
+      - name: Remove all unused Docker images
+        run: sudo docker image prune -a -f
 
       - name: Run application Server container
         run: sudo docker-compose -f docker-compose.dev.yml up -d
