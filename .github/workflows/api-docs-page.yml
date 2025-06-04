@@ -3,7 +3,8 @@ name: BE/DOCS - API Docs Build & Deploy
 on:
   workflow_dispatch:
   push:
-    branches: develop
+    branches:
+    - develop
 
 permissions:
   contents: write

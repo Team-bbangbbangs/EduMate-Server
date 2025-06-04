@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'org.asciidoctor.jvm.convert' version '4.0.4'
+    id 'jacoco'
 }
 
 group = 'com.edumate'
@@ -86,5 +87,15 @@ bootJar {
     dependsOn copyDocument
     from("${asciidoctor.outputDir}") {
         into 'static/docs'
+    }
+}
+
+jacocoTestReport {
+    executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+
+    reports {
+        html.required.set(false)
+        xml.required.set(true)
+        csv.required.set(false)
     }
 }
