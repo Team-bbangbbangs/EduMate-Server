@@ -88,11 +88,6 @@ bootJar {
     }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
-}
-
 jacocoTestReport {
     executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
 
@@ -102,4 +97,3 @@ jacocoTestReport {
         csv.required.set(false)
     }
 }
-
