@@ -26,7 +26,7 @@ jobs:
       - name: create secret config file
         run: |
           cd src/main/resources
-          echo "${{ secrets.APPLICATION_YML_DEV }}" > ./application-dev.yml
+          echo "${{ secrets.APPLICATION_DEV_YML }}" > ./application-dev.yml
 
       - name: Cache Gradle packages
         uses: actions/cache@v3
