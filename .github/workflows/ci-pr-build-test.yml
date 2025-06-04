@@ -9,6 +9,7 @@ permissions: write-all
 
 jobs:
   build:
+    environment: dev
     runs-on: ubuntu-latest
 
     defaults:
@@ -26,7 +27,7 @@ jobs:
       - name: create secret config file
         run: |
           cd src/main/resources
-          echo "${{ secrets.APPLICATION_DEV_YML }}" > ./application-dev.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./application-dev.yml
 
       - name: Cache Gradle packages
         uses: actions/cache@v3
