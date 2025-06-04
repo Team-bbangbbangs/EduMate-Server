@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - develop
+      - feat/EDMT-78
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
