@@ -1,0 +1,67 @@
+package com.edumate.eduserver.auth.security.jwt;
+
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.security.Key;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.Date;
+import javax.crypto.spec.SecretKeySpec;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class JwtGenerator {
+
+    private final JwtProperties jwtProperties;
+
+    private static final String USER_ROLE_CLAIM = "role";
+    private static final String USER_ID_CLAIM = "userId";
+
+    String generateToken(final long userId, final String role, final boolean isAccessToken) {
+        Instant now = Instant.now();
+        Instant expiration = generateExpirationInstant(isAccessToken, now);
+
+        JwtBuilder builder = createJwtBuilder(userId, role, isAccessToken, now, expiration);
+
+        return builder
+                .signWith(getSigningKey(), SignatureAlgorithm.forName(jwtProperties.algorithm()))
+                .compact();
+    }
+
+    private JwtBuilder createJwtBuilder(final long userId, final String role, boolean isAccessToken, final Instant now,
+                                        final Instant expiration) {
+        JwtBuilder builder = Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .claim(USER_ID_CLAIM, userId)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expiration));
+
+        if (isAccessToken) {
+            builder.claim(USER_ROLE_CLAIM, role);
+        }
+
+        return builder;
+    }
+
+    private Instant generateExpirationInstant(final boolean isAccessToken, final Instant now) {
+        return now.plusMillis(calculateExpirationTime(isAccessToken));
+    }
+
+    private long calculateExpirationTime(final boolean isAccessToken) {
+        if (isAccessToken) {
+            return jwtProperties.accessTokenExpiration();
+        } else {
+            return jwtProperties.refreshTokenExpiration();
+        }
+    }
+
+    private Key getSigningKey() {
+        byte[] secretKeyBytes = Base64.getDecoder().decode(jwtProperties.secretKey());
+        return new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.forName(jwtProperties.algorithm()).getJcaName());
+    }
+}
+
