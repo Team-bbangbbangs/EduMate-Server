@@ -31,7 +31,7 @@ public class JwtValidator {
         if (type == TokenType.ACCESS) {
             String role = claims.get(USER_ROLE_CLAIM, String.class);
             if (role == null || role.isBlank()) {
-                throw new UnauthorizedException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
+                throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
             }
         }
     }
