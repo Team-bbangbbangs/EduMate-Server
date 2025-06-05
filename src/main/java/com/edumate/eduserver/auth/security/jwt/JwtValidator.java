@@ -3,7 +3,6 @@ package com.edumate.eduserver.auth.security.jwt;
 import com.edumate.eduserver.auth.exception.IllegalTokenException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.common.exception.UnauthorizedException;
-import com.edumate.eduserver.user.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
