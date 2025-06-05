@@ -155,4 +155,4 @@ Temporary Items
 /src/main/generated
 
 ### resources 하위 파일 무시 ###
-/src/main/resources/*
+/src/main/resources/**
