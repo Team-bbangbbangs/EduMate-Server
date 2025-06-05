@@ -4,11 +4,11 @@ import io.jsonwebtoken.Header;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
-import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ public class JwtGenerator {
         JwtBuilder builder = createJwtBuilder(userId, role, tokenType, now, expiration);
 
         return builder
-                .signWith(getSigningKey(), SignatureAlgorithm.forName(jwtProperties.algorithm()))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -60,8 +60,8 @@ public class JwtGenerator {
     }
 
     private Key getSigningKey() {
-        byte[] secretKeyBytes = Base64.getDecoder().decode(jwtProperties.secretKey());
-        return new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.forName(jwtProperties.algorithm()).getJcaName());
+        byte[] keyBytes = Base64.getDecoder().decode(jwtProperties.secretKey());
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
 

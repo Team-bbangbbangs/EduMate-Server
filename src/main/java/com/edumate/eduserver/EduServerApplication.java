@@ -2,14 +2,12 @@ package com.edumate.eduserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan
 public class EduServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EduServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EduServerApplication.class, args);
+    }
 
 }
