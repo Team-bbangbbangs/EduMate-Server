@@ -1,6 +1,6 @@
 package com.edumate.eduserver.auth.domain;
 
-public enum Status {
+public enum AuthorizeStatus {
     COMPLETE,
     FAILED,
     PENDING,
