@@ -65,6 +65,7 @@ dependencies {
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
 
 tasks.named('asciidoctor') {
@@ -98,6 +99,8 @@ bootJar {
 }
 
 jacocoTestReport {
+    dependsOn test
+    mustRunAfter copyDocument
     executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
 
     reports {
@@ -106,3 +109,4 @@ jacocoTestReport {
         csv.required.set(false)
     }
 }
+
