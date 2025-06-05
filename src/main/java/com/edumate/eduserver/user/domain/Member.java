@@ -44,7 +44,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private School school;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String profileImageUrl;
 
     @Column(nullable = false)
