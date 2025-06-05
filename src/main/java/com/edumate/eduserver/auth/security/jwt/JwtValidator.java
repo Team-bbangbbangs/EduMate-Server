@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtValidator {
 
-    private final JwtProperties jwtProperties;
     private final JwtParser jwtParser;
 
     private static final String USER_ROLE_CLAIM = "role";
