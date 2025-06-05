@@ -21,38 +21,38 @@ public class JwtGenerator {
     private static final String USER_ROLE_CLAIM = "role";
     private static final String USER_ID_CLAIM = "userId";
 
-    String generateToken(final long userId, final String role, final boolean isAccessToken) {
+    String generateToken(final long userId, final String role, final TokenType tokenType) {
         Instant now = Instant.now();
-        Instant expiration = generateExpirationInstant(isAccessToken, now);
+        Instant expiration = generateExpirationInstant(tokenType, now);
 
-        JwtBuilder builder = createJwtBuilder(userId, role, isAccessToken, now, expiration);
+        JwtBuilder builder = createJwtBuilder(userId, role, tokenType, now, expiration);
 
         return builder
                 .signWith(getSigningKey(), SignatureAlgorithm.forName(jwtProperties.algorithm()))
                 .compact();
     }
 
-    private JwtBuilder createJwtBuilder(final long userId, final String role, boolean isAccessToken, final Instant now,
-                                        final Instant expiration) {
+    private JwtBuilder createJwtBuilder(final long userId, final String role, final TokenType tokenType,
+                                        final Instant now, final Instant expiration) {
         JwtBuilder builder = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .claim(USER_ID_CLAIM, userId)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiration));
 
-        if (isAccessToken) {
+        if (tokenType == TokenType.ACCESS) {
             builder.claim(USER_ROLE_CLAIM, role);
         }
 
         return builder;
     }
 
-    private Instant generateExpirationInstant(final boolean isAccessToken, final Instant now) {
-        return now.plusMillis(calculateExpirationTime(isAccessToken));
+    private Instant generateExpirationInstant(final TokenType tokenType, final Instant now) {
+        return now.plusMillis(calculateExpirationTime(tokenType));
     }
 
-    private long calculateExpirationTime(final boolean isAccessToken) {
-        if (isAccessToken) {
+    private long calculateExpirationTime(final TokenType tokenType) {
+        if (tokenType == TokenType.ACCESS) {
             return jwtProperties.accessTokenExpiration();
         } else {
             return jwtProperties.refreshTokenExpiration();

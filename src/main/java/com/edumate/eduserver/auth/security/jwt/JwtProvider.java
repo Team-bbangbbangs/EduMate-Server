@@ -14,10 +14,10 @@ public class JwtProvider {
     }
 
     private String generateAccessToken(final long userId, final String role) {
-        return jwtGenerator.generateToken(userId, role, true);
+        return jwtGenerator.generateToken(userId, role, TokenType.ACCESS);
     }
 
     private String generateRefreshToken(final long userId, final String role) {
-        return jwtGenerator.generateToken(userId, role, false);
+        return jwtGenerator.generateToken(userId, role, TokenType.REFRESH);
     }
 }
