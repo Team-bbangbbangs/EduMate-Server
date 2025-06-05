@@ -154,8 +154,5 @@ Temporary Items
 # Qclass
 /src/main/generated
 
-### yaml ###
-application-*.yml
-
-### index.html ###
-/src/main/resources/static/
+### resources 하위 파일 무시 ###
+/src/main/resources/*
