@@ -18,3 +18,9 @@ spring:
       ddl-auto: create-drop
     defer-datasource-initialization: false
 
+security:
+  jwt:
+    token:
+      secret-key: dGVzdGtleWZvcmp3dHNlY3JldGtleWZvcmp3dHNlY3JldA==
+      access-token-expiration: 5000  # 5초
+      refresh-token-expiration: 1209600000 # 2주

@@ -11,5 +11,4 @@ class EduServerApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
