@@ -40,6 +40,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
     // Health Check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
