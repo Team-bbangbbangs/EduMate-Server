@@ -14,12 +14,15 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(UserId.class) && parameter.getParameterType().equals(Long.class);
+        boolean hasUserIdAnnotation = parameter.hasParameterAnnotation(UserId.class);
+        boolean isLongType = parameter.getParameterType().equals(Long.class) || parameter.getParameterType().equals(long.class);
+        return hasUserIdAnnotation && isLongType;
     }
 
     @Override
     public Object resolveArgument(final MethodParameter parameter, final ModelAndViewContainer mavContainer,
-                                  final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) throws Exception {
+                                  final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory)
+            throws Exception {
         return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
