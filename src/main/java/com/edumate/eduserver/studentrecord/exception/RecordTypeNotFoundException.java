@@ -5,7 +5,7 @@ import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode
 
 public class RecordTypeNotFoundException extends BadRequestException {
 
-    public RecordTypeNotFoundException(final StudentRecordErrorCode errorCode) {
-        super(errorCode);
+    public RecordTypeNotFoundException(final StudentRecordErrorCode errorCode, final String recordType) {
+        super(errorCode, errorCode.formatMessage(recordType));
     }
 }

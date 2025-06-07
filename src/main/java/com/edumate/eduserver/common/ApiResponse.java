@@ -28,8 +28,8 @@ public class ApiResponse<T> {
         return new ApiResponse<>(success.getStatus().value(), success.getCode(), success.getMessage(), data);
     }
 
-    public static <T> ApiResponse<T> fail(final EduMateCustomException ex, final ErrorCode error) {
-        return new ApiResponse<>(ex.getStatus().value(), error.getCode(), error.getMessage());
+    public static <T> ApiResponse<T> fail(final EduMateCustomException ex, final String code, final String message) {
+        return new ApiResponse<>(ex.getStatus().value(), code, message);
     }
 
     public static <T> ApiResponse<T> fail(final int httpStatus, final ErrorCode error) {

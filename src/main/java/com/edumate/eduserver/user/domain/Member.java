@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -44,7 +45,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private School school;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String profileImageUrl;
 
     @Column(nullable = false)
@@ -54,7 +55,32 @@ public class Member extends BaseEntity {
     private String refreshToken;
 
     @Column(nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 
     private LocalDateTime deletedAt;
+
+    @Builder
+    private Member(final Subject subject, final String email, final String password, final String nickname,
+                   final School school, final Role role, final boolean isDeleted) {
+        this.subject = subject;
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.school = school;
+        this.role = role;
+        this.isDeleted = isDeleted;
+    }
+
+    public static Member create(final Subject subject, final String email, final String password,
+        final String nickname, final School school, final Role role) {
+        return Member.builder()
+            .subject(subject)
+            .email(email)
+            .password(password)
+            .nickname(nickname)
+            .school(school)
+            .role(role)
+            .isDeleted(false)
+            .build();
+    }
 }
