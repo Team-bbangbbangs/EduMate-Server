@@ -24,11 +24,11 @@ public class StudentRecordService {
     private final MemberStudentRecordRepository memberStudentRecordRepository;
 
     @Transactional
-    public void update(final long memberId, final StudentRecordType recordType, final long studentId,
+    public void update(final long memberId, final StudentRecordType recordType, final long recordId,
                        final String semester, final String description, final int byteCount) {
         validateSemesterPattern(semester);
         validateMemberStudentRecordExists(memberId, recordType, semester);
-        StudentRecordDetail existingDetail = findRecordDetailById(studentId);
+        StudentRecordDetail existingDetail = findRecordDetailById(recordId);
         existingDetail.updateContent(description, byteCount);
     }
 
@@ -45,8 +45,8 @@ public class StudentRecordService {
                 .orElseThrow(() -> new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND));
     }
 
-    private StudentRecordDetail findRecordDetailById(final long studentId) {
-        return studentRecordDetailRepository.findById(studentId)
+    private StudentRecordDetail findRecordDetailById(final long recordId) {
+        return studentRecordDetailRepository.findById(recordId)
                 .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 }
