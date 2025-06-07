@@ -10,4 +10,8 @@ public class BadRequestException extends EduMateCustomException {
     public BadRequestException(final ErrorCode errorCode) {
         super(errorCode, STATUS);
     }
+
+    public BadRequestException(final ErrorCode errorCode, final String customMessage) {
+        super(errorCode, STATUS, customMessage);
+    }
 }
