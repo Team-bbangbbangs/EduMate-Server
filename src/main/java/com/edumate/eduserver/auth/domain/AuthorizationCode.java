@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class AuthorizationCode {
 
     @Id
-    @Column(name = "code_id")
+    @Column(name = "authorization_code_id")
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 

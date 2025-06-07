@@ -15,9 +15,12 @@ import lombok.NoArgsConstructor;
 public class ValidEmail {
 
     @Id
-    @Column(name = "email_id")
+    @Column(name = "valid_email_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String educationOffice;
 
     @Column(nullable = false, unique = true)
     private String validEmail;

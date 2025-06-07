@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,15 @@ public class Subject {
 
     @Column(nullable = false)
     private String name;
+
+    @Builder
+    private Subject(final String name) {
+        this.name = name;
+    }
+
+    public static Subject create(final String name) {
+        return Subject.builder()
+                .name(name)
+                .build();
+    }
 }
