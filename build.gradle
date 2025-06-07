@@ -41,7 +41,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // Security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-core'
 
     // Health Check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
