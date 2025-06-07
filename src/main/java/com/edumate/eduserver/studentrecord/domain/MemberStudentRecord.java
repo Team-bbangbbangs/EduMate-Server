@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,4 +36,19 @@ public class MemberStudentRecord {
 
     @Column(nullable = false)
     private String semester;
+
+    @Builder
+    private MemberStudentRecord(final Member member, final StudentRecordType studentRecordType, final String semester) {
+        this.member = member;
+        this.studentRecordType = studentRecordType;
+        this.semester = semester;
+    }
+
+    public static MemberStudentRecord create(final Member member, final StudentRecordType studentRecordType, final String semester) {
+        return MemberStudentRecord.builder()
+                .member(member)
+                .studentRecordType(studentRecordType)
+                .semester(semester)
+                .build();
+    }
 }
