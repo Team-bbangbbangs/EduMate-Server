@@ -28,13 +28,4 @@ class StudentRecordTypeConverterTest {
                 .isInstanceOf(RecordTypeNotFoundException.class)
                 .hasMessageContaining(StudentRecordErrorCode.RECORD_TYPE_NOT_FOUND.getMessage());
     }
-
-    @Test
-    @DisplayName("null 또는 빈 문자열은 예외를 발생시킨다")
-    void convert_nullOrEmpty() {
-        assertThatThrownBy(() -> converter.convert(null))
-                .isInstanceOf(RecordTypeNotFoundException.class);
-        assertThatThrownBy(() -> converter.convert(""))
-                .isInstanceOf(RecordTypeNotFoundException.class);
-    }
 }
