@@ -21,7 +21,7 @@ public class StudentRecordService {
     private final MemberStudentRecordRepository memberStudentRecordRepository;
 
     @Transactional
-    public void create(final long memberId, final StudentRecordType recordType, final long studentId,
+    public void update(final long memberId, final StudentRecordType recordType, final long studentId,
                        final String semester, final String description, final int byteCount) {
         MemberStudentRecord memberStudentRecord = findStudentRecordByMemberAndTypeAndSemester(memberId, recordType, semester);
         StudentRecordDetail existingDetail = findRecordDetailByStudentIdAndRecordId(studentId, memberStudentRecord.getId());
