@@ -7,7 +7,6 @@ import com.edumate.eduserver.common.exception.ConflictException;
 import com.edumate.eduserver.common.exception.ForbiddenException;
 import com.edumate.eduserver.common.exception.NotFoundException;
 import com.edumate.eduserver.common.exception.UnauthorizedException;
-import javax.swing.Spring;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
