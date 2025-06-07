@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,7 +32,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(ex.getStatus().value(), error.getCode(), error.getMessage());
     }
 
-    public static <T> ApiResponse<T> fail(final String code, final String message) {
-        return new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), code, message);
+    public static <T> ApiResponse<T> fail(final int httpStatus, final ErrorCode error) {
+        return new ApiResponse<>(httpStatus, error.getCode(), error.getMessage());
     }
 }
