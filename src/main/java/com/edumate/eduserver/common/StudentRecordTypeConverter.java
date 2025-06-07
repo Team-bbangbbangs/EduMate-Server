@@ -13,7 +13,7 @@ public class StudentRecordTypeConverter implements Converter<String, StudentReco
     @Override
     public StudentRecordType convert(final String source) {
         return Arrays.stream(StudentRecordType.values())
-                .filter(type -> type.getValue().equalsIgnoreCase(source))
+                .filter(type -> type.getValue().equalsIgnoreCase(source.trim()))
                 .findFirst()
                 .orElseThrow(() -> new RecordTypeNotFoundException(StudentRecordErrorCode.RECORD_TYPE_NOT_FOUND));
     }
