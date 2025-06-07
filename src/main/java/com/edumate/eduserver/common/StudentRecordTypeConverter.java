@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 public class StudentRecordTypeConverter implements Converter<String, StudentRecordType> {
 
     @Override
-    public StudentRecordType convert(final String source) {
+    public StudentRecordType convert(final String input) {
         return Arrays.stream(StudentRecordType.values())
-                .filter(type -> type.getValue().equalsIgnoreCase(source.trim()))
+                .filter(type -> type.getValue().equalsIgnoreCase(input.trim()))
                 .findFirst()
-                .orElseThrow(() -> new RecordTypeNotFoundException(StudentRecordErrorCode.RECORD_TYPE_NOT_FOUND));
+                .orElseThrow(() -> new RecordTypeNotFoundException(StudentRecordErrorCode.RECORD_TYPE_NOT_FOUND, input.trim()));
     }
 }

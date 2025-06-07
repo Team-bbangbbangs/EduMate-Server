@@ -14,7 +14,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EduMateCustomException.class)
     public ApiResponse<Void> handleCustomException(final EduMateCustomException e) {
-        return ApiResponse.fail(e, e.getErrorCode());
+        String message = e.getCustomMessage() != null ? e.getCustomMessage() : e.getErrorCode().getMessage();
+        return ApiResponse.fail(e, e.getErrorCode().getCode(), message);
     }
 
     @ExceptionHandler(Exception.class)
