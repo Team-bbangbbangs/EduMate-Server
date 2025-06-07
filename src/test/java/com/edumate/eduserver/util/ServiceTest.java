@@ -1,11 +1,10 @@
 package com.edumate.eduserver.util;
 
-import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.repository.SubjectRepository;
-import com.edumate.eduserver.user.domain.Member;
 import com.edumate.eduserver.user.repository.MemberRepository;
 import com.edumate.eduserver.util.fixture.MemberFixture;
 import com.edumate.eduserver.util.fixture.SubjectFixture;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,9 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 public class ServiceTest {
-
-    protected Subject defaultSubject;
-    protected Member defaultMember;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -31,7 +27,7 @@ public class ServiceTest {
     @BeforeEach
     void resetDb() {
         dbCleaner.truncateEveryTable();
-        defaultSubject = subjectRepository.save(SubjectFixture.KOREAN);
-        defaultMember = memberRepository.save(MemberFixture.TEACHER01);
+        subjectRepository.saveAll(List.of(SubjectFixture.KOREAN, SubjectFixture.MATH, SubjectFixture.ENGLISH));
+        memberRepository.saveAll(List.of(MemberFixture.TEACHER01, MemberFixture.TEACHER02, MemberFixture.TEACHER03));
     }
 }
