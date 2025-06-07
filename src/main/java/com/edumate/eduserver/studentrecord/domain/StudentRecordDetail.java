@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,5 +43,26 @@ public class StudentRecordDetail extends BaseEntity {
     public void updateContent(final String description, final int byteCount) {
         this.description = description;
         this.byteCount = byteCount;
+    }
+
+    @Builder
+    private StudentRecordDetail(final MemberStudentRecord memberStudentRecord, final String studentNumber,
+                                final String name, final String description, final int byteCount) {
+        this.memberStudentRecord = memberStudentRecord;
+        this.studentNumber = studentNumber;
+        this.name = name;
+        this.description = description;
+        this.byteCount = byteCount;
+    }
+
+    public static StudentRecordDetail create(final MemberStudentRecord memberStudentRecord, final String studentNumber,
+                                             final String name, final String description, final int byteCount) {
+        return StudentRecordDetail.builder()
+                .memberStudentRecord(memberStudentRecord)
+                .studentNumber(studentNumber)
+                .name(name)
+                .description(description)
+                .byteCount(byteCount)
+                .build();
     }
 }

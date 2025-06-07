@@ -12,12 +12,12 @@ import com.edumate.eduserver.user.domain.Member;
 
 public class MemberFixture {
 
-    public static final Member TEACHER01 = Member.create(KOREAN, "teacher01@sen.go.kr", "test123445", "teacher01",
+    public static final Member TEACHER_01 = Member.create(KOREAN, "teacher01@sen.go.kr", "test123445", "teacher01",
             HIGH_SCHOOL, TEACHER);
 
-    public static final Member TEACHER02 = Member.create(MATH, "teacher02@sen.go.kr", "test123445", "teacher02",
+    public static final Member TEACHER_02 = Member.create(MATH, "teacher02@sen.go.kr", "test123445", "teacher02",
             MIDDLE_SCHOOL, TEACHER);
 
-    public static final Member TEACHER03 = Member.create(ENGLISH, "teacher03@sen.go.kr", "test123445", "teacher03",
+    public static final Member TEACHER_03 = Member.create(ENGLISH, "teacher03@sen.go.kr", "test123445", "teacher03",
             HIGH_SCHOOL, PENDING_TEACHER);
 }
