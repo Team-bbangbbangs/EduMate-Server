@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class NicknameBannedWord extends BaseEntity {
 
     @Id
-    @Column(name = "word_id")
+    @Column(name = "nickname_banned_word_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
