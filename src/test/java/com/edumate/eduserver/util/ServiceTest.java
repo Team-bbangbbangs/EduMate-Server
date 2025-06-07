@@ -1,6 +1,7 @@
 package com.edumate.eduserver.util;
 
 import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
+import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.subject.domain.Subject;
@@ -22,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class ServiceTest {
 
     protected Member defaultTeacher;
+    protected StudentRecordDetail defaultRecordDetail;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -45,6 +47,6 @@ public class ServiceTest {
         Subject korean = subjectRepository.save(SubjectFixture.korean());
         defaultTeacher = memberRepository.save(MemberFixture.teacher01(korean));
         MemberStudentRecord record01 = memberStudentRecordRepository.save(MemberStudentRecordFixture.studentRecord01(defaultTeacher));
-        studentRecordDetailRepository.save(StudentRecordDetailFixture.detail01(record01));
+        defaultRecordDetail = studentRecordDetailRepository.save(StudentRecordDetailFixture.detail01(record01));
     }
 }
