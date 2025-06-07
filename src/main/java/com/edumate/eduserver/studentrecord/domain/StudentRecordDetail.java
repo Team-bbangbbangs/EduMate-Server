@@ -38,4 +38,9 @@ public class StudentRecordDetail extends BaseEntity {
 
     @Column(nullable = false)
     private int byteCount;
+
+    public void updateContent(final String description, final int byteCount) {
+        this.description = description;
+        this.byteCount = byteCount;
+    }
 }
