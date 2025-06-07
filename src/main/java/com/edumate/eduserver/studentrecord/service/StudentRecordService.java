@@ -1,6 +1,5 @@
 package com.edumate.eduserver.studentrecord.service;
 
-import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
@@ -28,8 +27,8 @@ public class StudentRecordService {
     public void update(final long memberId, final StudentRecordType recordType, final long studentId,
                        final String semester, final String description, final int byteCount) {
         validateSemesterPattern(semester);
-        MemberStudentRecord memberStudentRecord = findStudentRecordByMemberAndTypeAndSemester(memberId, recordType, semester);
-        StudentRecordDetail existingDetail = findRecordDetailByStudentIdAndRecordId(studentId, memberStudentRecord.getId());
+        validateMemberStudentRecordExists(memberId, recordType, semester);
+        StudentRecordDetail existingDetail = findRecordDetailById(studentId);
         existingDetail.updateContent(description, byteCount);
     }
 
@@ -39,16 +38,15 @@ public class StudentRecordService {
         }
     }
 
-    private MemberStudentRecord findStudentRecordByMemberAndTypeAndSemester(final long memberId,
-                                                                            final StudentRecordType recordType,
-                                                                            final String semester) {
-        return memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
+    private void validateMemberStudentRecordExists(final long memberId,
+                                                   final StudentRecordType recordType,
+                                                   final String semester) {
+        memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
                 .orElseThrow(() -> new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND));
     }
 
-    private StudentRecordDetail findRecordDetailByStudentIdAndRecordId(final long studentId,
-                                                                       final long memberStudentRecordId) {
-        return studentRecordDetailRepository.findByIdAndMemberStudentRecordId(studentId, memberStudentRecordId)
+    private StudentRecordDetail findRecordDetailById(final long studentId) {
+        return studentRecordDetailRepository.findById(studentId)
                 .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 }
