@@ -9,6 +9,7 @@ import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFound
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
+import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,12 @@ public class StudentRecordService {
         MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
         StudentRecordDetail existingDetail = findRecordDetailById(recordId, memberStudentRecord);
         existingDetail.updateContent(description, byteCount);
+    }
+
+    public StudentRecordDetailDto get(final long memberId, final StudentRecordType recordType, final long recordId, final String semester) {
+        validateSemesterPattern(semester);
+        MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
+        return StudentRecordDetailDto.of(findRecordDetailById(recordId, memberStudentRecord));
     }
 
     private void validateSemesterPattern(final String semester) {
