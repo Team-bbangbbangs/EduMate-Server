@@ -61,8 +61,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // RestDocs
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc:3.0.0'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor:3.0.0'
 }
 
 tasks.named('test') {
@@ -103,6 +103,7 @@ bootJar {
 
 jacocoTestReport {
     dependsOn test
+    dependsOn asciidoctor
     mustRunAfter copyDocument
     executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
 

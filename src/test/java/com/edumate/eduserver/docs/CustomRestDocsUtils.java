@@ -12,9 +12,8 @@ import org.springframework.restdocs.snippet.Snippet;
 
 public class CustomRestDocsUtils {
 
-    public static RestDocumentationResultHandler Documents(final String identifier,
-                                                                final Snippet... snippets) {
-        return document("{class-name}/" + identifier, getDocumentRequest(), getDocumentResponse(), snippets);
+    public static RestDocumentationResultHandler documents(final String identifier, final Snippet... snippets) {
+        return document(identifier, getDocumentRequest(), getDocumentResponse(), snippets);
     }
 
     private static OperationRequestPreprocessor getDocumentRequest() {
