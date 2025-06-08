@@ -1,5 +1,6 @@
 package com.edumate.eduserver.notice.facade.response;
 
+import com.edumate.eduserver.notice.service.dto.NoticeDto;
 import java.time.LocalDateTime;
 
 public record NoticeResponse(
@@ -8,4 +9,12 @@ public record NoticeResponse(
         String title,
         LocalDateTime createdAt
 ) {
+    public static NoticeResponse of(NoticeDto noticeDto) {
+        return new NoticeResponse(
+                noticeDto.noticeId(),
+                noticeDto.category().getText(),
+                noticeDto.title(),
+                noticeDto.createdAt()
+        );
+    }
 }

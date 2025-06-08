@@ -5,6 +5,7 @@ import com.edumate.eduserver.notice.domain.NoticeCategory;
 import com.edumate.eduserver.notice.exception.NoticeNotFoundException;
 import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
 import com.edumate.eduserver.notice.repository.NoticeRepository;
+import com.edumate.eduserver.notice.service.dto.NoticeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,7 +30,11 @@ public class NoticeService {
         return noticeRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
-    public Notice getNotice(long noticeId) {
+    public NoticeDto getNotice(long noticeId) {
+        return NoticeDto.of(findById(noticeId));
+    }
+
+    private Notice findById(long noticeId) {
         return noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoticeNotFoundException(NoticeErrorCode.NOTICE_NOT_FOUND));
     }

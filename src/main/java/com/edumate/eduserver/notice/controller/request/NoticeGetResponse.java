@@ -1,6 +1,6 @@
 package com.edumate.eduserver.notice.controller.request;
 
-import com.edumate.eduserver.notice.domain.NoticeCategory;
+import com.edumate.eduserver.notice.service.dto.NoticeDto;
 import java.time.LocalDateTime;
 
 public record NoticeGetResponse(
@@ -10,11 +10,13 @@ public record NoticeGetResponse(
         String content,
         LocalDateTime createdAt
 ) {
-    public static NoticeGetResponse of(long noticeId,
-                                       NoticeCategory noticeCategory,
-                                       String title,
-                                       String content,
-                                       LocalDateTime createdAt) {
-        return new NoticeGetResponse(noticeId, noticeCategory.getText(), title, content, createdAt);
+    public static NoticeGetResponse of(NoticeDto noticeDto) {
+        return new NoticeGetResponse(
+                noticeDto.noticeId(),
+                noticeDto.category().getText(),
+                noticeDto.title(),
+                noticeDto.content(),
+                noticeDto.createdAt()
+        );
     }
 }

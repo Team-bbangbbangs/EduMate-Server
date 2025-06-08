@@ -1,26 +1,16 @@
 package com.edumate.eduserver.notice.facade.response;
 
-import com.edumate.eduserver.notice.domain.Notice;
+import com.edumate.eduserver.notice.service.dto.NoticeDto;
 import java.util.List;
-import org.springframework.data.domain.Page;
 
 public record NoticesGetResponse(
         int totalPages,
         List<NoticeResponse> notices
 ) {
-    public static NoticesGetResponse of(final Page<Notice> noticePage) {
-        List<NoticeResponse> notices = noticePage.getContent()
-                .stream()
-                .map(notice -> new NoticeResponse(
-                        notice.getId(),
-                        notice.getCategory().getText(),
-                        notice.getTitle(),
-                        notice.getCreatedAt()
-                ))
-                .toList();
+    public static NoticesGetResponse of(int totalPages, List<NoticeDto> notices) {
         return new NoticesGetResponse(
-                noticePage.getTotalPages(),
-                notices
+                totalPages,
+                notices.stream().map(NoticeResponse::of).toList()
         );
     }
 }
