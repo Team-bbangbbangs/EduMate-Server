@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notice extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notice_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -35,6 +35,5 @@ public class Notice extends BaseEntity {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    @Column
     private LocalDateTime deletedAt;
 }
