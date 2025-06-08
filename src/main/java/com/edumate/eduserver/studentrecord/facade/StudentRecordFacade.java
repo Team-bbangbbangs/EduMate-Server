@@ -15,9 +15,9 @@ public class StudentRecordFacade {
     private final StudentRecordService studentRecordService;
 
     @Transactional
-    public void updateStudentRecord(final long memberId, final StudentRecordType recordType, final long studentId,
+    public void updateStudentRecord(final long memberId, final StudentRecordType recordType, final long recordId,
                                     final StudentRecordCreateRequest request) {
-        studentRecordService.update(memberId, recordType, studentId, request.semester().trim(), request.description().trim(), request.byteCount());
+        studentRecordService.update(memberId, recordType, recordId, request.semester().trim(), request.description().trim(), request.byteCount());
 
     }
 }

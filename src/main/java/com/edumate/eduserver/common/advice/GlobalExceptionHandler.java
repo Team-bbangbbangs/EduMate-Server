@@ -5,6 +5,7 @@ import com.edumate.eduserver.common.code.BusinessErrorCode;
 import com.edumate.eduserver.common.exception.EduMateCustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -26,6 +27,11 @@ public class GlobalExceptionHandler {
         }
         log.error("Unhandled Exception: {}", getDeepCause(e).getMessage(), e);
         return ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), BusinessErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ApiResponse<Void> handleValidationException(final MethodArgumentNotValidException e) {
+        return ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), BusinessErrorCode.BAD_REQUEST);
     }
 
     private Throwable getDeepCause(Throwable e) {

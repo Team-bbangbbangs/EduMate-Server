@@ -4,7 +4,16 @@ import com.edumate.eduserver.subject.domain.Subject;
 
 public class SubjectFixture {
 
-    public static final Subject KOREAN = Subject.create("국어");
-    public static final Subject MATH = Subject.create("수학");
-    public static final Subject ENGLISH = Subject.create("영어");
+    public static Subject korean() {
+        return Subject.create("국어");
+    }
+
+    public static Subject math() {
+        return Subject.create("수학");
+    }
+
+    public static Subject english() {
+        return Subject.create("영어");
+    }
 }
+

@@ -1,17 +1,26 @@
 package com.edumate.eduserver.docs;
 
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
+import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.restdocs.snippet.Snippet;
 
 public class CustomRestDocsUtils {
 
-    public static RestDocumentationResultHandler document(final String identifier, final Snippet... snippets) {
-        return MockMvcRestDocumentation.document(identifier,
-                Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
-                Preprocessors.preprocessResponse(Preprocessors.prettyPrint()),
-                snippets
-        );
+    public static RestDocumentationResultHandler documents(final String identifier, final Snippet... snippets) {
+        return document(identifier, getDocumentRequest(), getDocumentResponse(), snippets);
+    }
+
+    private static OperationRequestPreprocessor getDocumentRequest() {
+        return Preprocessors.preprocessRequest(prettyPrint());
+    }
+
+    private static OperationResponsePreprocessor getDocumentResponse() {
+        return preprocessResponse(prettyPrint());
     }
 }

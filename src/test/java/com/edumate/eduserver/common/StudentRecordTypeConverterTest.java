@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
-import com.edumate.eduserver.studentrecord.exception.RecordTypeNotFoundException;
+import com.edumate.eduserver.studentrecord.exception.InvalidRecordTypeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +24,6 @@ class StudentRecordTypeConverterTest {
     @DisplayName("존재하지 않는 값은 RecordTypeNotFoundException을 발생시킨다")
     void convert_invalidValue() {
         assertThatThrownBy(() -> converter.convert("invalid"))
-                .isInstanceOf(RecordTypeNotFoundException.class);
+                .isInstanceOf(InvalidRecordTypeException.class);
     }
 }
