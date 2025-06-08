@@ -8,6 +8,8 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,6 +58,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-success",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID(ability, behavior, creative-career, creative-autonomy, creative-club)")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (예: '2023-1')"),
                                 fieldWithPath("description").description("기록 내용"),
@@ -91,6 +97,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-4000202"))
                 .andExpect(jsonPath("$.message").value(String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", semesterInput)))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/invalid-semester",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (예: '2023-1')"),
                                 fieldWithPath("description").description("기록 내용"),
@@ -125,6 +135,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-4040204"))
                 .andExpect(jsonPath("$.message").value("해당 학생에 대한 생활기록부 기록이 존재하지 않습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/record-not-found",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (예: '2023-1')"),
                                 fieldWithPath("description").description("기록 내용"),
@@ -159,6 +173,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-4040203"))
                 .andExpect(jsonPath("$.message").value("해당 회원의 해당 학기 생활기록부가 존재하지 않습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/member-record-not-found",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (예: '2023-1')"),
                                 fieldWithPath("description").description("기록 내용"),
@@ -190,6 +208,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-4000201"))
                 .andExpect(jsonPath("$.message").value(String.format("입력하신 %s는 유효하지 않는 생활기록부 항목입니다.", recordType)))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/invalid-record-type",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (예: '2023-1')"),
                                 fieldWithPath("description").description("기록 내용"),
@@ -220,6 +242,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-40000"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/missing-semester",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (필수)"),
                                 fieldWithPath("description").description("기록 내용"),
@@ -250,6 +276,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-40000"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/missing-description",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (예: '2023-1')"),
                                 fieldWithPath("description").description("기록 내용 (필수)"),
@@ -280,6 +310,10 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-40000"))
                 .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/negative-byte-count",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
                         requestFields(
                                 fieldWithPath("semester").description("학기 정보 (예: '2023-1')"),
                                 fieldWithPath("description").description("기록 내용"),
