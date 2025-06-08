@@ -1,9 +1,9 @@
-package com.edumate.eduserver.notice.controller.response;
+package com.edumate.eduserver.notice.facade.response;
 
 import java.time.LocalDateTime;
 
 public record NoticeResponse(
-        Long noticeId,
+        long noticeId,
         String category,
         String title,
         LocalDateTime createdAt

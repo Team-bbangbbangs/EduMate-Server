@@ -1,4 +1,4 @@
-package com.edumate.eduserver.notice.controller.response;
+package com.edumate.eduserver.notice.facade.response;
 
 import com.edumate.eduserver.notice.domain.Notice;
 import java.util.List;
