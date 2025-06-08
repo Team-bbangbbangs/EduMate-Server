@@ -8,16 +8,47 @@ operation::student-record/update-success[snippets="path-parameters,http-request,
 
 ==== 실패: 잘못된 생기부 항목 타입
 
-operation::student-record/update-fail/invalid-record-type[snippets="http-request,http-response"]
+operation::student-record/fail/invalid-record-type[snippets="http-request,http-response"]
 
 ==== 실패: 잘못된 학기 양식
 
-operation::student-record/update-fail/invalid-semester[snippets="http-request,http-response"]
+operation::student-record/fail/invalid-semester[snippets="http-request,http-response"]
 
 ==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
 
-operation::student-record/update-fail/member-record-not-found[snippets="http-request,http-response"]
+operation::student-record/fail/member-record-not-found[snippets="http-request,http-response"]
 
 ==== 실패: 특정 학생의 생기부가 존재하지 않음
 
-operation::student-record/update-fail/record-not-found[snippets="http-request,http-response"]
+operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
+
+==== 실패: 유효하지 않은 요청 값
+
+include::{snippets}/student-record/update-fail/missing-description/http-request.adoc[]
+include::{snippets}/student-record/update-fail/missing-semester/http-request.adoc[]
+include::{snippets}/student-record/update-fail/negative-byte-count/http-request.adoc[]
+include::{snippets}/student-record/update-fail/missing-semester/http-response.adoc[]
+
+=== 생활기록부 종합 글 불러오기
+
+==== 성공
+
+operation::student-record/get-success[snippets="path-parameters,query-parameters,http-request,http-response"]
+
+==== 실패: 잘못된 생기부 항목 타입
+
+operation::student-record/fail/invalid-record-type[snippets="http-request,http-response"]
+
+==== 실패: 잘못된 학기 양식
+
+operation::student-record/fail/invalid-semester[snippets="http-request,http-response"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
+operation::student-record/fail/member-record-not-found[snippets="http-request,http-response"]
+
+==== 실패: 특정 학생의 생기부가 존재하지 않음
+
+operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
+
+
