@@ -3,7 +3,7 @@ package com.edumate.eduserver.studentrecord.facade;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
-import com.edumate.eduserver.studentrecord.facade.response.StudentRecordsResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailsResponse;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
 import java.util.List;
@@ -29,8 +29,8 @@ public class StudentRecordFacade {
         return StudentRecordDetailResponse.of(recordDetailDto.recordDetailId(), recordDetailDto.description(), recordDetailDto.byteCount());
     }
 
-    public StudentRecordsResponse getStudentRecords(final long memberId, final StudentRecordType recordType, final String semester) {
+    public StudentRecordDetailsResponse getStudentRecords(final long memberId, final StudentRecordType recordType, final String semester) {
         List<StudentRecordDetailDto> recordDetailDtos = studentRecordService.getAll(memberId, recordType, semester.trim());
-        return StudentRecordsResponse.of(recordDetailDtos);
+        return StudentRecordDetailsResponse.of(recordDetailDtos);
     }
 }

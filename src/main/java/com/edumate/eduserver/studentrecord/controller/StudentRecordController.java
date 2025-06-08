@@ -6,7 +6,7 @@ import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreat
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
-import com.edumate.eduserver.studentrecord.facade.response.StudentRecordsResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailsResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,8 +42,8 @@ public class StudentRecordController {
     }
 
     @GetMapping("/student-records/{recordType}")
-    public ApiResponse<StudentRecordsResponse> getStudentRecords(@PathVariable final StudentRecordType recordType,
-                                                                 @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
+    public ApiResponse<StudentRecordDetailsResponse> getStudentRecords(@PathVariable final StudentRecordType recordType,
+                                                                       @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
         return ApiResponse.success(
                 CommonSuccessCode.OK,
                 studentRecordFacade.getStudentRecords(1, recordType, semester)
