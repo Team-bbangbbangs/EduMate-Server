@@ -1,7 +1,8 @@
 package com.edumate.eduserver.notice.domain;
 
-import com.edumate.eduserver.notice.exception.NoticeCategoryNotFoundException;
+import com.edumate.eduserver.notice.exception.InvalidNoticeCategoryException;
 import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -19,11 +20,9 @@ public enum NoticeCategory {
         if (code == null) {
             return ALL;
         }
-        for (NoticeCategory category : NoticeCategory.values()) {
-            if (category.id == code) {
-                return category;
-            }
-        }
-        throw new NoticeCategoryNotFoundException(NoticeErrorCode.INVALID_NOTICE_CATEGORY);
+        return Arrays.stream(NoticeCategory.values())
+                .filter(category -> category.id == code)
+                .findFirst()
+                .orElseThrow(() -> new InvalidNoticeCategoryException(NoticeErrorCode.INVALID_NOTICE_CATEGORY));
     }
 }
