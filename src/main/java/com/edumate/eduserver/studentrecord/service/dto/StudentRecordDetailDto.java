@@ -4,10 +4,18 @@ import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 
 public record StudentRecordDetailDto(
         long recordDetailId,
+        String studentNumber,
+        String studentName,
         String description,
         int byteCount
 ) {
     public static StudentRecordDetailDto of(final StudentRecordDetail recordDetail) {
-        return new StudentRecordDetailDto(recordDetail.getId(), recordDetail.getDescription(), recordDetail.getByteCount());
+        return new StudentRecordDetailDto(
+                recordDetail.getId(),
+                recordDetail.getStudentNumber(),
+                recordDetail.getName(),
+                recordDetail.getDescription(),
+                recordDetail.getByteCount()
+        );
     }
 }

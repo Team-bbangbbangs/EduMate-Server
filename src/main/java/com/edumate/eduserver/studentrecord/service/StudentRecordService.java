@@ -10,6 +10,7 @@ import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
+import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,13 @@ public class StudentRecordService {
         return StudentRecordDetailDto.of(findRecordDetailById(recordId, memberStudentRecord));
     }
 
+    public List<StudentRecordDetailDto> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
+        validateSemesterPattern(semester);
+        MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
+        List<StudentRecordDetail> studentRecordDetails = findRecordDetails(memberStudentRecord);
+        return studentRecordDetails.stream().map(StudentRecordDetailDto::of).toList();
+    }
+
     private void validateSemesterPattern(final String semester) {
         if (!SEMESTER_PATTERN.matcher(semester).matches()) {
             throw new InvalidSemesterFormatException(StudentRecordErrorCode.INVALID_SEMESTER_FORMAT, semester);
@@ -56,5 +64,9 @@ public class StudentRecordService {
     private StudentRecordDetail findRecordDetailById(final long recordId, final MemberStudentRecord memberStudentRecord) {
         return studentRecordDetailRepository.findByIdAndMemberStudentRecord(recordId, memberStudentRecord)
                 .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
+    }
+
+    private List<StudentRecordDetail> findRecordDetails(final MemberStudentRecord memberStudentRecord) {
+        return studentRecordDetailRepository.findAllByMemberStudentRecordOrderByCreatedAtAsc(memberStudentRecord);
     }
 }
