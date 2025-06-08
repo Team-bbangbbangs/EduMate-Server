@@ -2,8 +2,11 @@ package com.edumate.eduserver.studentrecord.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -13,6 +16,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
@@ -22,6 +27,8 @@ import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFound
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
+
 import com.edumate.eduserver.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +47,7 @@ class StudentRecordControllerTest extends ControllerTest {
     private static final String RECORD_TYPE = StudentRecordType.BEHAVIOR_OPINION.getValue().toLowerCase();
 
     @Test
-    @DisplayName("학생 기록 업데이트 성공 케이스")
+    @DisplayName("학생 생활기록부 내용을 성공적으로 업데이트 한다.")
     void updateStudentRecord_Success() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest("2023-1", "학생의 행동 특성에 대한 기록", 100);
@@ -76,7 +83,43 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("학생 기록 업데이트 실패 - 유효하지 않은 학기 정보")
+    @DisplayName("학생 생활기록부 내용을 성공적으로 불러온다.")
+    void getStudentRecord_Success() throws Exception {
+        // given
+       long recordId = 1L;
+
+        StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse(recordId, "이 학생은 바르고 성실한 학생입니다.", 15);
+        when(studentRecordFacade.getStudentRecord(anyLong(), any(StudentRecordType.class), anyLong(), anyString()))
+                .thenReturn(dummyRecordResponse);
+
+        // when & then
+        mockMvc.perform(get(BASE_URL + "/{recordType}/{recordId}", RECORD_TYPE, recordId)
+                        .queryParam("semester", "2025-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-success",
+                        pathParameters(
+                                parameterWithName("recordType").description("기록 타입"),
+                                parameterWithName("recordId").description("학생 레코드 ID")
+                        ),
+                        queryParameters(
+                                parameterWithName("semester").description("학기 정보 (예: '2025-1')")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data.recordDetailId").description("학생 기록 레코드 ID"),
+                                fieldWithPath("data.description").description("학생 기록 내용"),
+                                fieldWithPath("data.byteCount").description("학생 기록 데이터 바이트 수")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 학기 정보로 요청을 보내면 실패한다.")
     void updateStudentRecord_InvalidSemester() throws Exception {
         // given
         String semesterInput = "invalid-semester";
@@ -96,7 +139,7 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("EDMT-4000202"))
                 .andExpect(jsonPath("$.message").value(String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", semesterInput)))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/invalid-semester",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/invalid-semester",
                         pathParameters(
                                 parameterWithName("recordType").description("기록 타입"),
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -115,7 +158,7 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("학생 기록 업데이트 실패 - 기록을 찾을 수 없음")
+    @DisplayName("존재하지 않은 학생 레코드 ID로 요청을 보내면 실패한다.")
     void updateStudentRecord_RecordNotFound() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest("2023-1", "학생의 행동 특성에 대한 기록", 100);
@@ -134,7 +177,7 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value("EDMT-4040204"))
                 .andExpect(jsonPath("$.message").value("해당 학생에 대한 생활기록부 기록이 존재하지 않습니다."))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/record-not-found",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/record-not-found",
                         pathParameters(
                                 parameterWithName("recordType").description("기록 타입"),
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -153,7 +196,7 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("학생 기록 업데이트 실패 - 회원의 해당 학기 생기부를 찾을 수 없음")
+    @DisplayName("존재하지 않은 학생 생활기록부 관련 요청을 보내면 실패한다.")
     void updateStudentRecord_MemberRecordNotFound() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest("2023-1", "학생의 행동 특성에 대한 기록", 100);
@@ -172,7 +215,7 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value("EDMT-4040203"))
                 .andExpect(jsonPath("$.message").value("해당 회원의 해당 학기 생활기록부가 존재하지 않습니다."))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/member-record-not-found",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/member-record-not-found",
                         pathParameters(
                                 parameterWithName("recordType").description("기록 타입"),
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -191,7 +234,7 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("학생 기록 업데이트 실패 - 유효하지 않은 RecordType")
+    @DisplayName("유효하지 않은 RecordType으로 요청을 보내면 실패한다.")
     void updateStudentRecord_InvalidRecordType() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest("2023-1", "학생의 행동 특성에 대한 기록", 100);
@@ -207,7 +250,7 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("EDMT-4000201"))
                 .andExpect(jsonPath("$.message").value(String.format("입력하신 %s는 유효하지 않는 생활기록부 항목입니다.", recordType)))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/invalid-record-type",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/invalid-record-type",
                         pathParameters(
                                 parameterWithName("recordType").description("기록 타입"),
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -226,7 +269,7 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("학생 기록 업데이트 실패 - semester 필드 누락")
+    @DisplayName("semester 필드 누락하여 요청하면 실패한다.")
     void updateStudentRecord_MissingSemester() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest(null, "학생의 행동 특성에 대한 기록", 100);
@@ -260,7 +303,7 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("학생 기록 업데이트 실패 - description 필드 누락")
+    @DisplayName("description 필드 누락하여 요청을 보내면 실패한다.")
     void updateStudentRecord_MissingDescription() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest("2023-1", null, 100);
