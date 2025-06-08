@@ -2,12 +2,14 @@ package com.edumate.eduserver.notice.controller;
 
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
+import com.edumate.eduserver.notice.controller.request.NoticeGetResponse;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
 import com.edumate.eduserver.notice.facade.NoticeFacade;
 import com.edumate.eduserver.notice.facade.response.NoticesGetResponse;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +30,16 @@ public class NoticeController {
         return ApiResponse.success(
                 CommonSuccessCode.OK,
                 noticeFacade.getNotices(category, page)
+        );
+    }
+
+    @GetMapping("/notices/{noticeId}")
+    public ApiResponse<NoticeGetResponse> getNotice(
+            @PathVariable final long noticeId
+    ) {
+        return ApiResponse.success(
+                CommonSuccessCode.OK,
+                noticeFacade.getNotice(noticeId)
         );
     }
 }

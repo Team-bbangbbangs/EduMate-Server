@@ -2,6 +2,8 @@ package com.edumate.eduserver.notice.service;
 
 import com.edumate.eduserver.notice.domain.Notice;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
+import com.edumate.eduserver.notice.exception.NoticeNotFoundException;
+import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
 import com.edumate.eduserver.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,4 +28,10 @@ public class NoticeService {
         }
         return noticeRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
+
+    public Notice getNotice(long noticeId) {
+        return noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new NoticeNotFoundException(NoticeErrorCode.NOTICE_NOT_FOUND));
+    }
+
 }
