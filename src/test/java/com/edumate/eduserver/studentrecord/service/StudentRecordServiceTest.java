@@ -2,6 +2,8 @@ package com.edumate.eduserver.studentrecord.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
@@ -9,6 +11,7 @@ import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatExcept
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
+import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
 import com.edumate.eduserver.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +43,26 @@ class StudentRecordServiceTest extends ServiceTest {
         // then
         StudentRecordDetail updated = studentRecordDetailRepository.findById(studentRecordId).get();
         assertThat(updated.getDescription()).isEqualTo(newDescription);
+    }
+
+    @Test
+    @DisplayName("특정 학생의 특정 생기부 항목에 대한 종합 내용을 불러온다.")
+    void test() {
+        // given
+        long memberId = defaultTeacher.getId();
+        StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
+        long studentRecordId = defaultRecordDetail.getId();
+        String semester = "2025-1";
+
+        // when
+        StudentRecordDetailDto recordDetail = studentRecordService.get(memberId, recordType, studentRecordId, semester);
+
+        // then
+        assertAll(
+                () -> assertEquals(studentRecordId, recordDetail.recordDetailId()),
+                () -> assertEquals(defaultRecordDetail.getDescription(), recordDetail.description()),
+                () -> assertEquals(defaultRecordDetail.getByteCount(), recordDetail.byteCount())
+        );
     }
 
     @Test
