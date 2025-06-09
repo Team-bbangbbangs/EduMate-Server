@@ -1,5 +1,7 @@
 package com.edumate.eduserver.user.domain;
 
+import static java.util.UUID.randomUUID;
+
 import com.edumate.eduserver.BaseEntity;
 import com.edumate.eduserver.subject.domain.Subject;
 import jakarta.persistence.Column;
@@ -55,6 +57,9 @@ public class Member extends BaseEntity {
     private String refreshToken;
 
     @Column(nullable = false)
+    private String memberUuid;
+
+    @Column(nullable = false)
     private boolean isDeleted;
 
     private LocalDateTime deletedAt;
@@ -69,11 +74,12 @@ public class Member extends BaseEntity {
         this.school = school;
         this.role = role;
         this.isDeleted = isDeleted;
+        this.memberUuid = randomUUID().toString();
     }
 
     public static Member create(final Subject subject, final String email, final String password,
         final String nickname, final School school, final Role role) {
-        return Member.builder()
+        return com.edumate.eduserver.user.domain.Member.builder()
             .subject(subject)
             .email(email)
             .password(password)
