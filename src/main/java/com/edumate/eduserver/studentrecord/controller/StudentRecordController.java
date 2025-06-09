@@ -29,7 +29,7 @@ public class StudentRecordController {
     @PostMapping("/student-records/{recordType}/{recordId}")
     public ApiResponse<Void> updateStudentRecord(@PathVariable final StudentRecordType recordType,
                                                  @PathVariable final long recordId,
-                                                 @RequestBody @Valid StudentRecordCreateRequest request) {
+                                                 @RequestBody @Valid final StudentRecordCreateRequest request) {
         studentRecordFacade.updateStudentRecord(1, recordType, recordId, request); // 멤버 아이디 하드코딩
         return ApiResponse.success(CommonSuccessCode.OK);
     }
