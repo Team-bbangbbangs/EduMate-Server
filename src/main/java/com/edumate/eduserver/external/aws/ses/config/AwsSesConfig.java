@@ -1,4 +1,4 @@
-package com.edumate.eduserver.config;
+package com.edumate.eduserver.external.aws.ses.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(AwsSesProperties.class)
-public class AwsConfig {
+public class AwsSesConfig {
 
     private final AwsSesProperties awsSesProperties;
 
