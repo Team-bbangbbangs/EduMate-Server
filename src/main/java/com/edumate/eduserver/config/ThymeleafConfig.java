@@ -16,7 +16,7 @@ public class ThymeleafConfig {
     private static final String TEMPLATE_FILE_EXTENSION = ".html";
 
     @Bean
-    public TemplateEngine templateEngine() {
+    public TemplateEngine customTemplateEngine() {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(fileTemplateResolver());
         return templateEngine;
