@@ -18,6 +18,7 @@ operation::student-record/fail/record-not-found[snippets="http-request,http-resp
 
 include::{snippets}/student-record/update-fail/missing-description/http-request.adoc[]
 include::{snippets}/student-record/update-fail/negative-byte-count/http-request.adoc[]
+include::{snippets}/student-record/update-fail/negative-byte-count/http-response.adoc[]
 
 === 생활기록부 종합 글 불러오기
 
