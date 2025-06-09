@@ -26,27 +26,21 @@ public class StudentRecordController {
 
     private static final String DEFAULT_SEMESTER = "2025-1";
 
-    @PostMapping("/student-records/{recordType}/{recordId}")
-    public ApiResponse<Void> updateStudentRecord(@PathVariable final StudentRecordType recordType,
-                                                 @PathVariable final long recordId,
+    @PostMapping("/student-records/summary/{recordId}")
+    public ApiResponse<Void> updateStudentRecord(@PathVariable final long recordId,
                                                  @RequestBody @Valid final StudentRecordCreateRequest request) {
-        studentRecordFacade.updateStudentRecord(1, recordType, recordId, request); // 멤버 아이디 하드코딩
+        studentRecordFacade.updateStudentRecord(1, recordId, request); // 멤버 아이디 하드코딩
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
-    @GetMapping("/student-records/{recordType}/{recordId}")
-    public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@PathVariable final StudentRecordType recordType,
-                                                                     @PathVariable final long recordId,
-                                                                     @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
-        return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentRecord(1, recordType, recordId, semester)); // 멤버 아이디 하드코딩
+    @GetMapping("/student-records/summary/{recordId}")
+    public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@PathVariable final long recordId) {
+        return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentRecord(1, recordId)); // 멤버 아이디 하드코딩
     }
 
     @GetMapping("/student-records/{recordType}")
     public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@PathVariable final StudentRecordType recordType,
                                                                                  @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
-        return ApiResponse.success(
-                CommonSuccessCode.OK,
-                studentRecordFacade.getStudentRecordOverviews(1, recordType, semester)
-        ); // 멤버 아이디 하드코딩
+        return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentRecordOverviews(1, recordType, semester)); // 멤버 아이디 하드코딩
     }
 }
