@@ -26,14 +26,14 @@ public class StudentRecordController {
 
     private static final String DEFAULT_SEMESTER = "2025-1";
 
-    @PostMapping("/student-records/summary/{recordId}")
+    @PostMapping("/student-records/detail/{recordId}")
     public ApiResponse<Void> updateStudentRecord(@PathVariable final long recordId,
                                                  @RequestBody @Valid final StudentRecordCreateRequest request) {
         studentRecordFacade.updateStudentRecord(1, recordId, request); // 멤버 아이디 하드코딩
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
-    @GetMapping("/student-records/summary/{recordId}")
+    @GetMapping("/student-records/detail/{recordId}")
     public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@PathVariable final long recordId) {
         return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentRecord(1, recordId)); // 멤버 아이디 하드코딩
     }
