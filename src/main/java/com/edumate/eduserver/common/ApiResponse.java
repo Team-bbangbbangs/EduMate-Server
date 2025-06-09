@@ -1,6 +1,5 @@
 package com.edumate.eduserver.common;
 
-import com.edumate.eduserver.common.code.ErrorCode;
 import com.edumate.eduserver.common.code.SuccessCode;
 import com.edumate.eduserver.common.exception.EduMateCustomException;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -32,7 +31,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(ex.getStatus().value(), code, message);
     }
 
-    public static <T> ApiResponse<T> fail(final int httpStatus, final ErrorCode error) {
-        return new ApiResponse<>(httpStatus, error.getCode(), error.getMessage());
+    public static <T> ApiResponse<T> fail(final int httpStatus, final String code, final String message) {
+        return new ApiResponse<>(httpStatus, code, message);
     }
 }
