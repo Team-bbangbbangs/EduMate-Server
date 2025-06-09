@@ -30,11 +30,11 @@ public class NoticeService {
         return noticeRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
-    public NoticeDto getNotice(long noticeId) {
+    public NoticeDto getNotice(final long noticeId) {
         return NoticeDto.of(findById(noticeId));
     }
 
-    private Notice findById(long noticeId) {
+    private Notice findById(final long noticeId) {
         return noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoticeNotFoundException(NoticeErrorCode.NOTICE_NOT_FOUND));
     }

@@ -9,7 +9,7 @@ public record NoticeResponse(
         String title,
         LocalDateTime createdAt
 ) {
-    public static NoticeResponse of(NoticeDto noticeDto) {
+    public static NoticeResponse of(final NoticeDto noticeDto) {
         return new NoticeResponse(
                 noticeDto.noticeId(),
                 noticeDto.category().getText(),

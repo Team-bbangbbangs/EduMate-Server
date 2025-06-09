@@ -27,7 +27,7 @@ public class NoticeFacade {
         );
     }
 
-    public NoticeGetResponse getNotice(long noticeId) {
+    public NoticeGetResponse getNotice(final long noticeId) {
         NoticeDto noticeDto = noticeService.getNotice(noticeId);
         return NoticeGetResponse.of(noticeDto);
     }

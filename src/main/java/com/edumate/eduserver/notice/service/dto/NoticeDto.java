@@ -11,7 +11,7 @@ public record NoticeDto(
         String content,
         LocalDateTime createdAt
 ) {
-    public static NoticeDto of(Notice notice) {
+    public static NoticeDto of(final Notice notice) {
         return new NoticeDto(
                 notice.getId(),
                 notice.getCategory(),

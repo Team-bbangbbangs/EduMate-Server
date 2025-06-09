@@ -7,7 +7,7 @@ public record NoticesGetResponse(
         int totalPages,
         List<NoticeResponse> notices
 ) {
-    public static NoticesGetResponse of(int totalPages, List<NoticeDto> notices) {
+    public static NoticesGetResponse of(final int totalPages, final List<NoticeDto> notices) {
         return new NoticesGetResponse(
                 totalPages,
                 notices.stream().map(NoticeResponse::of).toList()
