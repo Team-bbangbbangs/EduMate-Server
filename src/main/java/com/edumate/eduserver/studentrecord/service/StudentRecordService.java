@@ -10,6 +10,7 @@ import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
+import com.edumate.eduserver.studentrecord.service.dto.StudentRecordOverviewDto;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +42,11 @@ public class StudentRecordService {
         return StudentRecordDetailDto.of(findRecordDetailById(recordId, memberStudentRecord));
     }
 
-    public List<StudentRecordDetailDto> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
+    public List<StudentRecordOverviewDto> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
         validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
         List<StudentRecordDetail> studentRecordDetails = findRecordDetails(memberStudentRecord);
-        return studentRecordDetails.stream().map(StudentRecordDetailDto::of).toList();
+        return studentRecordDetails.stream().map(StudentRecordOverviewDto::of).toList();
     }
 
     private void validateSemesterPattern(final String semester) {

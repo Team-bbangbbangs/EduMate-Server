@@ -3,9 +3,10 @@ package com.edumate.eduserver.studentrecord.facade;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
-import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailsResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
+import com.edumate.eduserver.studentrecord.service.dto.StudentRecordOverviewDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,8 @@ public class StudentRecordFacade {
         return StudentRecordDetailResponse.of(recordDetailDto.recordDetailId(), recordDetailDto.description(), recordDetailDto.byteCount());
     }
 
-    public StudentRecordDetailsResponse getStudentRecords(final long memberId, final StudentRecordType recordType, final String semester) {
-        List<StudentRecordDetailDto> recordDetailDtos = studentRecordService.getAll(memberId, recordType, semester.trim());
-        return StudentRecordDetailsResponse.of(recordDetailDtos);
+    public StudentRecordOverviewsResponse getStudentRecordOverviews(final long memberId, final StudentRecordType recordType, final String semester) {
+        List<StudentRecordOverviewDto> recordOverviewDtos = studentRecordService.getAll(memberId, recordType, semester.trim());
+        return StudentRecordOverviewsResponse.of(recordOverviewDtos);
     }
 }
