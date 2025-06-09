@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
-import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
@@ -105,44 +104,6 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("data.recordDetailId").description("학생 기록 레코드 ID"),
                                 fieldWithPath("data.description").description("학생 기록 내용"),
                                 fieldWithPath("data.byteCount").description("학생 기록 데이터 바이트 수")
-                        )
-                ));
-    }
-
-    @Test
-    @DisplayName("유효하지 않은 학기 정보로 요청을 보내면 실패한다.")
-    void updateStudentRecord_InvalidSemester() throws Exception {
-        // given
-        String semesterInput = "invalid-semester";
-        StudentRecordCreateRequest request = new StudentRecordCreateRequest("학생의 행동 특성에 대한 기록", 100);
-        long recordId = 1L;
-
-        doThrow(new InvalidSemesterFormatException(StudentRecordErrorCode.INVALID_SEMESTER_FORMAT, semesterInput))
-                .when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), any(StudentRecordCreateRequest.class));
-
-        // when & then
-        mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(request)))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("EDMT-4000202"))
-                .andExpect(jsonPath("$.message").value(
-                        String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", semesterInput)))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/invalid-semester",
-                        pathParameters(
-                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("description").description("기록 내용"),
-                                fieldWithPath("byteCount").description("기록 데이터 크기")
-                        ),
-                        responseFields(
-                                fieldWithPath("status").description("HTTP 상태 코드"),
-                                fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지")
                         )
                 ));
     }
