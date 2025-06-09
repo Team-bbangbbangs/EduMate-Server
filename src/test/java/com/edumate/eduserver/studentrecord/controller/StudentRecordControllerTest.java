@@ -87,8 +87,7 @@ class StudentRecordControllerTest extends ControllerTest {
                 .thenReturn(dummyRecordResponse);
 
         // when & then
-        mockMvc.perform(get(BASE_URL + "/detail/{recordId}", recordId)
-                        .queryParam("semester", "2025-1"))
+        mockMvc.perform(get(BASE_URL + "/detail/{recordId}", recordId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
