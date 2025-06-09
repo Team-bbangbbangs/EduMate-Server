@@ -1,4 +1,4 @@
-package com.edumate.eduserver.notice.controller.request;
+package com.edumate.eduserver.notice.facade.response;
 
 import com.edumate.eduserver.notice.service.dto.NoticeDto;
 import java.time.LocalDateTime;

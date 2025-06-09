@@ -2,7 +2,7 @@ package com.edumate.eduserver.notice.controller;
 
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
-import com.edumate.eduserver.notice.controller.request.NoticeGetResponse;
+import com.edumate.eduserver.notice.facade.response.NoticeGetResponse;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
 import com.edumate.eduserver.notice.facade.NoticeFacade;
 import com.edumate.eduserver.notice.facade.response.NoticesGetResponse;

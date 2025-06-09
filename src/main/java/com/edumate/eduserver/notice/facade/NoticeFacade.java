@@ -1,6 +1,6 @@
 package com.edumate.eduserver.notice.facade;
 
-import com.edumate.eduserver.notice.controller.request.NoticeGetResponse;
+import com.edumate.eduserver.notice.facade.response.NoticeGetResponse;
 import com.edumate.eduserver.notice.domain.Notice;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
 import com.edumate.eduserver.notice.facade.response.NoticesGetResponse;
