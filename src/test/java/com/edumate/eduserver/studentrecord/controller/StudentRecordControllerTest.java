@@ -193,8 +193,8 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("EDMT-40000"))
-                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.code").value("EDMT-4002"))
+                .andExpect(jsonPath("$.message").value("null 값은 허용되지 않습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/missing-description",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -225,8 +225,8 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("EDMT-40000"))
-                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.code").value("EDMT-4002"))
+                .andExpect(jsonPath("$.message").value("바이트 수는 0 이상이어야 합니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/negative-byte-count",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
