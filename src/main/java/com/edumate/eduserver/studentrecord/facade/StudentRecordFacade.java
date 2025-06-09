@@ -20,18 +20,17 @@ public class StudentRecordFacade {
     private final StudentRecordService studentRecordService;
 
     @Transactional
-    public void updateStudentRecord(final long memberId, final StudentRecordType recordType, final long recordId,
-                                    final StudentRecordCreateRequest request) {
-        studentRecordService.update(memberId, recordType, recordId, request.semester().trim(), request.description().trim(), request.byteCount());
+    public void updateStudentRecord(final long memberId, final long recordId, final StudentRecordCreateRequest request) {
+        studentRecordService.update(recordId, request.description().trim(), request.byteCount());
     }
 
-    public StudentRecordDetailResponse getStudentRecord(final long memberId, final StudentRecordType recordType, final long recordId, final String semester) {
-        StudentRecordDetailDto recordDetailDto = studentRecordService.get(memberId, recordType, recordId, semester.trim());
+    public StudentRecordDetailResponse getStudentRecord(final long memberId, final long recordId) {
+        StudentRecordDetailDto recordDetailDto = studentRecordService.get(recordId);
         return StudentRecordDetailResponse.of(recordDetailDto.recordDetailId(), recordDetailDto.description(), recordDetailDto.byteCount());
     }
 
     public StudentRecordOverviewsResponse getStudentRecordOverviews(final long memberId, final StudentRecordType recordType, final String semester) {
-        List<StudentRecordOverviewDto> recordOverviewDtos = studentRecordService.getAll(memberId, recordType, semester.trim());
-        return StudentRecordOverviewsResponse.of(recordOverviewDtos);
+        List<StudentRecordOverviewDto> recordOverviewDto = studentRecordService.getAll(memberId, recordType, semester.trim());
+        return StudentRecordOverviewsResponse.of(recordOverviewDto);
     }
 }

@@ -1,13 +1,14 @@
 package com.edumate.eduserver.common.advice;
 
 import com.edumate.eduserver.common.ApiResponse;
-import com.edumate.eduserver.common.code.BusinessErrorCode;
 import com.edumate.eduserver.common.exception.EduMateCustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -19,19 +20,27 @@ public class GlobalExceptionHandler {
         return ApiResponse.fail(e, e.getErrorCode().getCode(), message);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ApiResponse<Void> handleUnexpectedException(final Exception e) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ApiResponse<Void> handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException e) {
         Throwable cause = getDeepCause(e);
         if (cause instanceof EduMateCustomException) {
             return handleCustomException((EduMateCustomException) cause);
         }
-        log.error("Unhandled Exception: {}", getDeepCause(e).getMessage(), e);
-        return ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), BusinessErrorCode.INTERNAL_SERVER_ERROR);
+        log.warn("MethodArgumentTypeMismatchException: {}", e.getMessage());
+        return ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), "EDMT-4001", e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ApiResponse<Void> handleValidationException(final MethodArgumentNotValidException e) {
-        return ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), BusinessErrorCode.BAD_REQUEST);
+        FieldError fieldError = e.getFieldError();
+        String message = (fieldError != null) ? fieldError.getDefaultMessage() : e.getMessage();
+        return ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), "EDMT-4002", message);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ApiResponse<Void> handleUnexpectedException(final Exception e) {
+        log.error("Unhandled Exception: {}", getDeepCause(e).getMessage(), e);
+        return ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "EDMT-500", e.getMessage());
     }
 
     private Throwable getDeepCause(Throwable e) {

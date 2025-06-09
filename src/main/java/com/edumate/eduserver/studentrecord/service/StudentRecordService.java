@@ -28,18 +28,14 @@ public class StudentRecordService {
     private final MemberStudentRecordRepository memberStudentRecordRepository;
 
     @Transactional
-    public void update(final long memberId, final StudentRecordType recordType, final long recordId,
-                       final String semester, final String description, final int byteCount) {
-        validateSemesterPattern(semester);
-        MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
-        StudentRecordDetail existingDetail = findRecordDetailById(recordId, memberStudentRecord);
+    public void update(final long recordId, final String description, final int byteCount) {
+        StudentRecordDetail existingDetail = findRecordDetailById(recordId);
         existingDetail.updateContent(description, byteCount);
     }
 
-    public StudentRecordDetailDto get(final long memberId, final StudentRecordType recordType, final long recordId, final String semester) {
-        validateSemesterPattern(semester);
-        MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
-        return StudentRecordDetailDto.of(findRecordDetailById(recordId, memberStudentRecord));
+    public StudentRecordDetailDto get(final long recordId) {
+        StudentRecordDetail recordDetail = findRecordDetailById(recordId);
+        return StudentRecordDetailDto.of(recordDetail);
     }
 
     public List<StudentRecordOverviewDto> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
@@ -55,15 +51,13 @@ public class StudentRecordService {
         }
     }
 
-    private MemberStudentRecord findMemberStudentRecord(final long memberId,
-                                                                  final StudentRecordType recordType,
-                                                                  final String semester) {
+    private MemberStudentRecord findMemberStudentRecord(final long memberId, final StudentRecordType recordType, final String semester) {
         return memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
                 .orElseThrow(() -> new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND));
     }
 
-    private StudentRecordDetail findRecordDetailById(final long recordId, final MemberStudentRecord memberStudentRecord) {
-        return studentRecordDetailRepository.findByIdAndMemberStudentRecord(recordId, memberStudentRecord)
+    private StudentRecordDetail findRecordDetailById(final long recordId) {
+        return studentRecordDetailRepository.findById(recordId)
                 .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 
