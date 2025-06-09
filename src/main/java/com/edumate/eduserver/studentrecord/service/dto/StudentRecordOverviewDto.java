@@ -2,20 +2,18 @@ package com.edumate.eduserver.studentrecord.service.dto;
 
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 
-public record StudentRecordDetailDto(
+public record StudentRecordOverviewDto(
         long recordDetailId,
         String studentNumber,
         String studentName,
-        String description,
-        int byteCount
+        String description
 ) {
-    public static StudentRecordDetailDto of(final StudentRecordDetail recordDetail) {
-        return new StudentRecordDetailDto(
+    public static StudentRecordOverviewDto of(final StudentRecordDetail recordDetail) {
+        return new StudentRecordOverviewDto(
                 recordDetail.getId(),
                 recordDetail.getStudentNumber(),
                 recordDetail.getName(),
-                recordDetail.getDescription(),
-                recordDetail.getByteCount()
+                recordDetail.getDescription()
         );
     }
 }

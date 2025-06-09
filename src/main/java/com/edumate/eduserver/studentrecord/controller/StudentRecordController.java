@@ -6,6 +6,7 @@ import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreat
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,8 @@ public class StudentRecordController {
 
     private final StudentRecordFacade studentRecordFacade;
 
+    private static final String DEFAULT_SEMESTER = "2025-1";
+
     @PostMapping("/student-records/{recordType}/{recordId}")
     public ApiResponse<Void> updateStudentRecord(@PathVariable final StudentRecordType recordType,
                                                  @PathVariable final long recordId,
@@ -34,7 +37,16 @@ public class StudentRecordController {
     @GetMapping("/student-records/{recordType}/{recordId}")
     public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@PathVariable final StudentRecordType recordType,
                                                                      @PathVariable final long recordId,
-                                                                     @RequestParam(defaultValue = "2025-1") final String semester) {
+                                                                     @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
         return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentRecord(1, recordType, recordId, semester)); // 멤버 아이디 하드코딩
+    }
+
+    @GetMapping("/student-records/{recordType}")
+    public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@PathVariable final StudentRecordType recordType,
+                                                                                 @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
+        return ApiResponse.success(
+                CommonSuccessCode.OK,
+                studentRecordFacade.getStudentRecordOverviews(1, recordType, semester)
+        ); // 멤버 아이디 하드코딩
     }
 }
