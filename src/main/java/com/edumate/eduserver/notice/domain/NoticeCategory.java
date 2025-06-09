@@ -16,7 +16,7 @@ public enum NoticeCategory {
     private final int id;
     private final String text;
 
-    public static NoticeCategory fromId(Integer code) {
+    public static NoticeCategory fromId(final Integer code) {
         if (code == null) {
             return ALL;
         }

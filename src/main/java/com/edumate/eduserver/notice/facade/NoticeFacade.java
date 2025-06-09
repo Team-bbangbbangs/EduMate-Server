@@ -1,9 +1,11 @@
 package com.edumate.eduserver.notice.facade;
 
-import com.edumate.eduserver.notice.facade.response.NoticesGetResponse;
+import com.edumate.eduserver.notice.facade.response.NoticeGetResponse;
 import com.edumate.eduserver.notice.domain.Notice;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
+import com.edumate.eduserver.notice.facade.response.NoticesGetResponse;
 import com.edumate.eduserver.notice.service.NoticeService;
+import com.edumate.eduserver.notice.service.dto.NoticeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,15 @@ public class NoticeFacade {
 
     public NoticesGetResponse getNotices(final NoticeCategory category, final int page) {
         int zeroBasedPage = page - 1;
-        Page<Notice> notices = noticeService.getNotices(category, zeroBasedPage);
-        return NoticesGetResponse.of(notices);
+        Page<Notice> noticePages = noticeService.getNotices(category, zeroBasedPage);
+        return NoticesGetResponse.of(
+                noticePages.getTotalPages(),
+                noticePages.stream().map(NoticeDto::of).toList()
+        );
+    }
+
+    public NoticeGetResponse getNotice(final long noticeId) {
+        NoticeDto noticeDto = noticeService.getNotice(noticeId);
+        return NoticeGetResponse.of(noticeDto);
     }
 }
