@@ -2,9 +2,11 @@ package com.edumate.eduserver.studentrecord.facade;
 
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
+import com.edumate.eduserver.studentrecord.facade.response.StudentNameResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
+import com.edumate.eduserver.studentrecord.service.dto.StudentNameDto;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordOverviewDto;
 import java.util.List;
@@ -32,5 +34,10 @@ public class StudentRecordFacade {
     public StudentRecordOverviewsResponse getStudentRecordOverviews(final long memberId, final StudentRecordType recordType, final String semester) {
         List<StudentRecordOverviewDto> recordOverviewDto = studentRecordService.getAll(memberId, recordType, semester.trim());
         return StudentRecordOverviewsResponse.of(recordOverviewDto);
+    }
+
+    public StudentNameResponse getStudentName(final long memberId, final StudentRecordType recordType, final String semester) {
+        StudentNameDto studentNameDto = studentRecordService.getStudentName(memberId, recordType, semester.trim());
+        return StudentNameResponse.of(studentNameDto.studentNames());
     }
 }

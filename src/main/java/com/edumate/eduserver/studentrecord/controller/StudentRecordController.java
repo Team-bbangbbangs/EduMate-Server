@@ -5,6 +5,7 @@ import com.edumate.eduserver.common.code.CommonSuccessCode;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
+import com.edumate.eduserver.studentrecord.facade.response.StudentNameResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import jakarta.validation.Valid;
@@ -42,5 +43,11 @@ public class StudentRecordController {
     public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@PathVariable final StudentRecordType recordType,
                                                                                  @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
         return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentRecordOverviews(1, recordType, semester)); // 멤버 아이디 하드코딩
+    }
+
+    @GetMapping("/student-records/{recordType}/students")
+    public ApiResponse<StudentNameResponse> getStudentRecordOverviewsByStudent(@PathVariable final StudentRecordType recordType,
+                                                                               @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
+        return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentName(1, recordType, semester)); // 멤버 아이디 하드코딩
     }
 }
