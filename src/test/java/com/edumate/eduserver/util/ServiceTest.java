@@ -48,5 +48,6 @@ public class ServiceTest {
         defaultTeacher = memberRepository.save(MemberFixture.teacher01(korean));
         MemberStudentRecord record01 = memberStudentRecordRepository.save(MemberStudentRecordFixture.studentRecord01(defaultTeacher));
         defaultRecordDetail = studentRecordDetailRepository.save(StudentRecordDetailFixture.detail01(record01));
+        studentRecordDetailRepository.save(StudentRecordDetailFixture.detail02(record01));
     }
 }

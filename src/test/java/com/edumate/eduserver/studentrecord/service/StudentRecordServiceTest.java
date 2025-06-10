@@ -6,8 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
+import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
+import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
+import com.edumate.eduserver.studentrecord.service.dto.StudentNameDto;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
 import com.edumate.eduserver.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +44,7 @@ class StudentRecordServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("특정 학생의 특정 생기부 항목에 대한 종합 내용을 불러온다.")
-    void test() {
+    void getStudentRecordDetail() {
         // given
         long studentRecordId = defaultRecordDetail.getId();
 
@@ -55,6 +58,32 @@ class StudentRecordServiceTest extends ServiceTest {
                 () -> assertEquals(defaultRecordDetail.getByteCount(), recordDetail.byteCount())
         );
     }
+
+    @Test
+    @DisplayName("특정 학기의 특정 생기부 항목에 포함된 학생 이름 목록을 불러온다.")
+    void getStudentName() {
+        // given
+        long memberId = 1L;
+        StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
+        String semester = "2025-1";
+        // when
+        StudentNameDto studentNameDto = studentRecordService.getStudentName(memberId, recordType, semester);
+
+        // then
+        assertThat(studentNameDto.studentNames()).contains("김가연", "이승섭");
+     }
+
+     @Test
+     @DisplayName("잘못된 학기 형식으로 요청을 보낼 경우, 예외가 발생한다.")
+     void invalidSemesterFormat() {
+         // given
+            String invalidSemester = "2025-3";
+
+         // when & then
+            assertThatThrownBy(() ->
+                    studentRecordService.getStudentName(1L, StudentRecordType.BEHAVIOR_OPINION, invalidSemester)
+            ).isInstanceOf(InvalidSemesterFormatException.class);
+      }
 
 
     @Test
