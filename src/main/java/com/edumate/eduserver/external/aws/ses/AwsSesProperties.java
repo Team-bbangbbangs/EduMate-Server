@@ -7,6 +7,7 @@ public record AwsSesProperties(
         String accessKey,
         String secretKey,
         String senderEmail,
-        String region
+        String region,
+        String emailVerifyUrl
 ) {
 }
