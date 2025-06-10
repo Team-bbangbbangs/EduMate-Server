@@ -52,7 +52,8 @@ public class EmailService {
     }
 
     private void validateSendResult(final String to, final SendEmailResult result) {
-        if (result.getSdkHttpMetadata().getHttpStatusCode() != 200) {
+        int statusCode = result.getSdkHttpMetadata().getHttpStatusCode();
+        if (statusCode < 200 || statusCode >= 300) {
             log.error("Failed to send email to {}. Response: {}", to, result);
             throw new EmailSendFailedException(AuthErrorCode.EMAIL_SEND_FAILED);
         }
