@@ -46,8 +46,8 @@ public class StudentRecordController {
     }
 
     @GetMapping("/student-records/{recordType}/students")
-    public ApiResponse<StudentNameResponse> getStudentRecordOverviewsByStudent(@PathVariable final StudentRecordType recordType,
-                                                                               @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
+    public ApiResponse<StudentNameResponse> getStudentNames(@PathVariable final StudentRecordType recordType,
+                                                            @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
         return ApiResponse.success(CommonSuccessCode.OK, studentRecordFacade.getStudentName(1, recordType, semester)); // 멤버 아이디 하드코딩
     }
 }
