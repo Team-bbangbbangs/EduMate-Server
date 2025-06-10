@@ -53,7 +53,7 @@ dependencies {
 
     // AWS - SES
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'com.amazonaws:aws-java-sdk-ses:1.12.500'
+    implementation 'software.amazon.awssdk:ses:2.25.10'
 
     // thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
