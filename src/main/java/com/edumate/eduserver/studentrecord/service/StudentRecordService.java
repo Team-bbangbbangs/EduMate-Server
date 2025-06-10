@@ -9,6 +9,7 @@ import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFound
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
+import com.edumate.eduserver.studentrecord.service.dto.StudentNameDto;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
 import com.edumate.eduserver.studentrecord.service.dto.StudentRecordOverviewDto;
 import java.util.List;
@@ -43,6 +44,13 @@ public class StudentRecordService {
         MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
         List<StudentRecordDetail> studentRecordDetails = findRecordDetails(memberStudentRecord);
         return studentRecordDetails.stream().map(StudentRecordOverviewDto::of).toList();
+    }
+
+    public StudentNameDto getStudentName(final long memberId, final StudentRecordType recordType, final String semester) {
+        validateSemesterPattern(semester);
+        MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
+        List<StudentRecordDetail> studentRecordDetails = findRecordDetails(memberStudentRecord);
+        return StudentNameDto.of(studentRecordDetails);
     }
 
     private void validateSemesterPattern(final String semester) {

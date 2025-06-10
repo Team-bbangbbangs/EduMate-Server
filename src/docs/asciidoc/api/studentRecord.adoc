@@ -28,10 +28,22 @@ operation::student-record/get-success[snippets="path-parameters,http-request,htt
 
 ==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
 
-operation::student-record/fail/member-record-not-found[snippets="http-request,http-response"]
+operation::student-record/fail/member-record-not-found[snippets="http-response"]
 
 ==== 실패: 특정 학생의 생기부가 존재하지 않음
 
-operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
+operation::student-record/fail/record-not-found[snippets="http-response"]
 
+=== 학생 이름 불러오기
 
+==== 성공
+
+operation::student-record/get-names-success[snippets="path-parameters,query-parameters,http-request,http-response"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
+operation::student-record/fail/member-record-not-found[snippets=http-response]
+
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
