@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
+    // 400 Bad Request
+    ILLEGAL_URL_ARGUMENT("EDMT-4000106", "잘못된 URL 인자입니다."),
+
     // 401 Unauthorized
     INVALID_ACCESS_TOKEN_VALUE("EDMT-4010101", "유효하지 않은 엑세스 토큰입니다."),
     EXPIRED_ACCESS_TOKEN("EDMT-4010102", "이미 만료된 엑세스 토큰입니다."),
@@ -14,7 +17,7 @@ public enum AuthErrorCode implements ErrorCode {
     INVALID_REFRESH_TOKEN_VALUE("EDMT-4010104", "유효하지 않은 리프레시 토큰입니다."),
 
     // 502 Bad Gateway
-    EMAIL_SEND_FAILED("EDMT-5020105", "이메일 전송에 실패했습니다."),;
+    EMAIL_SEND_FAILED("EDMT-5020105", "이메일 전송에 실패했습니다.");
 
     private final String code;
     private final String message;

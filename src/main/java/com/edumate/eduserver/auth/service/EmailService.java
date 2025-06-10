@@ -28,15 +28,15 @@ public class EmailService {
     private static final String DEFAULT_CHARSET = StandardCharsets.UTF_8.name();
     private static final String EMAIL_SUBJECT = "EduMate 회원가입을 환영합니다.";
 
-    public void sendEmail(final String to, final String verifyUrl) {
-        String htmlBody = buildEmailBody(verifyUrl);
+    public void sendEmail(final String to, final String memberUuid, final String verificationCode) {
+        String htmlBody = buildEmailBody(memberUuid, verificationCode);
         SendEmailRequest request = buildSendEmailRequest(to, htmlBody);
         SendEmailResult result = amazonSimpleEmailService.sendEmail(request);
         validateSendResult(to, result);
     }
 
-    private String buildEmailBody(final String verifyUrl) {
-        return awsSesEmailMapper.buildVerificationEmail(verifyUrl);
+    private String buildEmailBody(final String memberUuid, final String verificationCode) {
+        return awsSesEmailMapper.buildVerificationEmail(memberUuid, verificationCode);
     }
 
     private SendEmailRequest buildSendEmailRequest(final String to, final String htmlBody) {

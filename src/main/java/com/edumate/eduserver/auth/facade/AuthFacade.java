@@ -1,7 +1,6 @@
 package com.edumate.eduserver.auth.facade;
 
 import com.edumate.eduserver.auth.service.EmailService;
-import com.edumate.eduserver.external.aws.ses.AwsSesProperties;
 import com.edumate.eduserver.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,10 +11,9 @@ public class AuthFacade {
 
     private final EmailService emailService;
     private final MemberService memberService;
-    private final AwsSesProperties awsSesProperties;
 
     public void sendVerificationEmail(final String memberUuid) {
         String emailAddress = memberService.getMemberEmail(memberUuid);
-        emailService.sendEmail(emailAddress, String.format(awsSesProperties.emailVerifyUrl(), memberUuid, "8888")); // 임시 코드(수정 예정)
+        emailService.sendEmail(emailAddress, memberUuid, "8888"); // 임시 코드 하드코딩 (수정 예정)
     }
 }
