@@ -292,7 +292,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(get(BASE_URL + "/{recordType}/students", RECORD_TYPE)
-                        .param("semester", "2025-1"))
+                        .param("semester", invalidSemester))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
