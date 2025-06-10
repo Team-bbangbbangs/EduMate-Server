@@ -12,6 +12,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -111,22 +112,28 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 목록을 성공적으로 불러온다.")
-    void getStudentName() throws Exception{
+    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 이름 목록을 성공적으로 불러온다.")
+    void getStudentName() throws Exception {
         // given
         StudentNameResponse dummyResponse = new StudentNameResponse(List.of("김가연", "이승섭"));
         when(studentRecordFacade.getStudentName(anyLong(), any(StudentRecordType.class), any(String.class)))
                 .thenReturn(dummyResponse);
         String recordType = StudentRecordType.ABILITY_DETAIL.getValue().toLowerCase();
 
-        // when &  then
-        mockMvc.perform(get(BASE_URL + "/" + recordType + "/students")
+        // when & then
+        mockMvc.perform(get(BASE_URL + "/{recordType}/students", recordType)
                         .param("semester", "2025-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-success",
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        queryParameters(
+                                parameterWithName("semester").description("학기 (YYYY-1 또는 YYYY-2 형식)")
+                        ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
@@ -134,7 +141,8 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("data.studentNames").description("학생 이름 목록")
                         )
                 ));
-     }
+    }
+
 
     @Test
     @DisplayName("존재하지 않은 학생 레코드 ID로 요청을 보내면 실패한다.")
@@ -283,14 +291,20 @@ class StudentRecordControllerTest extends ControllerTest {
                 .getStudentName(anyLong(), any(StudentRecordType.class), any(String.class));
 
         // when & then
-        mockMvc.perform(get(BASE_URL + "/" + RECORD_TYPE + "/students")
-                        .param("semester", invalidSemester))
+        mockMvc.perform(get(BASE_URL + "/{recordType}/students", RECORD_TYPE)
+                        .param("semester", "2025-1"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("EDMT-4000202"))
                 .andExpect(jsonPath("$.message").value(String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", invalidSemester)))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-fail/invalid-semester-format",
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        queryParameters(
+                                parameterWithName("semester").description("학기 (YYYY-1 또는 YYYY-2 형식)")
+                        ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
