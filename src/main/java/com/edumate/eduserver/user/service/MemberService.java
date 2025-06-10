@@ -4,7 +4,6 @@ import com.edumate.eduserver.user.domain.Member;
 import com.edumate.eduserver.user.exception.MemberNotFoundException;
 import com.edumate.eduserver.user.exception.code.MemberErrorCode;
 import com.edumate.eduserver.user.repository.MemberRepository;
-import com.edumate.eduserver.user.service.dto.MemberInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +15,9 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public MemberInfoDto getMemberNicknameAndEmail(final String memberUuid) {
+    public String getMemberEmail(final String memberUuid) {
         Member member = findByUuid(memberUuid);
-        return MemberInfoDto.of(member.getNickname(), member.getEmail());
+        return member.getEmail();
     }
 
     private Member findByUuid(final String memberUuid) {
