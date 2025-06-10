@@ -1,4 +1,4 @@
-package com.edumate.eduserver.config;
+package com.edumate.eduserver.auth.security.config;
 
 import com.edumate.eduserver.auth.security.jwt.JwtProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

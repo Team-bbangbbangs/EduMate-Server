@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import software.amazon.awssdk.core.exception.SdkException;
 
 @Slf4j
 @RestControllerAdvice
@@ -35,6 +36,12 @@ public class GlobalExceptionHandler {
         FieldError fieldError = e.getFieldError();
         String message = (fieldError != null) ? fieldError.getDefaultMessage() : e.getMessage();
         return ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), "EDMT-4002", message);
+    }
+
+    @ExceptionHandler(SdkException.class)
+    public ApiResponse<Void> handleSdkException(final SdkException e) {
+        log.error("AWS SDK Exception: {}", getDeepCause(e).getMessage(), e);
+        return ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "EDMT-50201", e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
