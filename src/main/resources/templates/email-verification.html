@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <title>이메일 인증</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        .verification-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #0d6efd;
+            color: #fff !important;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .verification-button:hover {
+            background-color: #0b5ed7 !important;
+        }
+    </style>
 </head>
 <body style="font-family: 'Noto Sans KR', sans-serif; background-color: #f1f3f5; padding: 30px;">
 <div style="
@@ -19,18 +36,7 @@
     <p style="color: #495057;">이 이메일 인증은 EduMate 회원가입을 위한 필수적인 단계입니다.</p>
     <p style="color: #495057;">아래 <strong>‘이메일 인증하기’</strong> 버튼을 눌러주세요.</p>
 
-    <a th:href="${verificationLink}" style="
-        display: inline-block;
-        padding: 12px 24px;
-        background-color: #0d6efd;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 6px;
-        margin-top: 20px;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-    " onmouseover="this.style.backgroundColor='#0b5ed7'"
-       onmouseout="this.style.backgroundColor='#0d6efd'">이메일 인증하기</a>
+    <a th:href="${verificationLink}" class="verification-button">이메일 인증하기</a>
 </div>
 </body>
 </html>
