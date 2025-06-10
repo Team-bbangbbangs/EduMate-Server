@@ -3,21 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>이메일 인증</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 </head>
-<body style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px;">
-<div style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px;">
-    <h2 style="color: #333;">🌟 안녕하세요, <span th:text="${nickName}"></span>님</h2>
-    <p style="color: #555;">EduMate 회원가입을 환영합니다.</p>
-    <p>이 이메일 인증은 EduMate 회원가입을 위한 필수적인 단계입니다. </p>
-    <p>아래 ‘이메일 인증하기' 버튼을 눌러주세요.</p>
+<body style="font-family: 'Noto Sans KR', sans-serif; background-color: #f1f3f5; padding: 30px;">
+<div style="
+    max-width: 600px;
+    margin: auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+">
+    <h2 style="color: #212529; margin-bottom: 10px;">👋 안녕하세요, 선생님</h2>
+    <p style="color: #495057; margin-top: 0;">EduMate 회원가입을 환영합니다.</p>
+    <p style="color: #495057;">이 이메일 인증은 EduMate 회원가입을 위한 필수적인 단계입니다.</p>
+    <p style="color: #495057;">아래 <strong>‘이메일 인증하기’</strong> 버튼을 눌러주세요.</p>
+
     <a th:href="${verificationLink}" style="
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-top: 20px;">이메일 인증하기</a>
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #0d6efd;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 6px;
+        margin-top: 20px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    " onmouseover="this.style.backgroundColor='#0b5ed7'"
+       onmouseout="this.style.backgroundColor='#0d6efd'">이메일 인증하기</a>
 </div>
 </body>
 </html>
