@@ -19,12 +19,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
+import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
+import com.edumate.eduserver.studentrecord.facade.response.StudentNameResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.util.ControllerTest;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -106,6 +109,32 @@ class StudentRecordControllerTest extends ControllerTest {
                         )
                 ));
     }
+
+    @Test
+    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 목록을 성공적으로 불러온다.")
+    void getStudentName() throws Exception{
+        // given
+        StudentNameResponse dummyResponse = new StudentNameResponse(List.of("김가연", "이승섭"));
+        when(studentRecordFacade.getStudentName(anyLong(), any(StudentRecordType.class), any(String.class)))
+                .thenReturn(dummyResponse);
+        String recordType = StudentRecordType.ABILITY_DETAIL.getValue().toLowerCase();
+
+        // when &  then
+        mockMvc.perform(get(BASE_URL + "/" + recordType + "/students")
+                        .param("semester", "2025-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-success",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data.studentNames").description("학생 이름 목록")
+                        )
+                ));
+     }
 
     @Test
     @DisplayName("존재하지 않은 학생 레코드 ID로 요청을 보내면 실패한다.")
@@ -212,7 +241,7 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("학생 기록 업데이트 실패 - 음수 byteCount")
+    @DisplayName("음수 byteCount를 보내면 요청에 실패한다.")
     void updateStudentRecord_NegativeByteCount() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest("학생의 행동 특성에 대한 기록", -1);
@@ -242,4 +271,31 @@ class StudentRecordControllerTest extends ControllerTest {
                         )
                 ));
     }
+
+    @Test
+    @DisplayName("적절하지 않은 Semester 형식으로 요청을 보내면 실패한다.")
+    void invalidSemesterFormat() throws Exception {
+        // given
+        String invalidSemester = "2025-3";
+
+        doThrow(new InvalidSemesterFormatException(StudentRecordErrorCode.INVALID_SEMESTER_FORMAT, invalidSemester))
+                .when(studentRecordFacade)
+                .getStudentName(anyLong(), any(StudentRecordType.class), any(String.class));
+
+        // when & then
+        mockMvc.perform(get(BASE_URL + "/" + RECORD_TYPE + "/students")
+                        .param("semester", invalidSemester))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value("EDMT-4000202"))
+                .andExpect(jsonPath("$.message").value(String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", invalidSemester)))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-fail/invalid-semester-format",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+     }
 }
