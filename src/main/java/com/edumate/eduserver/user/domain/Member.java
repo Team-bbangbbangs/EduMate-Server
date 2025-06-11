@@ -99,4 +99,8 @@ public class Member extends BaseEntity {
         this.role = Role.TEACHER;
         this.verifiedAt = LocalDateTime.now();
     }
+
+    public void updateRefreshToken(final String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
