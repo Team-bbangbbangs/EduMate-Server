@@ -2,7 +2,6 @@ package com.edumate.eduserver.auth.service;
 
 import com.edumate.eduserver.auth.domain.AuthorizationCode;
 import com.edumate.eduserver.auth.domain.AuthorizeStatus;
-import com.edumate.eduserver.auth.exception.AlreadyUsedCodeException;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
@@ -22,13 +21,22 @@ public class AuthService {
 
     @Transactional
     public void verifyEmailCode(final Member member, final String inputCode) {
-        AuthorizationCode authorizationCode = findByMember(member);
+        AuthorizationCode authorizationCode = findValidCodeByMember(member);
         validateCode(authorizationCode, inputCode);
         authorizationCode.verified();
     }
 
-    private AuthorizationCode findByMember(final Member member) {
-        return authorizationCodeRepository.findByMember(member)
+    @Transactional
+    public void updateCode(final Member member, final String code) {
+        authorizationCodeRepository.findByMemberAndStatus(member, AuthorizeStatus.PENDING)
+                .ifPresent(authorizationCodeRepository::delete);
+
+        AuthorizationCode newCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
+        authorizationCodeRepository.save(newCode);
+    }
+
+    private AuthorizationCode findValidCodeByMember(final Member member) {
+        return authorizationCodeRepository.findByMemberAndStatus(member, AuthorizeStatus.PENDING)
                 .orElseThrow(() -> new AuthCodeNotFoundException(AuthErrorCode.AUTH_CODE_NOT_FOUND));
     }
 
@@ -46,9 +54,6 @@ public class AuthService {
         }
         if (!code.getAuthorizationCode().equals(inputCode)) {
             return Optional.of(new IllegalArgumentException(AuthErrorCode.ILLEGAL_URL_ARGUMENT.getMessage()));
-        }
-        if (code.getStatus() != AuthorizeStatus.PENDING) {
-            return Optional.of(new AlreadyUsedCodeException(AuthErrorCode.ALREADY_USED_CODE));
         }
         return Optional.empty();
     }
