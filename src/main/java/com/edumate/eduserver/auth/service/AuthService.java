@@ -4,7 +4,7 @@ import com.edumate.eduserver.auth.domain.AuthorizationCode;
 import com.edumate.eduserver.auth.domain.AuthorizeStatus;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
-import com.edumate.eduserver.auth.exception.UnMatchedCodeException;
+import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.repository.AuthorizationCodeRepository;
 import com.edumate.eduserver.user.domain.Member;
@@ -54,7 +54,7 @@ public class AuthService {
             return Optional.of(new ExpiredCodeException(AuthErrorCode.EXPIRED_ACCESS_TOKEN));
         }
         if (!code.getAuthorizationCode().equals(inputCode)) {
-            return Optional.of(new UnMatchedCodeException(AuthErrorCode.INVALID_CODE));
+            return Optional.of(new MisMatchedCodeException(AuthErrorCode.INVALID_CODE));
         }
         return Optional.empty();
     }
