@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -43,4 +44,25 @@ public class AuthorizationCode {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AuthorizeStatus status;
+
+    @Builder
+    private AuthorizationCode(final Member member, final String authorizationCode, final LocalDateTime createdAt,
+                              final LocalDateTime expiredAt, final AuthorizeStatus status) {
+        this.member = member;
+        this.authorizationCode = authorizationCode;
+        this.createdAt = createdAt;
+        this.expiredAt = expiredAt;
+        this.status = status;
+    }
+
+    public static AuthorizationCode create(final Member member, final String authorizationCode,
+                                           final AuthorizeStatus status) {
+        return AuthorizationCode.builder()
+                .member(member)
+                .authorizationCode(authorizationCode)
+                .status(status)
+                .createdAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusMinutes(10))
+                .build();
+    }
 }

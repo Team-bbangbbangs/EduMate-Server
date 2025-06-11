@@ -15,9 +15,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public String getMemberEmail(final String memberUuid) {
-        Member member = findByUuid(memberUuid);
-        return member.getEmail();
+    public Member getMemberByUuid(final String memberUuid) {
+        return findByUuid(memberUuid);
     }
 
     private Member findByUuid(final String memberUuid) {
