@@ -54,6 +54,9 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column
+    private LocalDateTime verifiedAt;
+
     private String refreshToken;
 
     @Column(nullable = false)
@@ -66,14 +69,16 @@ public class Member extends BaseEntity {
 
     @Builder
     private Member(final Subject subject, final String email, final String password, final String nickname,
-                   final School school, final Role role, final boolean isDeleted) {
+                   final School school, final Role role, final LocalDateTime verifiedAt, final boolean isDeleted, final LocalDateTime deletedAt) {
         this.subject = subject;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.school = school;
         this.role = role;
+        this.verifiedAt = verifiedAt;
         this.isDeleted = isDeleted;
+        this.deletedAt = deletedAt;
         this.memberUuid = randomUUID().toString();
     }
 
@@ -88,5 +93,10 @@ public class Member extends BaseEntity {
             .role(role)
             .isDeleted(false)
             .build();
+    }
+
+    public void verifyAsTeacher() {
+        this.role = Role.TEACHER;
+        this.verifiedAt = LocalDateTime.now();
     }
 }
