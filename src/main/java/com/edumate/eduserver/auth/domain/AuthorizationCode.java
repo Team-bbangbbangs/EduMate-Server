@@ -65,4 +65,16 @@ public class AuthorizationCode {
                 .expiredAt(LocalDateTime.now().plusMinutes(10))
                 .build();
     }
+
+    public void verified() {
+        this.status = AuthorizeStatus.VERIFIED;
+    }
+
+    public void fail() {
+        this.status = AuthorizeStatus.FAILED;
+    }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiredAt);
+    }
 }

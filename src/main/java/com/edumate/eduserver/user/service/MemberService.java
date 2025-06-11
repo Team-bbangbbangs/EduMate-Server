@@ -15,6 +15,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional
+    public void updateEmailVerified(final Member member) {
+        member.verifyAsTeacher();
+    }
+
     public Member getMemberByUuid(final String memberUuid) {
         return findByUuid(memberUuid);
     }
