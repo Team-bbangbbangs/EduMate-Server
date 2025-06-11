@@ -51,7 +51,7 @@ public class AuthService {
 
     private Optional<RuntimeException> getValidationException(AuthorizationCode code, String inputCode) {
         if (code.isExpired()) {
-            return Optional.of(new ExpiredCodeException(AuthErrorCode.EXPIRED_ACCESS_TOKEN));
+            return Optional.of(new ExpiredCodeException(AuthErrorCode.EXPIRED_CODE));
         }
         if (!code.getAuthorizationCode().equals(inputCode)) {
             return Optional.of(new MisMatchedCodeException(AuthErrorCode.INVALID_CODE));
