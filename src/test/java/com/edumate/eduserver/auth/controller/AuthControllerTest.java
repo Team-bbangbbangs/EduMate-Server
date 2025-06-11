@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
-import com.edumate.eduserver.auth.exception.UnMatchedCodeException;
+import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.EmailVerifyResponse;
@@ -33,6 +33,7 @@ class AuthControllerTest extends ControllerTest {
     private AuthFacade authFacade;
 
     private static final String BASE_URL = "/api/v1/auth";
+    private final String BASE_DOMAIN_PACKAGE = "auth/";
     private static final String MEMBER_UUID = "test-member-uuid";
     private static final String CODE = "123456";
 
@@ -50,7 +51,7 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
-                .andDo(CustomRestDocsUtils.documents("auth-verify-email-success",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "verify-email-success",
                         queryParameters(
                                 parameterWithName("id").description("회원 UUID"),
                                 parameterWithName("code").description("이메일 인증 코드")
@@ -67,7 +68,7 @@ class AuthControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("만료된 인증 코드로 인증을 시도할 경우 예외가 발생한다.")
-    void verifyEmail_expiredCode() throws Exception {
+    void expiredCode() throws Exception {
         doThrow(new ExpiredCodeException(AuthErrorCode.EXPIRED_CODE))
                 .when(authFacade).verifyEmailCode(anyString(), anyString());
 
@@ -79,7 +80,7 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value(AuthErrorCode.EXPIRED_CODE.getCode()))
                 .andExpect(jsonPath("$.message").value(AuthErrorCode.EXPIRED_CODE.getMessage()))
-                .andDo(CustomRestDocsUtils.documents("auth-verify-email-expired-code",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "verify-email-fail/expired-code",
                         queryParameters(
                                 parameterWithName("id").description("회원 UUID"),
                                 parameterWithName("code").description("이메일 인증 코드")
@@ -94,7 +95,7 @@ class AuthControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("유효하지 않은 인증 코드로 인증을 시도할 경우 예외가 발생한다.")
-    void verifyEmail_authCodeNotFound() throws Exception {
+    void authCodeNotFound() throws Exception {
         doThrow(new AuthCodeNotFoundException(AuthErrorCode.AUTH_CODE_NOT_FOUND))
                 .when(authFacade).verifyEmailCode(anyString(), anyString());
 
@@ -106,7 +107,7 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value(AuthErrorCode.AUTH_CODE_NOT_FOUND.getCode()))
                 .andExpect(jsonPath("$.message").value(AuthErrorCode.AUTH_CODE_NOT_FOUND.getMessage()))
-                .andDo(CustomRestDocsUtils.documents("auth-verify-email-auth-code-not-found",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "verify-email-fail/auth-code-not-found",
                         queryParameters(
                                 parameterWithName("id").description("회원 UUID"),
                                 parameterWithName("code").description("이메일 인증 코드")
@@ -120,9 +121,9 @@ class AuthControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("잘못된 URL 인자 예외")
-    void verifyEmail_illegalUrlArgument() throws Exception {
-        doThrow(new UnMatchedCodeException(AuthErrorCode.INVALID_CODE))
+    @DisplayName("코드가 일치하지 않을 경우 예외가 발생한다.")
+    void misMatchedCode() throws Exception {
+        doThrow(new MisMatchedCodeException(AuthErrorCode.INVALID_CODE))
                 .when(authFacade).verifyEmailCode(anyString(), anyString());
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/verify-email")
@@ -133,7 +134,7 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_CODE.getCode()))
                 .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_CODE.getMessage()))
-                .andDo(CustomRestDocsUtils.documents("auth-verify-email-illegal-url-argument",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "verify-email-fail/code-mismatch",
                         queryParameters(
                                 parameterWithName("id").description("회원 UUID"),
                                 parameterWithName("code").description("이메일 인증 코드")
