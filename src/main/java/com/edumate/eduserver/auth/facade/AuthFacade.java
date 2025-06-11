@@ -25,8 +25,8 @@ public class AuthFacade {
     public void sendVerificationEmail(final String memberUuid) {
         Member member = memberService.getMemberByUuid(memberUuid);
         String verificationCode = randomCodeGenerator.generate();
-        emailService.sendEmail(member.getEmail(), memberUuid, verificationCode);
         authService.updateCode(member, verificationCode);
+        emailService.sendEmail(member.getEmail(), memberUuid, verificationCode);
     }
 
     @Transactional
