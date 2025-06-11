@@ -28,8 +28,8 @@ public class AuthController {
     }
 
     @GetMapping("/auth/email/verify-email")
-    public ApiResponse<EmailVerifyResponse> verifyEmail(@RequestParam("memberUuid") final String memberUuid,
-                                                        @RequestParam("verificationCode") final String verificationCode) {
+    public ApiResponse<EmailVerifyResponse> verifyEmail(@RequestParam("id") final String memberUuid,
+                                                        @RequestParam("code") final String verificationCode) {
         return ApiResponse.success(CommonSuccessCode.OK,authFacade.verifyEmailCode(memberUuid, verificationCode));
     }
 }
