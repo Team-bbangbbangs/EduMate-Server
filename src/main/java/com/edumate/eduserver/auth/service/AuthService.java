@@ -10,10 +10,13 @@ import com.edumate.eduserver.auth.repository.AuthorizationCodeRepository;
 import com.edumate.eduserver.user.domain.Member;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
@@ -29,11 +32,15 @@ public class AuthService {
 
     @Transactional
     public void updateCode(final Member member, final String code) {
-        authorizationCodeRepository.findByMemberAndStatus(member, AuthorizeStatus.PENDING)
-                .ifPresent(authorizationCodeRepository::delete);
+        try {
+            authorizationCodeRepository.findByMemberAndStatus(member, AuthorizeStatus.PENDING)
+                    .ifPresent(authorizationCodeRepository::delete);
 
-        AuthorizationCode newCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
-        authorizationCodeRepository.save(newCode);
+            AuthorizationCode newCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
+            authorizationCodeRepository.save(newCode);
+        } catch (DataIntegrityViolationException ex) {
+            log.warn("중복 insert 시도 – 이미 저장됨");
+        }
     }
 
     private AuthorizationCode findValidCodeByMember(final Member member) {
