@@ -19,6 +19,7 @@ public class RandomCodeGenerator {
     private static final int CODE_LENGTH = 6;
     private static final int MAX_VALUE = 10;
 
+    @Transactional
     public String getCode(final Member member) {
         String authCode = generate();
         saveCode(authCode, member);
