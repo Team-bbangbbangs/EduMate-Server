@@ -30,7 +30,6 @@ public class AuthController {
     @GetMapping("/auth/verify-email")
     public ApiResponse<EmailVerifyResponse> verifyEmail(@RequestParam("id") final String memberUuid,
                                                         @RequestParam("code") final String verificationCode) {
-        EmailVerifyResponse response = authFacade.verifyEmailCode(memberUuid.trim(), verificationCode.trim());
-        return ApiResponse.success(CommonSuccessCode.OK, response);
+        return ApiResponse.success(CommonSuccessCode.OK, authFacade.verifyEmailCode(memberUuid.trim(), verificationCode.trim()));
     }
 }
