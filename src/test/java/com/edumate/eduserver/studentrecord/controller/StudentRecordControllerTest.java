@@ -2,6 +2,7 @@ package com.edumate.eduserver.studentrecord.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -21,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCreateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
@@ -147,6 +150,42 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("data.studentDetails[].recordId").description("레코드 ID"),
                                 fieldWithPath("data.studentDetails[].studentName").description("학생 이름")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("여러개의 생기부 목록을 성공적으로 저장한다.")
+    void insertStudentRecords() throws Exception{
+        // given
+        StudentRecordsCreateRequest request = new StudentRecordsCreateRequest("2025-1",
+                List.of(new StudentRecordInfo("2020123", "김가연"), new StudentRecordInfo("2931232", "김지안"))
+        );
+        doNothing().when(studentRecordFacade)
+                .createStudentRecords(anyLong(), any(StudentRecordType.class), anyString(), anyList());
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/{recordType}/students/batch", RECORD_TYPE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.code").value("EDMT-201"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "create-success",
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        requestFields(
+                                fieldWithPath("semester").description("학기 정보"),
+                                fieldWithPath("studentRecords[].studentNumber").description("학번"),
+                                fieldWithPath("studentRecords[].studentName").description("학생 이름")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
                         )
                 ));
     }
