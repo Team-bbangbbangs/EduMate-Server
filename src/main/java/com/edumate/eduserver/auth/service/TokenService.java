@@ -16,9 +16,8 @@ public class TokenService {
 
     @Transactional
     public Token generateTokens(final Member member) {
-        String role = member.getRole().name();
-        String accessToken = jwtGenerator.generateToken(member.getId(), role, TokenType.ACCESS);
-        String refreshToken = jwtGenerator.generateToken(member.getId(), role, TokenType.REFRESH);
+        String accessToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.ACCESS);
+        String refreshToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.REFRESH);
         member.updateRefreshToken(refreshToken);
         return Token.of(accessToken, refreshToken);
     }
