@@ -26,7 +26,7 @@ public class StudentRecordFacade {
 
     public StudentRecordDetailResponse getStudentRecord(final long memberId, final long recordId) {
         StudentRecordDetail recordDetail = studentRecordService.getRecordDetailById(recordId);
-        return StudentRecordDetailResponse.of(recordDetail.getId(), recordDetail.getDescription(), recordDetail.getByteCount());
+        return StudentRecordDetailResponse.of(recordDetail.getDescription(), recordDetail.getByteCount());
     }
 
     public StudentRecordOverviewsResponse getStudentRecordOverviews(final long memberId, final StudentRecordType recordType, final String semester) {

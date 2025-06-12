@@ -93,8 +93,7 @@ class StudentRecordControllerTest extends ControllerTest {
         // given
         long recordId = 1L;
 
-        StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse(recordId,
-                "이 학생은 바르고 성실한 학생입니다.", 15);
+        StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse("이 학생은 바르고 성실한 학생입니다.", 15);
         when(studentRecordFacade.getStudentRecord(anyLong(), anyLong()))
                 .thenReturn(dummyRecordResponse);
 
@@ -112,7 +111,6 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.recordDetailId").description("학생 기록 레코드 ID"),
                                 fieldWithPath("data.description").description("학생 기록 내용"),
                                 fieldWithPath("data.byteCount").description("학생 기록 데이터 바이트 수")
                         )
