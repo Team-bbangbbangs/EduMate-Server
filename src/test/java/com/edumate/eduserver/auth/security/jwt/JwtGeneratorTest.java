@@ -15,9 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class JwtGeneratorTest {
 
-    private static final String ROLE_CLAIM = "role";
-    private static final String USER_ID_CLAIM = "userId";
-
     @Autowired
     JwtGenerator jwtGenerator;
 
@@ -28,18 +25,16 @@ class JwtGeneratorTest {
     @DisplayName("Access 토큰이 정상적으로 생성되는지 확인한다.")
     void generateAccessToken_success() {
         // given
-        long userId = 123L;
-        String role = "TEACHER";
+        String memberUuid = "123L";
 
         // when
-        String token = jwtGenerator.generateToken(userId, role, TokenType.ACCESS);
+        String token = jwtGenerator.generateToken(memberUuid, TokenType.ACCESS);
 
         // then
         Claims claims = jwtParser.parseClaims(token);
 
         assertAll(
-                () -> assertThat(claims.get(USER_ID_CLAIM, Integer.class).longValue()).isEqualTo(userId),
-                () -> assertThat(claims.get(ROLE_CLAIM, String.class)).isEqualTo(role),
+                () -> assertThat(claims.getSubject()).isEqualTo(memberUuid),
                 () -> assertThat(claims.getExpiration()).isNotNull(),
                 () -> assertThat(claims.getIssuedAt()).isNotNull()
         );
@@ -49,18 +44,16 @@ class JwtGeneratorTest {
     @DisplayName("Refresh 토큰이 정상적으로 생성되는지 확인한다.")
     void generateRefreshToken_success() {
         // given
-        long userId = 456L;
-        String role = "ADMIN";
+        String memberUuid = "456L";
 
         // when
-        String token = jwtGenerator.generateToken(userId, role, TokenType.REFRESH);
+        String token = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
 
         // then
         Claims claims = jwtParser.parseClaims(token);
 
         assertAll(
-                () -> assertThat(claims.get(USER_ID_CLAIM, Integer.class).longValue()).isEqualTo(userId),
-                () -> assertThat(claims.get(ROLE_CLAIM)).isNull(),
+                () -> assertThat(claims.getSubject()).isEqualTo(memberUuid),
                 () -> assertThat(claims.getExpiration()).isNotNull()
         );
     }

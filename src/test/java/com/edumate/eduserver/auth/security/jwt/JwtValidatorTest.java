@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.edumate.eduserver.auth.exception.IllegalTokenException;
-import com.edumate.eduserver.common.exception.UnauthorizedException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -23,8 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class JwtValidatorTest {
 
-    private static final String ROLE_CLAIM = "role";
-    private static final String USER_ID_CLAIM = "userId";
     private static final String FAKE_SECRET_KEY = "anothersecretkeyforjwt1234567890";
 
     @Autowired
@@ -40,9 +37,8 @@ class JwtValidatorTest {
     @DisplayName("정상 Access 토큰은 예외 없이 통과한다")
     void validateToken_success() {
         // given & when
-        long userId = 1L;
-        String role = "TEACHER";
-        String token = jwtGenerator.generateToken(userId, role, TokenType.ACCESS);
+        String memberUuid = "q24234";
+        String token = jwtGenerator.generateToken(memberUuid, TokenType.ACCESS);
 
         // then
         assertDoesNotThrow(() -> jwtValidator.validateToken(token, TokenType.ACCESS));
@@ -52,9 +48,8 @@ class JwtValidatorTest {
     @DisplayName("정상 Refresh 토큰은 예외 없이 통과한다")
     void validateRefreshToken_success() {
         // given & when
-        long userId = 2L;
-        String role = "ADMIN";
-        String token = jwtGenerator.generateToken(userId, role, TokenType.REFRESH);
+        String memberUuid = "aasf";
+        String token = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
 
         // then
         assertDoesNotThrow(() -> jwtValidator.validateToken(token, TokenType.REFRESH));
@@ -64,13 +59,11 @@ class JwtValidatorTest {
     @DisplayName("만료된 토큰은 예외가 발생한다")
     void validateToken_expired() {
         // given
-        long userId = 3L;
-        String role = "TEACHER";
+        String memberUuid = "asdf";
 
         // when
         String expiredToken = Jwts.builder()
-                .claim(USER_ID_CLAIM, userId)
-                .claim(ROLE_CLAIM, role)
+                .setSubject(memberUuid)
                 .setIssuedAt(Date.from(Instant.now().minusSeconds(60)))
                 .setExpiration(Date.from(Instant.now().minusSeconds(30)))
                 .signWith(Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtProperties.secretKey())), SignatureAlgorithm.HS256)
@@ -82,35 +75,15 @@ class JwtValidatorTest {
     }
 
     @Test
-    @DisplayName("role 클레임이 없는 Access 토큰은 예외가 발생한다")
-    void validateToken_noRoleClaim() {
-        // given
-        long userId = 4L;
-
-        String token = Jwts.builder()
-                .claim(USER_ID_CLAIM, userId)
-                .setIssuedAt(new Date())
-                .setExpiration(Date.from(Instant.now().plusSeconds(60)))
-                .signWith(hmacShaKeyFor(Base64.getDecoder().decode(jwtProperties.secretKey())), SignatureAlgorithm.HS256)
-                .compact();
-
-        // when & then
-        assertThatThrownBy(() -> jwtValidator.validateToken(token, TokenType.ACCESS))
-                .isInstanceOf(UnauthorizedException.class);
-    }
-
-    @Test
     @DisplayName("잘못된 서명의 토큰은 예외가 발생한다")
     void validateToken_invalidSignature() {
         // given
-        long userId = 5L;
-        String role = "TEACHER";
+        String memberUuid = "adsfasdf";
 
         // when
         String fakeSecret = Base64.getEncoder().encodeToString(FAKE_SECRET_KEY.getBytes());
         String token = Jwts.builder()
-                .claim(USER_ID_CLAIM, userId)
-                .claim(ROLE_CLAIM, role)
+                .setSubject(memberUuid)
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plusSeconds(60)))
                 .signWith(hmacShaKeyFor(Base64.getDecoder().decode(fakeSecret)), SignatureAlgorithm.HS256)
