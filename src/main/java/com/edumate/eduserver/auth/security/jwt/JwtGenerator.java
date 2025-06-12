@@ -21,7 +21,7 @@ public class JwtGenerator {
     private static final String USER_ROLE_CLAIM = "role";
     private static final String USER_ID_CLAIM = "userId";
 
-    String generateToken(final long userId, final String role, final TokenType tokenType) {
+    public String generateToken(final long userId, final String role, final TokenType tokenType) {
         Instant now = Instant.now();
         Instant expiration = generateExpirationInstant(tokenType, now);
 

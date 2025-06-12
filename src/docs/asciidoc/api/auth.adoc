@@ -1,0 +1,19 @@
+== 인증
+
+=== 이메일 인증 코드 인증
+
+==== 성공
+
+operation::auth/verify-email-success[snippets="query-parameters,http-request,http-response,response-fields"]
+
+==== 실패: 유효하지 않은 인증 코드
+
+operation::auth/verify-email-fail/code-mismatch[snippets="query-parameters,http-request,http-response"]
+
+==== 실패: 인증 코드가 만료됨
+
+operation::auth/verify-email-fail/expired-code[snippets="query-parameters,http-request,http-response"]
+
+==== 실패: 유효한 인증 코드가 존재하지 않음
+
+operation::auth/verify-email-fail/auth-code-not-found[snippets="query-parameters,http-request,http-response"]

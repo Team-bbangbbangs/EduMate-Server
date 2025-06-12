@@ -6,4 +6,5 @@
 :toc-title: API 목록
 :sectnums:
 
+include::api/auth.adoc[]
 include::api/studentRecord.adoc[]

@@ -45,6 +45,8 @@ public class AuthorizationCode {
     @Enumerated(EnumType.STRING)
     private AuthorizeStatus status;
 
+    private static final int MINUTES_TO_EXPIRE = 10;
+
     @Builder
     private AuthorizationCode(final Member member, final String authorizationCode, final LocalDateTime createdAt,
                               final LocalDateTime expiredAt, final AuthorizeStatus status) {
@@ -62,7 +64,26 @@ public class AuthorizationCode {
                 .authorizationCode(authorizationCode)
                 .status(status)
                 .createdAt(LocalDateTime.now())
-                .expiredAt(LocalDateTime.now().plusMinutes(10))
+                .expiredAt(LocalDateTime.now().plusMinutes(MINUTES_TO_EXPIRE))
                 .build();
+    }
+
+    public void verified() {
+        this.status = AuthorizeStatus.VERIFIED;
+    }
+
+    public void fail() {
+        this.status = AuthorizeStatus.FAILED;
+    }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiredAt);
+    }
+
+    public void updateCode(final String code) {
+        this.authorizationCode = code;
+        this.createdAt = LocalDateTime.now();
+        this.expiredAt = LocalDateTime.now().plusMinutes(MINUTES_TO_EXPIRE);
+        this.status = AuthorizeStatus.REVOKED;
     }
 }

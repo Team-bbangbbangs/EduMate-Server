@@ -4,7 +4,7 @@
 
 ==== 성공
 
-operation::student-record/update-success[snippets="path-parameters,http-request,request-fields,http-response"]
+operation::student-record/update-success[snippets="path-parameters,http-request,request-fields,http-response,response-fields"]
 
 ==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
 

@@ -32,8 +32,7 @@ public class EmailService {
         if (httpResponse.isSuccessful()) {
             log.info("Email sent successfully to {}. Response: {}", emailReceiver, result);
         } else {
-            log.error("Failed to send email to {}. Response: {}. Status Code: {}", emailReceiver, result,
-                    httpResponse.statusCode());
+            log.error("Failed to send email to {}. Response: {}. Status Code: {}", emailReceiver, result, httpResponse.statusCode());
         }
     }
 }

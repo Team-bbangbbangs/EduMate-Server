@@ -15,11 +15,12 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Member getMemberByUuid(final String memberUuid) {
-        return findByUuid(memberUuid);
+    @Transactional
+    public void updateEmailVerified(final Member member) {
+        member.verifyAsTeacher();
     }
 
-    private Member findByUuid(final String memberUuid) {
+    public Member getMemberByUuid(final String memberUuid) {
         return memberRepository.findByMemberUuid(memberUuid)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
