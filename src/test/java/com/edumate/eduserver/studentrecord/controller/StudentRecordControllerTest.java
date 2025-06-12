@@ -41,6 +41,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@DisplayName("학생 생활기록부 컨트롤러 테스트")
 @WebMvcTest(StudentRecordController.class)
 class StudentRecordControllerTest extends ControllerTest {
 
