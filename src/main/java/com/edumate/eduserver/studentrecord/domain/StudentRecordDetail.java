@@ -32,7 +32,7 @@ public class StudentRecordDetail extends BaseEntity {
     private String studentNumber;
 
     @Column(nullable = false)
-    private String name;
+    private String studentName;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
@@ -47,20 +47,20 @@ public class StudentRecordDetail extends BaseEntity {
 
     @Builder
     private StudentRecordDetail(final MemberStudentRecord memberStudentRecord, final String studentNumber,
-                                final String name, final String description, final int byteCount) {
+                                final String studentName, final String description, final int byteCount) {
         this.memberStudentRecord = memberStudentRecord;
         this.studentNumber = studentNumber;
-        this.name = name;
+        this.studentName = studentName;
         this.description = description;
         this.byteCount = byteCount;
     }
 
     public static StudentRecordDetail create(final MemberStudentRecord memberStudentRecord, final String studentNumber,
-                                             final String name, final String description, final int byteCount) {
+                                             final String studentName, final String description, final int byteCount) {
         return StudentRecordDetail.builder()
                 .memberStudentRecord(memberStudentRecord)
                 .studentNumber(studentNumber)
-                .name(name)
+                .studentName(studentName)
                 .description(description)
                 .byteCount(byteCount)
                 .build();

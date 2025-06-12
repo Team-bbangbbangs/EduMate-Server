@@ -9,9 +9,6 @@ import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFound
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
-import com.edumate.eduserver.studentrecord.service.dto.StudentNameDto;
-import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
-import com.edumate.eduserver.studentrecord.service.dto.StudentRecordOverviewDto;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -30,27 +27,25 @@ public class StudentRecordService {
 
     @Transactional
     public void update(final long recordId, final String description, final int byteCount) {
-        StudentRecordDetail existingDetail = findRecordDetailById(recordId);
+        StudentRecordDetail existingDetail = getRecordDetailById(recordId);
         existingDetail.updateContent(description, byteCount);
     }
 
-    public StudentRecordDetailDto get(final long recordId) {
-        StudentRecordDetail recordDetail = findRecordDetailById(recordId);
-        return StudentRecordDetailDto.of(recordDetail);
+    public StudentRecordDetail getRecordDetailById(final long recordId) {
+        return studentRecordDetailRepository.findById(recordId)
+                .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 
-    public List<StudentRecordOverviewDto> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
+    public List<StudentRecordDetail> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
         validateSemesterPattern(semester);
-        MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
-        List<StudentRecordDetail> studentRecordDetails = findRecordDetails(memberStudentRecord);
-        return studentRecordDetails.stream().map(StudentRecordOverviewDto::of).toList();
+        MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
+        return findRecordDetails(memberStudentRecord);
     }
 
-    public StudentNameDto getStudentName(final long memberId, final StudentRecordType recordType, final String semester) {
+    public List<StudentRecordDetail> getStudentNames(final long memberId, final StudentRecordType recordType, final String semester) {
         validateSemesterPattern(semester);
-        MemberStudentRecord memberStudentRecord = findMemberStudentRecord(memberId, recordType, semester);
-        List<StudentRecordDetail> studentRecordDetails = findRecordDetails(memberStudentRecord);
-        return StudentNameDto.of(studentRecordDetails);
+        MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
+        return findRecordDetails(memberStudentRecord);
     }
 
     private void validateSemesterPattern(final String semester) {
@@ -59,14 +54,9 @@ public class StudentRecordService {
         }
     }
 
-    private MemberStudentRecord findMemberStudentRecord(final long memberId, final StudentRecordType recordType, final String semester) {
+    private MemberStudentRecord getMemberStudentRecord(final long memberId, final StudentRecordType recordType, final String semester) {
         return memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
                 .orElseThrow(() -> new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND));
-    }
-
-    private StudentRecordDetail findRecordDetailById(final long recordId) {
-        return studentRecordDetailRepository.findById(recordId)
-                .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 
     private List<StudentRecordDetail> findRecordDetails(final MemberStudentRecord memberStudentRecord) {

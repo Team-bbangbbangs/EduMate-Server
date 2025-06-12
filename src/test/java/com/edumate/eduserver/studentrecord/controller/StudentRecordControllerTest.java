@@ -1,7 +1,9 @@
 package com.edumate.eduserver.studentrecord.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -25,8 +27,9 @@ import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFound
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
-import com.edumate.eduserver.studentrecord.facade.response.StudentNameResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
+import com.edumate.eduserver.studentrecord.facade.response.vo.StudentDetail;
 import com.edumate.eduserver.util.ControllerTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +56,7 @@ class StudentRecordControllerTest extends ControllerTest {
         long recordId = 1L;
 
         doNothing().when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), any(StudentRecordCreateRequest.class));
+                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
@@ -86,7 +89,8 @@ class StudentRecordControllerTest extends ControllerTest {
         // given
         long recordId = 1L;
 
-        StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse(recordId, "이 학생은 바르고 성실한 학생입니다.", 15);
+        StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse(recordId,
+                "이 학생은 바르고 성실한 학생입니다.", 15);
         when(studentRecordFacade.getStudentRecord(anyLong(), anyLong()))
                 .thenReturn(dummyRecordResponse);
 
@@ -112,11 +116,14 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 이름 목록을 성공적으로 불러온다.")
+    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 정보 목록을 성공적으로 불러온다.")
     void getStudentName() throws Exception {
         // given
-        StudentNameResponse dummyResponse = new StudentNameResponse(List.of("김가연", "이승섭"));
-        when(studentRecordFacade.getStudentName(anyLong(), any(StudentRecordType.class), any(String.class)))
+        StudentDetail detail1 = new StudentDetail(1L, "김가연");
+        StudentDetail detail2 = new StudentDetail(2L, "이승섭");
+        StudentNamesResponse dummyResponse = new StudentNamesResponse(List.of(detail1, detail2));
+
+        when(studentRecordFacade.getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class)))
                 .thenReturn(dummyResponse);
         String recordType = StudentRecordType.ABILITY_DETAIL.getValue().toLowerCase();
 
@@ -138,7 +145,8 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.studentNames").description("학생 이름 목록")
+                                fieldWithPath("data.studentDetails[].recordId").description("레코드 ID"),
+                                fieldWithPath("data.studentDetails[].studentName").description("학생 이름")
                         )
                 ));
     }
@@ -153,7 +161,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         doThrow(new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), any(StudentRecordCreateRequest.class));
+                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
@@ -189,7 +197,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         doThrow(new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), any(StudentRecordCreateRequest.class));
+                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
@@ -288,7 +296,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         doThrow(new InvalidSemesterFormatException(StudentRecordErrorCode.INVALID_SEMESTER_FORMAT, invalidSemester))
                 .when(studentRecordFacade)
-                .getStudentName(anyLong(), any(StudentRecordType.class), any(String.class));
+                .getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class));
 
         // when & then
         mockMvc.perform(get(BASE_URL + "/{recordType}/students", RECORD_TYPE)
@@ -297,7 +305,8 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("EDMT-4000202"))
-                .andExpect(jsonPath("$.message").value(String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", invalidSemester)))
+                .andExpect(jsonPath("$.message").value(
+                        String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", invalidSemester)))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-fail/invalid-semester-format",
                         pathParameters(
                                 parameterWithName("recordType").description("생활기록부 항목 타입")
@@ -311,5 +320,5 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("message").description("응답 메시지")
                         )
                 ));
-     }
+    }
 }

@@ -10,9 +10,8 @@ import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
-import com.edumate.eduserver.studentrecord.service.dto.StudentNameDto;
-import com.edumate.eduserver.studentrecord.service.dto.StudentRecordDetailDto;
 import com.edumate.eduserver.util.ServiceTest;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,33 +43,36 @@ class StudentRecordServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("특정 학생의 특정 생기부 항목에 대한 종합 내용을 불러온다.")
-    void getStudentRecordDetail() {
+    void getStudentRecordStudentRecordDetail() {
         // given
         long studentRecordId = defaultRecordDetail.getId();
 
         // when
-        StudentRecordDetailDto recordDetail = studentRecordService.get(studentRecordId);
+        StudentRecordDetail recordDetail = studentRecordService.getRecordDetailById(studentRecordId);
 
         // then
         assertAll(
-                () -> assertEquals(studentRecordId, recordDetail.recordDetailId()),
-                () -> assertEquals(defaultRecordDetail.getDescription(), recordDetail.description()),
-                () -> assertEquals(defaultRecordDetail.getByteCount(), recordDetail.byteCount())
+                () -> assertEquals(studentRecordId, recordDetail.getId()),
+                () -> assertEquals(defaultRecordDetail.getDescription(), recordDetail.getDescription()),
+                () -> assertEquals(defaultRecordDetail.getByteCount(), recordDetail.getByteCount())
         );
     }
 
     @Test
     @DisplayName("특정 학기의 특정 생기부 항목에 포함된 학생 이름 목록을 불러온다.")
-    void getStudentName() {
+    void getStudentRecordStudentNames() {
         // given
         long memberId = 1L;
         StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
         String semester = "2025-1";
         // when
-        StudentNameDto studentNameDto = studentRecordService.getStudentName(memberId, recordType, semester);
+        List<StudentRecordDetail> details = studentRecordService.getStudentNames(memberId, recordType, semester);
+        List<String> studentNames = details.stream()
+                .map(StudentRecordDetail::getStudentName)
+                .toList();
 
         // then
-        assertThat(studentNameDto.studentNames()).contains("김가연", "이승섭");
+        assertThat(studentNames).contains("김가연", "이승섭");
      }
 
      @Test
@@ -81,7 +83,7 @@ class StudentRecordServiceTest extends ServiceTest {
 
          // when & then
             assertThatThrownBy(() ->
-                    studentRecordService.getStudentName(1L, StudentRecordType.BEHAVIOR_OPINION, invalidSemester)
+                    studentRecordService.getStudentNames(1L, StudentRecordType.BEHAVIOR_OPINION, invalidSemester)
             ).isInstanceOf(InvalidSemesterFormatException.class);
       }
 
