@@ -40,7 +40,7 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("이메일 인증을 성공한다.")
     void verifyEmail() throws Exception {
-        EmailVerifyResponse response = new EmailVerifyResponse("access-token", "refresh-token");
+        EmailVerifyResponse response = new EmailVerifyResponse(1, true);
         Mockito.when(authFacade.verifyEmailCode(anyString(), anyString())).thenReturn(response);
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/verify-email")
@@ -60,8 +60,8 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.accessToken").description("엑세스 토큰"),
-                                fieldWithPath("data.refreshToken").description("리프레시 토큰")
+                                fieldWithPath("data.memberId").description("회원 아이디"),
+                                fieldWithPath("data.isVerified").description("인증 여부")
                         )
                 ));
     }

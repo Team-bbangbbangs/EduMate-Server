@@ -8,7 +8,6 @@ import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.repository.AuthorizationCodeRepository;
 import com.edumate.eduserver.user.domain.Member;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,43 +23,39 @@ public class AuthService {
 
     @Transactional
     public void verifyEmailCode(final Member member, final String inputCode) {
-        AuthorizationCode authorizationCode = findValidCodeByMember(member);
-        validateCode(authorizationCode, inputCode);
+        AuthorizationCode authorizationCode = getValidCodeByMember(member.getId());
+        checkVerified(authorizationCode, inputCode);
         authorizationCode.verified();
     }
 
     @Transactional
-    public void updateCode(final Member member, final String code) {
-            authorizationCodeRepository.findByMemberAndStatus(member, AuthorizeStatus.PENDING)
-                    .ifPresentOrElse(
-                            existing -> existing.updateCode(code),
-                            () -> {
-                                AuthorizationCode newCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
-                                authorizationCodeRepository.save(newCode);
-                            }
-                    );
+    public void saveCode(final Member member, final String code) {
+        AuthorizationCode authorizationCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
+        authorizationCodeRepository.save(authorizationCode);
     }
 
-    private AuthorizationCode findValidCodeByMember(final Member member) {
-        return authorizationCodeRepository.findByMemberAndStatus(member, AuthorizeStatus.PENDING)
+    private AuthorizationCode getValidCodeByMember(final long memberId) {
+        return authorizationCodeRepository.findTop1ByMemberIdAndStatusOrderByIdDesc(memberId, AuthorizeStatus.PENDING)
                 .orElseThrow(() -> new AuthCodeNotFoundException(AuthErrorCode.AUTH_CODE_NOT_FOUND));
     }
 
-    private void validateCode(final AuthorizationCode authorizationCode, final String inputCode) {
-        getValidationException(authorizationCode, inputCode)
-                .ifPresent(ex -> {
-                    authorizationCode.fail();
-                    throw ex;
-                });
+    private void checkVerified(final AuthorizationCode code, final String inputCode) {
+        try {
+            validateCode(code, inputCode);
+        } catch (ExpiredCodeException | MisMatchedCodeException e) {
+            log.error("Code validation failed: {}", e.getMessage());
+            throw e;
+        } finally {
+            code.fail();
+        }
     }
 
-    private Optional<RuntimeException> getValidationException(AuthorizationCode code, String inputCode) {
+    private void validateCode(final AuthorizationCode code, final String inputCode) {
         if (code.isExpired()) {
-            return Optional.of(new ExpiredCodeException(AuthErrorCode.EXPIRED_CODE));
+            throw new ExpiredCodeException(AuthErrorCode.EXPIRED_CODE);
         }
         if (!code.getAuthorizationCode().equals(inputCode)) {
-            return Optional.of(new MisMatchedCodeException(AuthErrorCode.INVALID_CODE));
+            throw new MisMatchedCodeException(AuthErrorCode.INVALID_CODE);
         }
-        return Optional.empty();
     }
 }

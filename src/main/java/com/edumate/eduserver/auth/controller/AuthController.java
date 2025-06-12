@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthFacade authFacade;
 
-    @PostMapping("/auth/email/send-verification")
+    @PostMapping("/email/send-verification")
     public ApiResponse<Void> sendVerificationEmail(@RequestBody @Valid final EmailSendRequest request) {
-        authFacade.sendVerificationEmail(request.memberUuid());
+        authFacade.sendVerificationEmail(request.memberUuid().trim());
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
-    @GetMapping("/auth/verify-email")
+    @GetMapping("/verify-email")
     public ApiResponse<EmailVerifyResponse> verifyEmail(@RequestParam("id") final String memberUuid,
                                                         @RequestParam("code") final String verificationCode) {
         return ApiResponse.success(CommonSuccessCode.OK, authFacade.verifyEmailCode(memberUuid.trim(), verificationCode.trim()));

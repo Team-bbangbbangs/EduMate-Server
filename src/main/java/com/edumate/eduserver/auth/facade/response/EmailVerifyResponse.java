@@ -1,10 +1,10 @@
 package com.edumate.eduserver.auth.facade.response;
 
 public record EmailVerifyResponse(
-        String accessToken,
-        String refreshToken
+        long memberId,
+        boolean isVerified
 ) {
-    public static EmailVerifyResponse of(final String accessToken, final String refreshToken) {
-        return new EmailVerifyResponse(accessToken, refreshToken);
+    public static EmailVerifyResponse of(final long memberId, final boolean isVerified) {
+        return new EmailVerifyResponse(memberId, isVerified);
     }
 }
