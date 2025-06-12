@@ -1,5 +1,6 @@
 package com.edumate.eduserver.studentrecord.facade;
 
+import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
@@ -36,5 +37,10 @@ public class StudentRecordFacade {
     public StudentNamesResponse getStudentDetails(final long memberId, final StudentRecordType recordType, final String semester) {
         List<StudentRecordDetail> studentRecordDetails = studentRecordService.getStudentNames(memberId, recordType, semester);
         return StudentNamesResponse.of(studentRecordDetails);
+    }
+
+    @Transactional
+    public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester, final List<StudentRecordInfo> studentRecordInfos) {
+        studentRecordService.createStudentRecords(memberId, recordType, semester, studentRecordInfos);
     }
 }

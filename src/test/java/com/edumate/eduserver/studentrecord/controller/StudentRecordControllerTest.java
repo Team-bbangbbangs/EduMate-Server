@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
-import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
@@ -52,7 +52,7 @@ class StudentRecordControllerTest extends ControllerTest {
     @DisplayName("학생 생활기록부 내용을 성공적으로 업데이트 한다.")
     void updateStudentRecord_Success() throws Exception {
         // given
-        StudentRecordCreateRequest request = new StudentRecordCreateRequest("학생의 행동 특성에 대한 기록", 100);
+        StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("학생의 행동 특성에 대한 기록", 100);
         long recordId = 1L;
 
         doNothing().when(studentRecordFacade)
@@ -156,7 +156,7 @@ class StudentRecordControllerTest extends ControllerTest {
     @DisplayName("존재하지 않은 학생 레코드 ID로 요청을 보내면 실패한다.")
     void updateStudentRecord_RecordNotFound() throws Exception {
         // given
-        StudentRecordCreateRequest request = new StudentRecordCreateRequest("2023-1", 100);
+        StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("2023-1", 100);
         long recordId = 999L;
 
         doThrow(new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND))
@@ -192,7 +192,7 @@ class StudentRecordControllerTest extends ControllerTest {
     @DisplayName("존재하지 않은 학생 생활기록부 관련 요청을 보내면 실패한다.")
     void updateStudentRecord_MemberRecordNotFound() throws Exception {
         // given
-        StudentRecordCreateRequest request = new StudentRecordCreateRequest("학생의 행동 특성에 대한 기록", 100);
+        StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("학생의 행동 특성에 대한 기록", 100);
         long recordId = 1L;
 
         doThrow(new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND))
@@ -228,7 +228,7 @@ class StudentRecordControllerTest extends ControllerTest {
     @DisplayName("description 필드 누락하여 요청을 보내면 실패한다.")
     void updateStudentRecord_MissingDescription() throws Exception {
         // given
-        StudentRecordCreateRequest request = new StudentRecordCreateRequest(null, 100);
+        StudentRecordUpdateRequest request = new StudentRecordUpdateRequest(null, 100);
         long recordId = 1L;
 
         // when & then
@@ -260,7 +260,7 @@ class StudentRecordControllerTest extends ControllerTest {
     @DisplayName("음수 byteCount를 보내면 요청에 실패한다.")
     void updateStudentRecord_NegativeByteCount() throws Exception {
         // given
-        StudentRecordCreateRequest request = new StudentRecordCreateRequest("학생의 행동 특성에 대한 기록", -1);
+        StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("학생의 행동 특성에 대한 기록", -1);
         long recordId = 1L;
 
         // when & then
