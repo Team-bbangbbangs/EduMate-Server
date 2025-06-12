@@ -7,3 +7,4 @@
 :sectnums:
 
 include::api/studentRecord.adoc[]
+include::api/notice.adoc[]
