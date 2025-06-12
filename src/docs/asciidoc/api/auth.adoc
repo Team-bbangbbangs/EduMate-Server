@@ -4,7 +4,7 @@
 
 ==== 성공
 
-operation::auth/verify-email-success[snippets="query-parameters,http-request,http-response"]
+operation::auth/verify-email-success[snippets="query-parameters,http-request,http-response,response-fields"]
 
 ==== 실패: 유효하지 않은 인증 코드
 
