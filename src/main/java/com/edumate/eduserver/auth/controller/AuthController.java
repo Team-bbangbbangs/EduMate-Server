@@ -2,7 +2,6 @@ package com.edumate.eduserver.auth.controller;
 
 import com.edumate.eduserver.auth.controller.request.EmailSendRequest;
 import com.edumate.eduserver.auth.facade.AuthFacade;
-import com.edumate.eduserver.auth.facade.response.EmailVerifyResponse;
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import jakarta.validation.Valid;
@@ -28,8 +27,9 @@ public class AuthController {
     }
 
     @GetMapping("/verify-email")
-    public ApiResponse<EmailVerifyResponse> verifyEmail(@RequestParam("id") final String memberUuid,
-                                                        @RequestParam("code") final String verificationCode) {
-        return ApiResponse.success(CommonSuccessCode.OK, authFacade.verifyEmailCode(memberUuid.trim(), verificationCode.trim()));
+    public ApiResponse<Void> verifyEmail(@RequestParam("id") final String memberUuid,
+                                         @RequestParam("code") final String verificationCode) {
+        authFacade.verifyEmailCode(memberUuid.trim(), verificationCode.trim());
+        return ApiResponse.success(CommonSuccessCode.OK);
     }
 }
