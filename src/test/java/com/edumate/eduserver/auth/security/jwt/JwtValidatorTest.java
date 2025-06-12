@@ -45,14 +45,15 @@ class JwtValidatorTest {
     }
 
     @Test
-    @DisplayName("정상 Refresh 토큰은 예외 없이 통과한다")
+    @DisplayName("Refresh 토큰으로 검증을 시도할 경우 예외가 발생한다.")
     void validateRefreshToken_success() {
-        // given & when
+        // given
         String memberUuid = "aasf";
         String token = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
 
-        // then
-        assertDoesNotThrow(() -> jwtValidator.validateToken(token, TokenType.REFRESH));
+        // when & then
+        assertThatThrownBy(() -> jwtValidator.validateToken(token, TokenType.ACCESS))
+                .isInstanceOf(IllegalTokenException.class);
     }
 
     @Test
