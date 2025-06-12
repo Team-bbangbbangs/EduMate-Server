@@ -15,7 +15,7 @@ public class JwtValidator {
 
     private static final String TOKEN_TYPE_CLAIM = "tokenType";
 
-    public void validateToken(final String token, final TokenType type) {
+    public void validateAccessToken(final String token, final TokenType type) {
         try {
             Claims claims = jwtParser.parseClaims(token);
             validateClaims(claims);

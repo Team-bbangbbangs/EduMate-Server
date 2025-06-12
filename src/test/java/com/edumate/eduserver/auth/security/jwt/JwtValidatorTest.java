@@ -35,13 +35,13 @@ class JwtValidatorTest {
 
     @Test
     @DisplayName("정상 Access 토큰은 예외 없이 통과한다")
-    void validateToken_success() {
+    void validateAccessToken_success() {
         // given & when
         String memberUuid = "q24234";
         String token = jwtGenerator.generateToken(memberUuid, TokenType.ACCESS);
 
         // then
-        assertDoesNotThrow(() -> jwtValidator.validateToken(token, TokenType.ACCESS));
+        assertDoesNotThrow(() -> jwtValidator.validateAccessToken(token, TokenType.ACCESS));
     }
 
     @Test
@@ -52,13 +52,13 @@ class JwtValidatorTest {
         String token = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
 
         // when & then
-        assertThatThrownBy(() -> jwtValidator.validateToken(token, TokenType.ACCESS))
+        assertThatThrownBy(() -> jwtValidator.validateAccessToken(token, TokenType.ACCESS))
                 .isInstanceOf(IllegalTokenException.class);
     }
 
     @Test
     @DisplayName("만료된 토큰은 예외가 발생한다")
-    void validateToken_expired() {
+    void validateAccessToken_expired() {
         // given
         String memberUuid = "asdf";
 
@@ -71,13 +71,13 @@ class JwtValidatorTest {
                 .compact();
 
         // then
-        assertThatThrownBy(() -> jwtValidator.validateToken(expiredToken, TokenType.ACCESS))
+        assertThatThrownBy(() -> jwtValidator.validateAccessToken(expiredToken, TokenType.ACCESS))
                 .isInstanceOf(IllegalTokenException.class);
     }
 
     @Test
     @DisplayName("잘못된 서명의 토큰은 예외가 발생한다")
-    void validateToken_invalidSignature() {
+    void validateAccessToken_invalidSignature() {
         // given
         String memberUuid = "adsfasdf";
 
@@ -91,7 +91,7 @@ class JwtValidatorTest {
                 .compact();
 
         // then
-        assertThatThrownBy(() -> jwtValidator.validateToken(token, TokenType.ACCESS))
+        assertThatThrownBy(() -> jwtValidator.validateAccessToken(token, TokenType.ACCESS))
                 .isInstanceOf(IllegalTokenException.class);
     }
 }
