@@ -40,15 +40,13 @@ public class StudentRecordService {
                         StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 
-    public List<StudentRecordDetail> getAll(final long memberId, final StudentRecordType recordType,
-                                            final String semester) {
+    public List<StudentRecordDetail> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
         validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         return findRecordDetails(memberStudentRecord);
     }
 
-    public List<StudentRecordDetail> getStudentNames(final long memberId, final StudentRecordType recordType,
-                                                     final String semester) {
+    public List<StudentRecordDetail> getStudentNames(final long memberId, final StudentRecordType recordType, final String semester) {
         validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         return findRecordDetails(memberStudentRecord);
@@ -71,10 +69,8 @@ public class StudentRecordService {
         }
     }
 
-    private MemberStudentRecord getMemberStudentRecord(final long memberId, final StudentRecordType recordType,
-                                                       final String semester) {
-        return memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType,
-                        semester)
+    private MemberStudentRecord getMemberStudentRecord(final long memberId, final StudentRecordType recordType, final String semester) {
+        return memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
                 .orElseThrow(() -> new MemberStudentRecordNotFoundException(
                         StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND));
     }
