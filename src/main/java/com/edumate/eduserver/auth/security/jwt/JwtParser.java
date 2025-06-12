@@ -22,7 +22,6 @@ public class JwtParser {
                 .getBody();
     }
 
-
     private Key getSigningKey() {
         byte[] keyBytes = Base64.getDecoder().decode(jwtProperties.secretKey());
         return Keys.hmacShaKeyFor(keyBytes);

@@ -2,7 +2,6 @@ package com.edumate.eduserver.auth.security.jwt;
 
 import com.edumate.eduserver.auth.exception.IllegalTokenException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
-import com.edumate.eduserver.common.exception.UnauthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +13,10 @@ public class JwtValidator {
 
     private final JwtParser jwtParser;
 
-    private static final String USER_ROLE_CLAIM = "role";
-
     public void validateToken(final String token, final TokenType type) {
         try {
             Claims claims = jwtParser.parseClaims(token);
-            validateClaims(claims, type);
+            validateClaims(claims);
         } catch (ExpiredJwtException e) {
             throw getExpiredTokenException(type);
         } catch (Exception e) {
@@ -27,12 +24,10 @@ public class JwtValidator {
         }
     }
 
-    private void validateClaims(final Claims claims, final TokenType type) {
-        if (type == TokenType.ACCESS) {
-            String role = claims.get(USER_ROLE_CLAIM, String.class);
-            if (role == null || role.isBlank()) {
-                throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
-            }
+    private void validateClaims(final Claims claims) {
+        String memberUuid = claims.getSubject();
+        if (memberUuid == null || memberUuid.isBlank()) {
+            throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
         }
     }
 

@@ -1,6 +1,5 @@
 package com.edumate.eduserver.auth.facade;
 
-import com.edumate.eduserver.auth.facade.response.EmailVerifyResponse;
 import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.EmailService;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
@@ -19,8 +18,6 @@ public class AuthFacade {
     private final MemberService memberService;
     private final RandomCodeGenerator randomCodeGenerator;
 
-    private static final boolean IS_VERIFIED = true;
-
     public void sendVerificationEmail(final String memberUuid) {
         Member member = memberService.getMemberByUuid(memberUuid);
         String verificationCode = randomCodeGenerator.generate();
@@ -29,10 +26,9 @@ public class AuthFacade {
     }
 
     @Transactional
-    public EmailVerifyResponse verifyEmailCode(final String memberUuid, final String verificationCode) {
+    public void verifyEmailCode(final String memberUuid, final String verificationCode) {
         Member member = memberService.getMemberByUuid(memberUuid);
         authService.verifyEmailCode(member, verificationCode);
         memberService.updateEmailVerified(member);
-        return EmailVerifyResponse.of(member.getId(), IS_VERIFIED);
     }
 }

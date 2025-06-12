@@ -1,6 +1,7 @@
 package com.edumate.eduserver.auth.controller;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -14,12 +15,10 @@ import com.edumate.eduserver.auth.exception.ExpiredCodeException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
-import com.edumate.eduserver.auth.facade.response.EmailVerifyResponse;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -40,8 +39,7 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("이메일 인증을 성공한다.")
     void verifyEmail() throws Exception {
-        EmailVerifyResponse response = new EmailVerifyResponse(1, true);
-        Mockito.when(authFacade.verifyEmailCode(anyString(), anyString())).thenReturn(response);
+        doNothing().when(authFacade).verifyEmailCode(anyString(), anyString());
 
         mockMvc.perform(RestDocumentationRequestBuilders.get(BASE_URL + "/verify-email")
                         .param("id", MEMBER_UUID)
@@ -59,9 +57,7 @@ class AuthControllerTest extends ControllerTest {
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
-                                fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.memberId").description("회원 아이디"),
-                                fieldWithPath("data.isVerified").description("인증 여부")
+                                fieldWithPath("message").description("응답 메시지")
                         )
                 ));
     }
