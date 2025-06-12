@@ -5,10 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
+import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
+import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.util.ServiceTest;
 import java.util.List;
@@ -24,6 +27,9 @@ class StudentRecordServiceTest extends ServiceTest {
 
     @Autowired
     private StudentRecordDetailRepository studentRecordDetailRepository;
+
+    @Autowired
+    private MemberStudentRecordRepository memberStudentRecordRepository;
 
     @Test
     @DisplayName("특정 학생의 특정 생기부 항목에 대한 내용을 업데이트 한다.")
@@ -55,6 +61,45 @@ class StudentRecordServiceTest extends ServiceTest {
                 () -> assertEquals(studentRecordId, recordDetail.getId()),
                 () -> assertEquals(defaultRecordDetail.getDescription(), recordDetail.getDescription()),
                 () -> assertEquals(defaultRecordDetail.getByteCount(), recordDetail.getByteCount())
+        );
+    }
+
+    @Test
+    @DisplayName("여러 개의 생기부 항목을 생성한다.")
+    void createStudentRecords() {
+        // given
+        long memberId = 1L;
+        StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
+        String semester = "2025-1";
+        List<StudentRecordInfo> studentRecordInfos = List.of(
+                StudentRecordInfo.of("2023002", "김지안"),
+                StudentRecordInfo.of("2023003", "유태근")
+        );
+
+        // when
+        studentRecordService.createStudentRecords(memberId, recordType, semester, studentRecordInfos);
+
+        // then
+        MemberStudentRecord memberStudentRecord = memberStudentRecordRepository
+                .findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
+                .orElseThrow();
+
+        List<StudentRecordDetail> details = studentRecordDetailRepository
+                .findAllByMemberStudentRecordOrderByCreatedAtAsc(memberStudentRecord);
+
+        List<String> newNames = List.of("김지안", "유태근");
+
+        List<StudentRecordDetail> newDetails = details.stream()
+                .filter(d -> newNames.contains(d.getStudentName()))
+                .toList();
+
+        assertAll(
+                () -> assertThat(newDetails).hasSize(2),
+                () -> assertThat(newDetails)
+                        .extracting(StudentRecordDetail::getStudentName)
+                        .containsExactlyElementsOf(newNames),
+                () -> assertThat(newDetails).allMatch(d -> d.getDescription().isEmpty()),
+                () -> assertThat(newDetails).allMatch(d -> d.getByteCount() == 0)
         );
     }
 
