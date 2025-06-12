@@ -13,8 +13,6 @@ public class JwtValidator {
 
     private final JwtParser jwtParser;
 
-    private static final String MEMBER_UUID_CLAIM = "member_uuid";
-
     public void validateToken(final String token, final TokenType type) {
         try {
             Claims claims = jwtParser.parseClaims(token);
@@ -27,7 +25,7 @@ public class JwtValidator {
     }
 
     private void validateClaims(final Claims claims) {
-        String memberUuid = claims.get(MEMBER_UUID_CLAIM, String.class);
+        String memberUuid = claims.getSubject();
         if (memberUuid == null || memberUuid.isBlank()) {
             throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
         }

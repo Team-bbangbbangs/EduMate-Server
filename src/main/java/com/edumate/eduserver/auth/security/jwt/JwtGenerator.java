@@ -17,15 +17,13 @@ public class JwtGenerator {
 
     private final JwtProperties jwtProperties;
 
-    private static final String MEMBER_UUID_CLAIM = "member_uuid";
-
-    public String generateToken(final String userId, final TokenType tokenType) {
+    public String generateToken(final String memberUuid, final TokenType tokenType) {
         Instant now = Instant.now();
         Instant expiration = generateExpirationInstant(tokenType, now);
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .claim(MEMBER_UUID_CLAIM, userId)
+                .setSubject(memberUuid)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
