@@ -31,8 +31,7 @@ public class MemberService {
                              final String schoolName) {
         School school = School.fromName(schoolName);
         Member member = Member.create(subject, email, password, DEFAULT_NICKNAME, school, INITIAL_ROLE);
-        memberRepository.saveAndFlush(member);
-
+        memberRepository.save(member);
         String generatedNickname = DEFAULT_NICKNAME + member.getId();
         member.updateNickname(generatedNickname);
         return member.getMemberUuid();

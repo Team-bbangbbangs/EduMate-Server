@@ -2,10 +2,13 @@ package com.edumate.eduserver.auth.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.edumate.eduserver.auth.exception.InvalidPasswordFormatException;
 import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
@@ -53,7 +56,7 @@ class AuthFacadeTest {
 
     @Test
     @DisplayName("회원가입이 정상적으로 동작한다.")
-    void signUp_success() {
+    void signUp() {
         String email = "test@email.com";
         String password = "Abc12345!";
         String subjectName = "수학";
@@ -79,21 +82,21 @@ class AuthFacadeTest {
 
     @Test
     @DisplayName("비밀번호 길이 오류시 예외가 발생한다.")
-    void signUp_invalidPasswordLength() {
+    void invalidPasswordLength() {
         String email = "test@email.com";
         String password = "short";
         String subjectName = "수학";
         String school = "테스트고";
         given(subjectService.getSubjectByName(subjectName)).willReturn(mock(Subject.class));
-        doThrow(new InvalidPasswordLengthException(AuthErrorCode.INVALID_PASSWORD_LENGTH))
-                .when(passwordEncoder).encode(password);
         assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school))
                 .isInstanceOf(InvalidPasswordLengthException.class);
+
+        verify(passwordEncoder, never()).encode(any());
     }
 
     @Test
     @DisplayName("비밀번호 형식 오류시 예외가 발생한다.")
-    void signUp_invalidPasswordFormat() {
+    void invalidPasswordFormat() {
         String email = "test@email.com";
         String password = "abcdefgh";
         String subjectName = "수학";
@@ -107,7 +110,7 @@ class AuthFacadeTest {
 
     @Test
     @DisplayName("비밀번호 반복문자 오류시 예외가 발생한다.")
-    void signUp_invalidPasswordRepetition() {
+    void invalidPasswordRepetition() {
         String email = "test@email.com";
         String password = "aaa12345";
         String subjectName = "수학";
