@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.edumate.eduserver.auth.exception.InvalidPasswordFormatException;
 import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
-import com.edumate.eduserver.auth.exception.InvalidPasswordRepetitionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -46,14 +45,14 @@ class PasswordValidatorTest {
     }
 
     @Test
-    @DisplayName("같은 문자가 3번 이상 연속되면 InvalidPasswordRepetitionException이 발생한다.")
+    @DisplayName("같은 문자가 3번 이상 연속되면 InvalidPasswordFormatException이 발생한다.")
     void invalidPasswordRepetition() {
         assertThatThrownBy(() -> PasswordValidator.validate("aaa12345"))
-                .isInstanceOf(InvalidPasswordRepetitionException.class);
+                .isInstanceOf(InvalidPasswordFormatException.class);
         assertThatThrownBy(() -> PasswordValidator.validate("11!111abc"))
-                .isInstanceOf(InvalidPasswordRepetitionException.class);
+                .isInstanceOf(InvalidPasswordFormatException.class);
         assertThatThrownBy(() -> PasswordValidator.validate("abc!!!123"))
-                .isInstanceOf(InvalidPasswordRepetitionException.class);
+                .isInstanceOf(InvalidPasswordFormatException.class);
     }
 }
 

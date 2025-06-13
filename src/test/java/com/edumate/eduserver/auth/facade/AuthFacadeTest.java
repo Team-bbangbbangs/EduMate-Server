@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 
 import com.edumate.eduserver.auth.exception.InvalidPasswordFormatException;
 import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
-import com.edumate.eduserver.auth.exception.InvalidPasswordRepetitionException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
@@ -114,10 +113,10 @@ class AuthFacadeTest {
         String subjectName = "수학";
         String school = "테스트고";
         given(subjectService.getSubjectByName(subjectName)).willReturn(mock(Subject.class));
-        doThrow(new InvalidPasswordRepetitionException(AuthErrorCode.INVALID_PASSWORD_REPETITION))
+        doThrow(new InvalidPasswordFormatException(AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(passwordEncoder).encode(password);
         assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school))
-                .isInstanceOf(InvalidPasswordRepetitionException.class);
+                .isInstanceOf(InvalidPasswordFormatException.class);
     }
 }
 

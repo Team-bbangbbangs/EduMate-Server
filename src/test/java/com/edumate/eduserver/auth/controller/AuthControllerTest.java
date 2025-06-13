@@ -282,8 +282,8 @@ class AuthControllerTest extends ControllerTest {
     @DisplayName("비밀번호 반복 문자 오류로 회원가입 시 예외가 발생한다.")
     void signUpInvalidPasswordRepetition() throws Exception {
         MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "aaa12345", "수학", "middle");
-        doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordRepetitionException(
-                AuthErrorCode.INVALID_PASSWORD_REPETITION))
+        doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordFormatException(
+                AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(authFacade).signUp(
                         org.mockito.ArgumentMatchers.anyString(),
                         org.mockito.ArgumentMatchers.anyString(),
@@ -297,8 +297,8 @@ class AuthControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_REPETITION.getCode()))
-                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_REPETITION.getMessage()))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "signup-fail/invalid-password-repetition",
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
