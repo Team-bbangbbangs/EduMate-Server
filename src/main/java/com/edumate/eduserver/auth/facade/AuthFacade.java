@@ -5,6 +5,7 @@ import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.security.jwt.TokenType;
 import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.EmailService;
+import com.edumate.eduserver.auth.service.PasswordValidator;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
@@ -44,6 +45,7 @@ public class AuthFacade {
     @Transactional
     public MemberSignUpResponse signUp(final String email, final String password, final String subjectName, final String school) {
         Subject subject = subjectService.getSubjectByName(subjectName);
+        PasswordValidator.validate(password);
         String encodedPassword = passwordEncoder.encode(password);
         authService.checkAlreadyRegistered(email);
         String memberUuid = memberService.saveMember(email, encodedPassword, subject, school);
