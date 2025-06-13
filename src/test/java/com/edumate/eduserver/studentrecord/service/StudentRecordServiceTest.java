@@ -11,6 +11,7 @@ import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
+import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.util.ServiceTest;
@@ -148,5 +149,16 @@ class StudentRecordServiceTest extends ServiceTest {
         assertThatThrownBy(() ->
                 studentRecordService.update(memberId, nonExistingStudentRecordId, newDescription, newByteCount)
         ).isInstanceOf(StudentRecordDetailNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("업데이트 권한이 없는 경우 예외가 발생한다.")
+    void updateWithPermissionDenied() {
+        long otherMemberId = 12L;
+
+        // when & then
+        assertThatThrownBy(() ->
+                studentRecordService.update(otherMemberId, defaultRecordDetail.getId(), "변경된 내용", 15)
+        ).isInstanceOf(UpdatePermissionDeniedException.class);
     }
 }
