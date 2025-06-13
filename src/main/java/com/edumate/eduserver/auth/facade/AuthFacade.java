@@ -1,5 +1,7 @@
 package com.edumate.eduserver.auth.facade;
 
+import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
+import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.security.jwt.TokenType;
@@ -12,6 +14,7 @@ import com.edumate.eduserver.subject.service.SubjectService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +51,13 @@ public class AuthFacade {
         PasswordValidator.validate(password);
         String encodedPassword = passwordEncoder.encode(password);
         Subject subject = subjectService.getSubjectByName(subjectName);
-        String memberUuid = memberService.saveMember(email, encodedPassword, subject, school);
-        String accessToken = jwtGenerator.generateToken(memberUuid, TokenType.ACCESS);
-        String refreshToken = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
-        return MemberSignUpResponse.of(accessToken, refreshToken);
+        try {
+            String memberUuid = memberService.saveMember(email, encodedPassword, subject, school);
+            String accessToken = jwtGenerator.generateToken(memberUuid, TokenType.ACCESS);
+            String refreshToken = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
+            return MemberSignUpResponse.of(accessToken, refreshToken);
+        } catch (DataIntegrityViolationException e) {
+            throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
+        }
     }
 }
