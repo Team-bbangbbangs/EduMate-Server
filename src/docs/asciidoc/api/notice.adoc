@@ -1,0 +1,17 @@
+== 공지사항
+
+=== 공지사항 목록 조회
+
+==== 성공
+
+operation::notice/get-success[snippets="query-parameters,http-request,http-response"]
+
+=== 공지사항 상세 조회
+
+==== 성공
+
+operation::notice/get-one-success[snippets="path-parameters,http-request,http-response"]
+
+==== 실패: 해당 공지사항이 존재하지 않음
+
+operation::notice/get-one-fail-not-found[snippets="http-request,http-response"]

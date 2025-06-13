@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,4 +37,11 @@ public class Notice extends BaseEntity {
     private boolean isDeleted = false;
 
     private LocalDateTime deletedAt;
+
+    @Builder
+    public Notice(NoticeCategory category, String title, String content) {
+        this.category = category;
+        this.title = title;
+        this.content = content;
+    }
 }

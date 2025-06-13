@@ -10,7 +10,9 @@ public record NoticesGetResponse(
     public static NoticesGetResponse of(final int totalPages, final List<NoticeDto> notices) {
         return new NoticesGetResponse(
                 totalPages,
-                notices.stream().map(NoticeResponse::of).toList()
+                notices.stream().map(notice -> NoticeResponse.of(
+                        notice.noticeId(), notice.category().getText(), notice.title(), notice.createdAt()
+                )).toList()
         );
     }
 }
