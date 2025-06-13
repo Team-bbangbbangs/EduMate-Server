@@ -8,7 +8,7 @@ public record NoticeResponse(
         String title,
         LocalDateTime createdAt
 ) {
-    public static NoticeResponse of(long noticeId, String category, String title, LocalDateTime createdAt) {
+    public static NoticeResponse of(final long noticeId, final String category, final String title, final LocalDateTime createdAt) {
         return new NoticeResponse(
                 noticeId,
                 category,
