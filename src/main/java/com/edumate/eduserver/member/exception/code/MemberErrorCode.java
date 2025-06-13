@@ -1,4 +1,4 @@
-package com.edumate.eduserver.user.exception.code;
+package com.edumate.eduserver.member.exception.code;
 
 import com.edumate.eduserver.common.code.ErrorCode;
 import lombok.Getter;

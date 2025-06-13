@@ -6,7 +6,7 @@ import com.edumate.eduserver.common.security.CustomPasswordEncoder;
 import com.edumate.eduserver.common.security.JwtAuthenticationEntryPoint;
 import com.edumate.eduserver.common.security.filter.ExceptionHandlerFilter;
 import com.edumate.eduserver.common.security.filter.JwtAuthenticationFilter;
-import com.edumate.eduserver.user.service.MemberAuthenticationService;
+import com.edumate.eduserver.member.service.MemberAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

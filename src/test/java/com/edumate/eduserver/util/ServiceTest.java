@@ -6,8 +6,8 @@ import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordReposit
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.repository.SubjectRepository;
-import com.edumate.eduserver.user.domain.Member;
-import com.edumate.eduserver.user.repository.MemberRepository;
+import com.edumate.eduserver.member.domain.Member;
+import com.edumate.eduserver.member.repository.MemberRepository;
 import com.edumate.eduserver.util.fixture.MemberFixture;
 import com.edumate.eduserver.util.fixture.MemberStudentRecordFixture;
 import com.edumate.eduserver.util.fixture.StudentRecordDetailFixture;

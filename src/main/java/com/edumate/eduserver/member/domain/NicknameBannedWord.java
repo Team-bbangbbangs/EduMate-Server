@@ -1,4 +1,4 @@
-package com.edumate.eduserver.user.domain;
+package com.edumate.eduserver.member.domain;
 
 import com.edumate.eduserver.BaseEntity;
 import jakarta.persistence.Column;

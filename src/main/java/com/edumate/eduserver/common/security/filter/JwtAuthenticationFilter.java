@@ -6,7 +6,7 @@ import com.edumate.eduserver.auth.security.jwt.JwtParser;
 import com.edumate.eduserver.auth.security.jwt.JwtValidator;
 import com.edumate.eduserver.auth.security.jwt.TokenType;
 import com.edumate.eduserver.common.security.MemberAuthentication;
-import com.edumate.eduserver.user.service.MemberAuthenticationService;
+import com.edumate.eduserver.member.service.MemberAuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

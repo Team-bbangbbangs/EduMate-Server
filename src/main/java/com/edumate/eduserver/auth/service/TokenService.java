@@ -2,7 +2,7 @@ package com.edumate.eduserver.auth.service;
 
 import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.security.jwt.TokenType;
-import com.edumate.eduserver.user.domain.Member;
+import com.edumate.eduserver.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -19,7 +19,7 @@ import com.edumate.eduserver.auth.service.EmailService;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
-import com.edumate.eduserver.user.service.MemberService;
+import com.edumate.eduserver.member.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

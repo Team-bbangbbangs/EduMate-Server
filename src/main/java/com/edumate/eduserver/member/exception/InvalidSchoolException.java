@@ -1,7 +1,7 @@
-package com.edumate.eduserver.user.exception;
+package com.edumate.eduserver.member.exception;
 
 import com.edumate.eduserver.common.exception.BadRequestException;
-import com.edumate.eduserver.user.exception.code.MemberErrorCode;
+import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 
 public class InvalidSchoolException extends BadRequestException {
 

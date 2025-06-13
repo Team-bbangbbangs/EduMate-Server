@@ -1,7 +1,7 @@
-package com.edumate.eduserver.user.domain;
+package com.edumate.eduserver.member.domain;
 
-import com.edumate.eduserver.user.exception.InvalidSchoolException;
-import com.edumate.eduserver.user.exception.code.MemberErrorCode;
+import com.edumate.eduserver.member.exception.InvalidSchoolException;
+import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

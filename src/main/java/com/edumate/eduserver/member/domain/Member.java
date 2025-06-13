@@ -1,4 +1,4 @@
-package com.edumate.eduserver.user.domain;
+package com.edumate.eduserver.member.domain;
 
 import com.edumate.eduserver.BaseEntity;
 import com.edumate.eduserver.subject.domain.Subject;
