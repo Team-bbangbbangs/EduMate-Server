@@ -4,6 +4,7 @@ import static io.jsonwebtoken.security.Keys.hmacShaKeyFor;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import com.edumate.eduserver.auth.exception.ExpiredTokenException;
 import com.edumate.eduserver.auth.exception.IllegalTokenException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -72,7 +73,7 @@ class JwtValidatorTest {
 
         // then
         assertThatThrownBy(() -> jwtValidator.validateToken(expiredToken, TokenType.ACCESS))
-                .isInstanceOf(IllegalTokenException.class);
+                .isInstanceOf(ExpiredTokenException.class);
     }
 
     @Test

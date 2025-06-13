@@ -5,7 +5,7 @@ import com.edumate.eduserver.common.exception.UnauthorizedException;
 
 public class IllegalTokenException extends UnauthorizedException {
 
-    public IllegalTokenException(final AuthErrorCode errorCode) {
-        super(errorCode);
+    public IllegalTokenException(final AuthErrorCode errorCode, final String message) {
+        super(errorCode, String.format(errorCode.getMessage(), message));
     }
 }

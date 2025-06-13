@@ -31,28 +31,29 @@ public class JwtValidator {
 
     private void validateClaims(final Claims claims, final TokenType expectedType) {
         String memberUuid = claims.getSubject();
-        if (memberUuid == null || memberUuid.isBlank()) {
-            throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
-        }
         String parsedTokenType = claims.get(TOKEN_TYPE_CLAIM, String.class);
+
+        if (memberUuid == null || memberUuid.isBlank()) {
+            throw new IllegalTokenException(AuthErrorCode.INVALID_TOKEN_VALUE, parsedTokenType);
+        }
         if (!expectedType.getType().equals(parsedTokenType)) {
-            throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
+            throw new IllegalTokenException(AuthErrorCode.INVALID_TOKEN_VALUE, parsedTokenType);
         }
     }
 
     private ExpiredTokenException getExpiredTokenException(final TokenType type) {
         if (type == TokenType.ACCESS) {
-            return new ExpiredTokenException(AuthErrorCode.EXPIRED_ACCESS_TOKEN);
+            return new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN, type.getType());
         } else {
-            return new ExpiredTokenException(AuthErrorCode.EXPIRED_REFRESH_TOKEN);
+            return new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN, type.getType());
         }
     }
 
     private IllegalTokenException getInvalidTokenException(final TokenType type) {
         if (type == TokenType.ACCESS) {
-            return new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
+            return new IllegalTokenException(AuthErrorCode.INVALID_TOKEN_VALUE, type.getType());
         } else {
-            return new IllegalTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE);
+            return new IllegalTokenException(AuthErrorCode.INVALID_TOKEN_VALUE, type.getType());
         }
     }
 }

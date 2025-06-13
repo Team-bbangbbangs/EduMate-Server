@@ -5,7 +5,7 @@ import com.edumate.eduserver.common.exception.UnauthorizedException;
 
 public class ExpiredTokenException extends UnauthorizedException {
 
-    public ExpiredTokenException(AuthErrorCode errorCode) {
-        super(errorCode);
+    public ExpiredTokenException(final AuthErrorCode errorCode, final String message) {
+        super(errorCode, String.format(errorCode.getMessage(), message));
     }
 }
