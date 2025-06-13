@@ -33,10 +33,6 @@ import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatExcept
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
-<<<<<<< HEAD
-import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
-=======
->>>>>>> 956ca9e ([test] 권한 오류에 대한 테스트 코드 작성)
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
@@ -224,12 +220,6 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value(STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
-<<<<<<< HEAD
-                .andExpect(jsonPath("$.message").value(
-                        STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
-                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
-=======
->>>>>>> 956ca9e ([test] 권한 오류에 대한 테스트 코드 작성)
                 .andExpect(jsonPath("$.message").value(
                         STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/record-not-found",
@@ -268,12 +258,6 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value(MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
-<<<<<<< HEAD
-                .andExpect(jsonPath("$.message").value(
-                        MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
-                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
-=======
->>>>>>> 956ca9e ([test] 권한 오류에 대한 테스트 코드 작성)
                 .andExpect(jsonPath("$.message").value(
                         MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/member-record-not-found",
