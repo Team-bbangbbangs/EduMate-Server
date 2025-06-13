@@ -25,7 +25,7 @@ public enum AuthErrorCode implements ErrorCode {
     AUTH_CODE_NOT_FOUND("EDMT-4040101", "유효한 인증 코드가 존재하지 않습니다."),
 
     // 409 Conflict,
-    MEMBER_ALREADY_REGISTERED("EDMT-40901", "이미 등록된 회원입니다.");
+    MEMBER_ALREADY_REGISTERED("EDMT-4090101", "이미 등록된 회원입니다.");
 
     private final String code;
     private final String message;
