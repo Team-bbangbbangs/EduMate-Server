@@ -1,6 +1,0 @@
-language: "ko-KR"
-tone_instructions: "부드럽고 친절한 어조로 이야기해주세요"
-early_access: false
-enable_free_tier: true
-reviews:
-  profile: "assertive"
