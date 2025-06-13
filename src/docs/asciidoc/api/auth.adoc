@@ -1,5 +1,18 @@
 == 인증
 
+=== 회원 가입
+
+==== 성공
+operation::auth/signup-success[snippets="http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 이미 가입한 회원
+operation::auth/signup-fail/duplicate-email[snippets="http-request,http-response"]
+
+==== 실패: 유효하지 않은 비밀번호 형식
+include::{snippets}/auth/signup-fail/invalid-password-format/response-body.adoc[]
+include::{snippets}/auth/signup-fail/invalid-password-length/response-body.adoc[]
+include::{snippets}/auth/signup-fail/invalid-password-repetition/response-body.adoc[]
+
 === 이메일 인증 코드 인증
 
 ==== 성공

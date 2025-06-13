@@ -1,9 +1,9 @@
-package com.edumate.eduserver.user.service;
+package com.edumate.eduserver.member.service;
 
-import com.edumate.eduserver.user.domain.Member;
-import com.edumate.eduserver.user.exception.MemberNotFoundException;
-import com.edumate.eduserver.user.exception.code.MemberErrorCode;
-import com.edumate.eduserver.user.repository.MemberRepository;
+import com.edumate.eduserver.member.domain.Member;
+import com.edumate.eduserver.member.exception.MemberNotFoundException;
+import com.edumate.eduserver.member.exception.code.MemberErrorCode;
+import com.edumate.eduserver.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

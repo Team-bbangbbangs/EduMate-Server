@@ -1,4 +1,4 @@
-package com.edumate.eduserver.user.domain;
+package com.edumate.eduserver.member.domain;
 
 import java.util.Collection;
 import java.util.Collections;

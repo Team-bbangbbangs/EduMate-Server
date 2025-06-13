@@ -2,7 +2,7 @@ package com.edumate.eduserver.util.fixture;
 
 import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
-import com.edumate.eduserver.user.domain.Member;
+import com.edumate.eduserver.member.domain.Member;
 
 public class MemberStudentRecordFixture {
 

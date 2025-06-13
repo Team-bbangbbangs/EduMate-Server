@@ -1,6 +1,6 @@
 package com.edumate.eduserver.studentrecord.domain;
 
-import com.edumate.eduserver.user.domain.Member;
+import com.edumate.eduserver.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

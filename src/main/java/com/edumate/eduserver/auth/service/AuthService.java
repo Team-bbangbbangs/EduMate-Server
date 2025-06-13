@@ -4,10 +4,12 @@ import com.edumate.eduserver.auth.domain.AuthorizationCode;
 import com.edumate.eduserver.auth.domain.AuthorizeStatus;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
+import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.repository.AuthorizationCodeRepository;
-import com.edumate.eduserver.user.domain.Member;
+import com.edumate.eduserver.member.domain.Member;
+import com.edumate.eduserver.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final AuthorizationCodeRepository authorizationCodeRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void verifyEmailCode(final Member member, final String inputCode) {
@@ -30,6 +33,12 @@ public class AuthService {
     public void saveCode(final Member member, final String code) {
         AuthorizationCode authorizationCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
         authorizationCodeRepository.save(authorizationCode);
+    }
+
+    public void checkAlreadyRegistered(final String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
+        }
     }
 
     private AuthorizationCode getValidCodeByMember(final long memberId) {

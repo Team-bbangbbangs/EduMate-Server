@@ -19,8 +19,7 @@ operation::student-record/update-fail/permission-denied[snippets="http-request,h
 
 ==== 실패: 유효하지 않은 요청 값
 
-include::{snippets}/student-record/update-fail/missing-description/http-request.adoc[]
-include::{snippets}/student-record/update-fail/negative-byte-count/http-request.adoc[]
+include::{snippets}/student-record/update-fail/missing-description/http-response.adoc[]
 include::{snippets}/student-record/update-fail/negative-byte-count/http-response.adoc[]
 
 === 생활기록부 종합 글 불러오기

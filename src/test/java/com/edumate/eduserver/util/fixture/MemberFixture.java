@@ -1,12 +1,12 @@
 package com.edumate.eduserver.util.fixture;
 
-import static com.edumate.eduserver.user.domain.Role.PENDING_TEACHER;
-import static com.edumate.eduserver.user.domain.Role.TEACHER;
-import static com.edumate.eduserver.user.domain.School.HIGH_SCHOOL;
-import static com.edumate.eduserver.user.domain.School.MIDDLE_SCHOOL;
+import static com.edumate.eduserver.member.domain.Role.PENDING_TEACHER;
+import static com.edumate.eduserver.member.domain.Role.TEACHER;
+import static com.edumate.eduserver.member.domain.School.HIGH_SCHOOL;
+import static com.edumate.eduserver.member.domain.School.MIDDLE_SCHOOL;
 
 import com.edumate.eduserver.subject.domain.Subject;
-import com.edumate.eduserver.user.domain.Member;
+import com.edumate.eduserver.member.domain.Member;
 
 public class MemberFixture {
 
