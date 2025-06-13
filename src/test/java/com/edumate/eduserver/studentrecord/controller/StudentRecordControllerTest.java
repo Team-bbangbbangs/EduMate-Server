@@ -208,8 +208,8 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.code").value("EDMT-4040204"))
-                .andExpect(jsonPath("$.message").value("해당 학생에 대한 생활기록부 기록이 존재하지 않습니다."))
+                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -244,8 +244,8 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.code").value("EDMT-4040203"))
-                .andExpect(jsonPath("$.message").value("해당 회원의 해당 학기 생활기록부가 존재하지 않습니다."))
+                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/member-record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
