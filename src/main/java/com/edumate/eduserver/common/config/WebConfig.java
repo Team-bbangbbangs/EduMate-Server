@@ -1,4 +1,4 @@
-package com.edumate.eduserver.config;
+package com.edumate.eduserver.common.config;
 
 import com.edumate.eduserver.common.StudentRecordTypeConverter;
 import com.edumate.eduserver.common.MemberUuidArgumentResolver;

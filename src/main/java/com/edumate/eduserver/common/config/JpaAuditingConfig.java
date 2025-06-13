@@ -1,4 +1,4 @@
-package com.edumate.eduserver.config;
+package com.edumate.eduserver.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
