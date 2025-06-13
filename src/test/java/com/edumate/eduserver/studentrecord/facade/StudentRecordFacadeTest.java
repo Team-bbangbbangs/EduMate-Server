@@ -3,6 +3,7 @@ package com.edumate.eduserver.studentrecord.facade;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,6 +12,11 @@ import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.verify;
 import static org.mockito.BDDMockito.willDoNothing;
 >>>>>>> e11cd12 ([test] facade 클래스에 대한 테스트 코드 작성)
+=======
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+>>>>>>> 956ca9e ([test] 권한 오류에 대한 테스트 코드 작성)
 
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
@@ -20,9 +26,12 @@ import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailRe
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> e11cd12 ([test] facade 클래스에 대한 테스트 코드 작성)
+=======
+>>>>>>> 956ca9e ([test] 권한 오류에 대한 테스트 코드 작성)
 import com.edumate.eduserver.user.domain.Member;
 import com.edumate.eduserver.user.service.MemberService;
 import java.util.List;
@@ -54,10 +63,14 @@ class StudentRecordFacadeTest {
         String description = "안녕하세요";
         int byteCount = 10;
 <<<<<<< HEAD
+<<<<<<< HEAD
         Member member = mock(Member.class);
 =======
          Member member = mock(Member.class);
 >>>>>>> e11cd12 ([test] facade 클래스에 대한 테스트 코드 작성)
+=======
+        Member member = mock(Member.class);
+>>>>>>> 956ca9e ([test] 권한 오류에 대한 테스트 코드 작성)
         given(memberService.getMemberByUuid(memberUuid)).willReturn(member);
         given(member.getId()).willReturn(100L);
         willDoNothing().given(studentRecordService).update(100L, recordId, description, byteCount);
