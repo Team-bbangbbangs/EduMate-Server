@@ -2,9 +2,15 @@ package com.edumate.eduserver.studentrecord.facade;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+<<<<<<< HEAD
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+=======
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.willDoNothing;
+>>>>>>> e11cd12 ([test] facade 클래스에 대한 테스트 코드 작성)
 
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
@@ -13,6 +19,10 @@ import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
+<<<<<<< HEAD
+=======
+
+>>>>>>> e11cd12 ([test] facade 클래스에 대한 테스트 코드 작성)
 import com.edumate.eduserver.user.domain.Member;
 import com.edumate.eduserver.user.service.MemberService;
 import java.util.List;
@@ -43,7 +53,11 @@ class StudentRecordFacadeTest {
         long recordId = 1L;
         String description = "안녕하세요";
         int byteCount = 10;
+<<<<<<< HEAD
         Member member = mock(Member.class);
+=======
+         Member member = mock(Member.class);
+>>>>>>> e11cd12 ([test] facade 클래스에 대한 테스트 코드 작성)
         given(memberService.getMemberByUuid(memberUuid)).willReturn(member);
         given(member.getId()).willReturn(100L);
         willDoNothing().given(studentRecordService).update(100L, recordId, description, byteCount);

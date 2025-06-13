@@ -32,8 +32,7 @@ public class StudentRecordController {
     @PostMapping("/detail/{recordId}")
     public ApiResponse<Void> updateStudentRecord(@MemberUuid final String memberUuid, @PathVariable final long recordId,
                                                  @RequestBody @Valid final StudentRecordUpdateRequest request) {
-        studentRecordFacade.updateStudentRecord(memberUuid.strip(), recordId, request.description().strip(),
-                request.byteCount());
+        studentRecordFacade.updateStudentRecord(memberUuid.strip(), recordId, request.description().strip(), request.byteCount());
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
@@ -48,8 +47,7 @@ public class StudentRecordController {
     public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@MemberUuid final String memberUuid,
                                                                                  @PathVariable final StudentRecordType recordType,
                                                                                  @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
-        StudentRecordOverviewsResponse response = studentRecordFacade.getStudentRecordOverviews(memberUuid.strip(), recordType,
-                semester.strip());
+        StudentRecordOverviewsResponse response = studentRecordFacade.getStudentRecordOverviews(memberUuid.strip(), recordType, semester.strip());
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 
