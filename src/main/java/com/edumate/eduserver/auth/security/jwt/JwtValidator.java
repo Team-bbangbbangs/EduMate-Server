@@ -15,10 +15,10 @@ public class JwtValidator {
 
     private static final String TOKEN_TYPE_CLAIM = "tokenType";
 
-    public void validateAccessToken(final String token, final TokenType type) {
+    public void validateToken(final String token, final TokenType type) {
         try {
             Claims claims = jwtParser.parseClaims(token);
-            validateClaims(claims);
+            validateClaims(claims, type);
         } catch (ExpiredJwtException e) {
             throw getExpiredTokenException(type);
         } catch (Exception e) {
@@ -26,19 +26,15 @@ public class JwtValidator {
         }
     }
 
-    private void validateClaims(final Claims claims) {
+    private void validateClaims(final Claims claims, final TokenType expectedType) {
         String memberUuid = claims.getSubject();
         if (memberUuid == null || memberUuid.isBlank()) {
             throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
         }
         String parsedTokenType = claims.get(TOKEN_TYPE_CLAIM, String.class);
-        if (!isAccessToken(parsedTokenType)) {
+        if (!expectedType.getType().equals(parsedTokenType)) {
             throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
         }
-    }
-
-    private boolean isAccessToken(final String parsedTokenType) {
-        return parsedTokenType.equals(TokenType.ACCESS.getType());
     }
 
     private IllegalTokenException getExpiredTokenException(final TokenType type) {
