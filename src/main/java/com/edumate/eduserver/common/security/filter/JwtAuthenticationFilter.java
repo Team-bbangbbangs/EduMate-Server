@@ -1,6 +1,5 @@
 package com.edumate.eduserver.common.security.filter;
 
-import com.edumate.eduserver.auth.exception.IllegalTokenException;
 import com.edumate.eduserver.auth.exception.MissingTokenException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.security.jwt.JwtParser;
@@ -33,18 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-
-        try {
-            jwtValidator.validateToken(token, TokenType.ACCESS);
-            String memberUuid = jwtParser.parseClaims(token).getSubject();
-            UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
-            MemberAuthentication authentication = MemberAuthentication.create(memberUuid, userDetails.getPassword(), userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        } catch (IllegalTokenException ex) {
-            SecurityContextHolder.clearContext();
-        }
+        jwtValidator.validateToken(token, TokenType.ACCESS);
+        String memberUuid = jwtParser.parseClaims(token).getSubject();
+        UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
+        MemberAuthentication authentication = MemberAuthentication.create(memberUuid, userDetails.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
     }
 
