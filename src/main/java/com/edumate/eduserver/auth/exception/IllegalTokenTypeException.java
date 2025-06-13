@@ -3,9 +3,9 @@ package com.edumate.eduserver.auth.exception;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.common.exception.UnauthorizedException;
 
-public class ExpiredTokenException extends UnauthorizedException {
+public class IllegalTokenTypeException extends UnauthorizedException {
 
-    public ExpiredTokenException(final AuthErrorCode errorCode) {
+    public IllegalTokenTypeException(final AuthErrorCode errorCode) {
         super(errorCode);
     }
 }
