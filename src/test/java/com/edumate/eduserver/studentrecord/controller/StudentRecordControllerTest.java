@@ -50,6 +50,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
     private final String BASE_URL = "/api/v1/student-records";
     private final String BASE_DOMAIN_PACKAGE = "student-record/";
+    private static final String ACCESS_TOKEN = "access-token";
     private static final String RECORD_TYPE = StudentRecordType.BEHAVIOR_OPINION.getValue().toLowerCase();
 
     @Test
@@ -60,10 +61,11 @@ class StudentRecordControllerTest extends ControllerTest {
         long recordId = 1L;
 
         doNothing().when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -94,11 +96,13 @@ class StudentRecordControllerTest extends ControllerTest {
         long recordId = 1L;
 
         StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse("이 학생은 바르고 성실한 학생입니다.", 15);
-        when(studentRecordFacade.getStudentRecord(anyLong(), anyLong()))
+        when(studentRecordFacade.getStudentRecord(anyString(), anyLong()))
                 .thenReturn(dummyRecordResponse);
 
         // when & then
-        mockMvc.perform(get(BASE_URL + "/detail/{recordId}", recordId))
+        mockMvc.perform(get(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
@@ -125,12 +129,13 @@ class StudentRecordControllerTest extends ControllerTest {
         StudentDetail detail2 = new StudentDetail(2L, "이승섭");
         StudentNamesResponse dummyResponse = new StudentNamesResponse(List.of(detail1, detail2));
 
-        when(studentRecordFacade.getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class)))
+        when(studentRecordFacade.getStudentDetails(anyString(), any(StudentRecordType.class), any(String.class)))
                 .thenReturn(dummyResponse);
         String recordType = StudentRecordType.ABILITY_DETAIL.getValue().toLowerCase();
 
         // when & then
         mockMvc.perform(get(BASE_URL + "/{recordType}/students", recordType)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .param("semester", "2025-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
@@ -155,16 +160,17 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("여러개의 생기부 목록을 성공적으로 저장한다.")
-    void insertStudentRecords() throws Exception{
+    void insertStudentRecords() throws Exception {
         // given
         StudentRecordsCreateRequest request = new StudentRecordsCreateRequest("2025-1",
                 List.of(new StudentRecordInfo("2020123", "김가연"), new StudentRecordInfo("2931232", "김지안"))
         );
         doNothing().when(studentRecordFacade)
-                .createStudentRecords(anyLong(), any(StudentRecordType.class), anyString(), anyList());
+                .createStudentRecords(anyString(), any(StudentRecordType.class), anyString(), anyList());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/{recordType}/students/batch", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -199,17 +205,19 @@ class StudentRecordControllerTest extends ControllerTest {
 
         doThrow(new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.message").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.message").value(
+                        StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -235,17 +243,19 @@ class StudentRecordControllerTest extends ControllerTest {
 
         doThrow(new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.message").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.message").value(
+                        StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/member-record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -271,6 +281,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -303,6 +314,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -334,10 +346,11 @@ class StudentRecordControllerTest extends ControllerTest {
 
         doThrow(new InvalidSemesterFormatException(StudentRecordErrorCode.INVALID_SEMESTER_FORMAT, invalidSemester))
                 .when(studentRecordFacade)
-                .getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class));
+                .getStudentDetails(anyString(), any(StudentRecordType.class), any(String.class));
 
         // when & then
         mockMvc.perform(get(BASE_URL + "/{recordType}/students", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .param("semester", invalidSemester))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
