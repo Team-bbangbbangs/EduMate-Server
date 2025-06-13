@@ -19,7 +19,10 @@ public enum AuthErrorCode implements ErrorCode {
     MISSED_TOKEN("EDMT-4010104", "인증 토큰이 누락되었습니다."),
 
     // 404 Not Found
-    AUTH_CODE_NOT_FOUND("EDMT-4040101", "유효한 인증 코드가 존재하지 않습니다.");
+    AUTH_CODE_NOT_FOUND("EDMT-4040101", "유효한 인증 코드가 존재하지 않습니다."),
+
+    // 409 Conflict
+    MEMBER_ALREADY_REGISTERED("EDMT-40901", "이미 등록된 회원입니다.");
 
     private final String code;
     private final String message;

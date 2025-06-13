@@ -1,7 +1,5 @@
 package com.edumate.eduserver.user.domain;
 
-import static java.util.UUID.randomUUID;
-
 import com.edumate.eduserver.BaseEntity;
 import com.edumate.eduserver.subject.domain.Subject;
 import jakarta.persistence.Column;
@@ -17,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -72,7 +71,8 @@ public class Member extends BaseEntity {
 
     @Builder
     private Member(final Subject subject, final String email, final String password, final String nickname,
-                   final School school, final Role role, final LocalDateTime verifiedAt, final boolean isDeleted, final LocalDateTime deletedAt) {
+                   final School school, final Role role, final LocalDateTime verifiedAt, final boolean isDeleted,
+                   final LocalDateTime deletedAt, final String memberUuid) {
         this.subject = subject;
         this.email = email;
         this.password = password;
@@ -82,20 +82,21 @@ public class Member extends BaseEntity {
         this.verifiedAt = verifiedAt;
         this.isDeleted = isDeleted;
         this.deletedAt = deletedAt;
-        this.memberUuid = randomUUID().toString();
+        this.memberUuid = memberUuid;
     }
 
     public static Member create(final Subject subject, final String email, final String password,
-        final String nickname, final School school, final Role role) {
-        return com.edumate.eduserver.user.domain.Member.builder()
-            .subject(subject)
-            .email(email)
-            .password(password)
-            .nickname(nickname)
-            .school(school)
-            .role(role)
-            .isDeleted(false)
-            .build();
+                                final String nickname, final School school, final Role role) {
+        return Member.builder()
+                .subject(subject)
+                .email(email)
+                .password(password)
+                .nickname(nickname)
+                .school(school)
+                .role(role)
+                .isDeleted(false)
+                .memberUuid(UUID.randomUUID().toString())
+                .build();
     }
 
     public void verifyAsTeacher() {
@@ -109,5 +110,9 @@ public class Member extends BaseEntity {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Role.toGrantedAuthorities(Set.of(role));
+    }
+
+    public void updateNickname(final String nickname) {
+        this.nickname = nickname;
     }
 }

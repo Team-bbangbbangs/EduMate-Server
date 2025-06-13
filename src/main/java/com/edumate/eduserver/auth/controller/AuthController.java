@@ -1,7 +1,9 @@
 package com.edumate.eduserver.auth.controller;
 
 import com.edumate.eduserver.auth.controller.request.EmailSendRequest;
+import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
 import com.edumate.eduserver.auth.facade.AuthFacade;
+import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import jakarta.validation.Valid;
@@ -31,5 +33,12 @@ public class AuthController {
                                          @RequestParam("code") final String verificationCode) {
         authFacade.verifyEmailCode(memberUuid.trim(), verificationCode.trim());
         return ApiResponse.success(CommonSuccessCode.OK);
+    }
+
+    @PostMapping("/signup")
+    public ApiResponse<MemberSignUpResponse> signUp(@RequestBody @Valid final MemberSignUpRequest request) {
+        return ApiResponse.success(CommonSuccessCode.OK,
+                authFacade.signUp(request.email().trim(), request.password().trim(),
+                        request.subject().trim(), request.school().trim()));
     }
 }
