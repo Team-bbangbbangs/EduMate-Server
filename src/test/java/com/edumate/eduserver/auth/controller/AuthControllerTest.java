@@ -3,18 +3,24 @@ package com.edumate.eduserver.auth.controller;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
+import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
+import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
@@ -135,6 +141,165 @@ class AuthControllerTest extends ControllerTest {
                                 parameterWithName("id").description("회원 UUID"),
                                 parameterWithName("code").description("이메일 인증 코드")
                         ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 ���드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("회원가입에 성공한다.")
+    void signUpSuccess() throws Exception {
+        MemberSignUpRequest request = new MemberSignUpRequest(
+                "test@email.com", "password123", "수학", "middle");
+        MemberSignUpResponse response = new MemberSignUpResponse("access-token", "refresh-token");
+
+        when(authFacade.signUp(
+                request.email().trim(), request.password().trim(), request.subject().trim(), request.school().trim()))
+                .thenReturn(response);
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andExpect(jsonPath("$.data.accessToken").value("access-token"))
+                .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "signup-success",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("회원 비밀번호"),
+                                fieldWithPath("subject").description("회원이 가르치는 과목"),
+                                fieldWithPath("school").description("중학교/고등학교")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data.accessToken").description("액세스 토큰"),
+                                fieldWithPath("data.refreshToken").description("리프레시 토큰")
+                        )
+                ));
+    }
+
+
+    @Test
+    @DisplayName("이미 존재하는 이메일로 회원가입 시 예외가 발생한다.")
+    void signUpConflict() throws Exception {
+        MemberSignUpRequest request = new MemberSignUpRequest(
+                "duplicate@email.com", "password123", "수학", "middle");
+        doThrow(new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED))
+                .when(authFacade).signUp(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString()
+                );
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.MEMBER_ALREADY_REGISTERED.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.MEMBER_ALREADY_REGISTERED.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "signup-fail/duplicate-email",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 길이 오류로 회원가입 시 예외가 발생한다.")
+    void signUpInvalidPasswordLength() throws Exception {
+        MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "short", "수학", "middle");
+        doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordLengthException(
+                AuthErrorCode.INVALID_PASSWORD_LENGTH))
+                .when(authFacade).signUp(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString()
+                );
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_LENGTH.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_LENGTH.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "signup-fail/invalid-password-length",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 형식 오류(영문, 숫자, 특수문자 미포함)로 회원가입 시 예외가 발생한다.")
+    void signUpInvalidPasswordFormat() throws Exception {
+        MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "password", "수학", "middle");
+        doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordFormatException(
+                AuthErrorCode.INVALID_PASSWORD_FORMAT))
+                .when(authFacade).signUp(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString()
+                );
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "signup-fail/invalid-password-format",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 반복 문자 오류로 회원가입 시 예외가 발생한다.")
+    void signUpInvalidPasswordRepetition() throws Exception {
+        MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "aaa12345", "수학", "middle");
+        doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordRepetitionException(
+                AuthErrorCode.INVALID_PASSWORD_REPETITION))
+                .when(authFacade).signUp(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers.anyString()
+                );
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_REPETITION.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_REPETITION.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "signup-fail/invalid-password-repetition",
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("에러 코드"),
