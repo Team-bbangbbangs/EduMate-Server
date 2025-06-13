@@ -7,6 +7,8 @@ import com.edumate.eduserver.auth.exception.InvalidSignatureTokenException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +29,11 @@ public class JwtValidator {
             validateClaims(claims, type);
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN);
+        } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new IllegalTokenException(AuthErrorCode.INVALID_TOKEN_VALUE);
         } catch (SignatureException e) {
             throw new InvalidSignatureTokenException(AuthErrorCode.INVALID_SIGNATURE_TOKEN);
-        }
-        catch (IllegalTokenException | IllegalTokenTypeException e) {
+        } catch (IllegalTokenException | IllegalTokenTypeException e) {
             throw e;
         } catch (Exception e) {
             log.error("Token validation failed: {}", e.getMessage());
