@@ -28,9 +28,16 @@ public class SecurityConfig {
     private final JwtValidator jwtValidator;
     private final JwtParser jwtParser;
 
-    private static final String[] authWhiteList = {"/api/v1/auth/signup", "/api/v1/auth/reissue", "/actuator/health",
-            "api/v1/auth/verify-email"};
-    private static final String[] businessLogicWhiteList = {"api/v1/notices", "api/v1/notices/{noticeId:\\d+}"};
+    private static final String[] AUTH_WHITELIST = {
+            "/api/v1/auth/signup",
+            "/api/v1/auth/reissue",
+            "/api/v1/auth/verify-email",
+            "/actuator/health"
+    };
+    private static final String[] BUSINESS_WHITE_LIST = {
+            "/api/v1/notices",
+            "/api/v1/notices/{noticeId:\\d+}"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -57,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                .requestMatchers(authWhiteList)
-                .requestMatchers(HttpMethod.GET, businessLogicWhiteList);
+                .requestMatchers(AUTH_WHITELIST)
+                .requestMatchers(HttpMethod.GET, BUSINESS_WHITE_LIST);
     }
 }
