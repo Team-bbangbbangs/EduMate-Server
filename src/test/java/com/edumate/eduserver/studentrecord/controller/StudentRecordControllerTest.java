@@ -33,6 +33,7 @@ import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatExcept
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
+import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
@@ -222,6 +223,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value(STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
                 .andExpect(jsonPath("$.message").value(
                         STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(
+                        StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -260,6 +264,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value(MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
                 .andExpect(jsonPath("$.message").value(
                         MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(
+                        StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/member-record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
