@@ -9,6 +9,7 @@ import com.edumate.eduserver.user.service.MemberAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -27,7 +28,9 @@ public class SecurityConfig {
     private final JwtValidator jwtValidator;
     private final JwtParser jwtParser;
 
-    private static final String[] authWhiteList = {"/api/v1/auth/signup", "/api/v1/auth/reissue", "/actuator/health"};
+    private static final String[] authWhiteList = {"/api/v1/auth/signup", "/api/v1/auth/reissue", "/actuator/health",
+            "api/v1/auth/verify-email"};
+    private static final String[] businessLogicWhiteList = {"api/v1/notices", "api/v1/notices/{noticeId:\\d+}"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -54,6 +57,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
-                .requestMatchers(authWhiteList);
+                .requestMatchers(authWhiteList)
+                .requestMatchers(HttpMethod.GET, businessLogicWhiteList);
     }
 }
