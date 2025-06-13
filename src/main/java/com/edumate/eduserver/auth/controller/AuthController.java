@@ -37,8 +37,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ApiResponse<MemberSignUpResponse> signUp(@RequestBody @Valid final MemberSignUpRequest request) {
-        return ApiResponse.success(CommonSuccessCode.OK,
-                authFacade.signUp(request.email().trim(), request.password().trim(),
-                        request.subject().trim(), request.school().trim()));
+        MemberSignUpResponse response = authFacade.signUp(request.email().trim(), request.password().trim(),
+                request.subject().trim(), request.school().trim());
+        return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 }
