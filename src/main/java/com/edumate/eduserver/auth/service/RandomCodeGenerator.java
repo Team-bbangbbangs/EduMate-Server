@@ -1,11 +1,9 @@
 package com.edumate.eduserver.auth.service;
 
 import java.security.SecureRandom;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class RandomCodeGenerator {
 
     private static final SecureRandom RANDOM = new SecureRandom();

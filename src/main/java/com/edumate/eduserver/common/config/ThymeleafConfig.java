@@ -1,4 +1,4 @@
-package com.edumate.eduserver.config;
+package com.edumate.eduserver.common.config;
 
 import java.nio.charset.StandardCharsets;
 import org.springframework.context.annotation.Bean;

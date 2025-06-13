@@ -17,6 +17,8 @@ public class JwtGenerator {
 
     private final JwtProperties jwtProperties;
 
+    private static final String TOKEN_TYPE_CLAIM = "tokenType";
+
     public String generateToken(final String memberUuid, final TokenType tokenType) {
         Instant now = Instant.now();
         Instant expiration = generateExpirationInstant(tokenType, now);
@@ -26,6 +28,7 @@ public class JwtGenerator {
                 .setSubject(memberUuid)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiration))
+                .claim(TOKEN_TYPE_CLAIM, tokenType.name())
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

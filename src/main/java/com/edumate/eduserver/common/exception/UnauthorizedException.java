@@ -10,4 +10,8 @@ public class UnauthorizedException extends EduMateCustomException {
     public UnauthorizedException(final ErrorCode errorCode) {
         super(errorCode, STATUS);
     }
+
+    public UnauthorizedException(final ErrorCode errorCode, final String customMessage) {
+        super(errorCode, STATUS, customMessage);
+    }
 }

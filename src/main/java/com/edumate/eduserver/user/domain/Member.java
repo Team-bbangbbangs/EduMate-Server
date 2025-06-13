@@ -15,10 +15,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Getter
@@ -102,5 +105,9 @@ public class Member extends BaseEntity {
 
     public void updateRefreshToken(final String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Role.toGrantedAuthorities(Set.of(role));
     }
 }

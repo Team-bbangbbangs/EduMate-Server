@@ -1,7 +1,7 @@
-package com.edumate.eduserver.config;
+package com.edumate.eduserver.common.config;
 
 import com.edumate.eduserver.common.StudentRecordTypeConverter;
-import com.edumate.eduserver.common.MemberUuIdArgumentResolver;
+import com.edumate.eduserver.common.MemberUuidArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final MemberUuIdArgumentResolver memberUuIdArgumentResolver;
+    private final MemberUuidArgumentResolver memberUuIdArgumentResolver;
     private final StudentRecordTypeConverter studentRecordTypeConverter;
 
     @Override
