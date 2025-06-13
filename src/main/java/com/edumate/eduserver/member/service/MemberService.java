@@ -1,12 +1,12 @@
 package com.edumate.eduserver.member.service;
 
-import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.domain.Role;
 import com.edumate.eduserver.member.domain.School;
 import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.repository.MemberRepository;
+import com.edumate.eduserver.subject.domain.Subject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +19,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private static final Role INITIAL_ROLE = Role.PENDING_TEACHER;
-    private static final String DEFAULT_NICKNAME = "닉네임";
+    private static final String DEFAULT_NICKNAME = "선생님";
 
     @Transactional
     public void updateEmailVerified(final Member member) {
@@ -30,7 +30,7 @@ public class MemberService {
     public String saveMember(final String email, final String password, final Subject subject,
                              final String schoolName) {
         School school = School.fromName(schoolName);
-        Member member = Member.create(subject, email, DEFAULT_NICKNAME, password, school, INITIAL_ROLE);
+        Member member = Member.create(subject, email, password, DEFAULT_NICKNAME, school, INITIAL_ROLE);
         memberRepository.saveAndFlush(member);
 
         String generatedNickname = DEFAULT_NICKNAME + member.getId();
