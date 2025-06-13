@@ -2,6 +2,7 @@ package com.edumate.eduserver.common.config;
 
 import com.edumate.eduserver.auth.security.jwt.JwtParser;
 import com.edumate.eduserver.auth.security.jwt.JwtValidator;
+import com.edumate.eduserver.common.security.CustomPasswordEncoder;
 import com.edumate.eduserver.common.security.JwtAuthenticationEntryPoint;
 import com.edumate.eduserver.common.security.filter.ExceptionHandlerFilter;
 import com.edumate.eduserver.common.security.filter.JwtAuthenticationFilter;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -66,5 +68,10 @@ public class SecurityConfig {
         return web -> web.ignoring()
                 .requestMatchers(AUTH_WHITELIST)
                 .requestMatchers(HttpMethod.GET, BUSINESS_WHITE_LIST);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new CustomPasswordEncoder();
     }
 }
