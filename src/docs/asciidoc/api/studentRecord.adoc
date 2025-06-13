@@ -47,3 +47,15 @@ operation::student-record/fail/member-record-not-found[snippets=http-response]
 ==== 실패: 유효하지 않은 학기 형식
 
 operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
+=== 생활기록부(학생) 어려명 추가
+
+==== 성공
+
+operation::student-record/create-success[snippets="path-parameters,http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+operation::student-record/fail/member-record-not-found[snippets="http-response"]
+
+==== 실패: 유효하지 않은 학기 형식
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
