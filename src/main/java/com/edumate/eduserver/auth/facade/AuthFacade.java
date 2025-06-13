@@ -44,10 +44,10 @@ public class AuthFacade {
 
     @Transactional
     public MemberSignUpResponse signUp(final String email, final String password, final String subjectName, final String school) {
-        Subject subject = subjectService.getSubjectByName(subjectName);
+        authService.checkAlreadyRegistered(email);
         PasswordValidator.validate(password);
         String encodedPassword = passwordEncoder.encode(password);
-        authService.checkAlreadyRegistered(email);
+        Subject subject = subjectService.getSubjectByName(subjectName);
         String memberUuid = memberService.saveMember(email, encodedPassword, subject, school);
         String accessToken = jwtGenerator.generateToken(memberUuid, TokenType.ACCESS);
         String refreshToken = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
