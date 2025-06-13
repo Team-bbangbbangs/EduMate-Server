@@ -9,12 +9,10 @@ import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.repository.AuthorizationCodeRepository;
 import com.edumate.eduserver.user.domain.Member;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
@@ -43,10 +41,8 @@ public class AuthService {
         try {
             validateCode(code, inputCode);
         } catch (ExpiredCodeException | MisMatchedCodeException e) {
-            log.error("Code validation failed: {}", e.getMessage());
-            throw e;
-        } finally {
             code.fail();
+            throw e;
         }
     }
 
