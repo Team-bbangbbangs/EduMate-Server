@@ -20,6 +20,9 @@ public enum AuthErrorCode implements ErrorCode {
     UNAUTHORIZED("EDMT-4010103", "인증되지 않은 사용자입니다."),
     MISSED_TOKEN("EDMT-4010104", "인증 토큰이 누락되었습니다."),
 
+    // 403 Forbidden
+    FORBIDDEN("EDMT-4030101", "권한이 부족한 사용자입니다."),
+
     // 404 Not Found,
     AUTH_CODE_NOT_FOUND("EDMT-4040101", "유효한 인증 코드가 존재하지 않습니다."),
 
