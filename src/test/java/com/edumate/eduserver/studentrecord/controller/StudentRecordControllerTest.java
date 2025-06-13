@@ -1,5 +1,9 @@
 package com.edumate.eduserver.studentrecord.controller;
 
+import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.INVALID_SEMESTER_FORMAT;
+import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND;
+import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND;
+import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.UPDATE_PERMISSION_DENIED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -28,7 +32,7 @@ import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
-import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
+import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
@@ -50,6 +54,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
     private final String BASE_URL = "/api/v1/student-records";
     private final String BASE_DOMAIN_PACKAGE = "student-record/";
+    private static final String ACCESS_TOKEN = "access-token";
     private static final String RECORD_TYPE = StudentRecordType.BEHAVIOR_OPINION.getValue().toLowerCase();
 
     @Test
@@ -60,10 +65,11 @@ class StudentRecordControllerTest extends ControllerTest {
         long recordId = 1L;
 
         doNothing().when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -94,11 +100,13 @@ class StudentRecordControllerTest extends ControllerTest {
         long recordId = 1L;
 
         StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse("이 학생은 바르고 성실한 학생입니다.", 15);
-        when(studentRecordFacade.getStudentRecord(anyLong(), anyLong()))
+        when(studentRecordFacade.getStudentRecord(anyString(), anyLong()))
                 .thenReturn(dummyRecordResponse);
 
         // when & then
-        mockMvc.perform(get(BASE_URL + "/detail/{recordId}", recordId))
+        mockMvc.perform(get(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
@@ -118,19 +126,20 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 정보 목록을 성공적으로 불러온다.")
+    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 정�� 목록을 성공적으로 불러온다.")
     void getStudentName() throws Exception {
         // given
         StudentDetail detail1 = new StudentDetail(1L, "김가연");
         StudentDetail detail2 = new StudentDetail(2L, "이승섭");
         StudentNamesResponse dummyResponse = new StudentNamesResponse(List.of(detail1, detail2));
 
-        when(studentRecordFacade.getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class)))
+        when(studentRecordFacade.getStudentDetails(anyString(), any(StudentRecordType.class), any(String.class)))
                 .thenReturn(dummyResponse);
         String recordType = StudentRecordType.ABILITY_DETAIL.getValue().toLowerCase();
 
         // when & then
         mockMvc.perform(get(BASE_URL + "/{recordType}/students", recordType)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .param("semester", "2025-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
@@ -155,16 +164,17 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("여러개의 생기부 목록을 성공적으로 저장한다.")
-    void insertStudentRecords() throws Exception{
+    void insertStudentRecords() throws Exception {
         // given
         StudentRecordsCreateRequest request = new StudentRecordsCreateRequest("2025-1",
                 List.of(new StudentRecordInfo("2020123", "김가연"), new StudentRecordInfo("2931232", "김지안"))
         );
         doNothing().when(studentRecordFacade)
-                .createStudentRecords(anyLong(), any(StudentRecordType.class), anyString(), anyList());
+                .createStudentRecords(anyString(), any(StudentRecordType.class), anyString(), anyList());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/{recordType}/students/batch", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -197,19 +207,21 @@ class StudentRecordControllerTest extends ControllerTest {
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("2023-1", 100);
         long recordId = 999L;
 
-        doThrow(new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND))
+        doThrow(new StudentRecordDetailNotFoundException(STUDENT_RECORD_DETAIL_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.message").value(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.code").value(STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(
+                        STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -233,19 +245,21 @@ class StudentRecordControllerTest extends ControllerTest {
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("학생의 행동 특성에 대한 기록", 100);
         long recordId = 1L;
 
-        doThrow(new MemberStudentRecordNotFoundException(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND))
+        doThrow(new MemberStudentRecordNotFoundException(MEMBER_STUDENT_RECORD_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
-                .andExpect(jsonPath("$.message").value(StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
+                .andExpect(jsonPath("$.code").value(MEMBER_STUDENT_RECORD_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(
+                        MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/member-record-not-found",
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
@@ -271,6 +285,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -303,6 +318,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -332,12 +348,13 @@ class StudentRecordControllerTest extends ControllerTest {
         // given
         String invalidSemester = "2025-3";
 
-        doThrow(new InvalidSemesterFormatException(StudentRecordErrorCode.INVALID_SEMESTER_FORMAT, invalidSemester))
+        doThrow(new InvalidSemesterFormatException(INVALID_SEMESTER_FORMAT, invalidSemester))
                 .when(studentRecordFacade)
-                .getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class));
+                .getStudentDetails(anyString(), any(StudentRecordType.class), any(String.class));
 
         // when & then
         mockMvc.perform(get(BASE_URL + "/{recordType}/students", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .param("semester", invalidSemester))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -356,6 +373,43 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사용자가 생기부 수정 시 UpdatePermissionDeniedException이 발생한다.")
+    void updateStudentRecord_PermissionDenied() throws Exception {
+        // given
+        StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("허용되지 않은 수정", 100);
+        long recordId = 99L;
+        doThrow(new UpdatePermissionDeniedException(
+                UPDATE_PERMISSION_DENIED))
+                .when(studentRecordFacade)
+                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value(403))
+                .andExpect(jsonPath("$.code").value(UPDATE_PERMISSION_DENIED.getCode()))
+                .andExpect(jsonPath("$.message").value(UPDATE_PERMISSION_DENIED.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/permission-denied",
+                        pathParameters(
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("description").description("기록 내용"),
+                                fieldWithPath("byteCount").description("기록 데이터 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
     }

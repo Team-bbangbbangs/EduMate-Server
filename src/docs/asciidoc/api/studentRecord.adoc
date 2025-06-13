@@ -14,6 +14,9 @@ operation::student-record/fail/member-record-not-found[snippets="http-request,ht
 
 operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
 
+==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
+
 ==== 실패: 유효하지 않은 요청 값
 
 include::{snippets}/student-record/update-fail/missing-description/http-request.adoc[]
@@ -33,6 +36,9 @@ operation::student-record/fail/member-record-not-found[snippets="http-response"]
 ==== 실패: 특정 학생의 생기부가 존재하지 않음
 
 operation::student-record/fail/record-not-found[snippets="http-response"]
+
+==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
 
 === 학생 이름 불러오기
 

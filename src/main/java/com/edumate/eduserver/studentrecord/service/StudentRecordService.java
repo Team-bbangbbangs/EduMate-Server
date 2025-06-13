@@ -7,6 +7,7 @@ import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
+import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
 import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
@@ -29,15 +30,21 @@ public class StudentRecordService {
     private static final int INITIAL_BYTE_COUNT = 0;
 
     @Transactional
-    public void update(final long recordId, final String description, final int byteCount) {
+    public void update(final long memberId, final long recordId, final String description, final int byteCount) {
         StudentRecordDetail existingDetail = getRecordDetailById(recordId);
+        validatePermission(existingDetail.getMemberStudentRecord(), memberId);
         existingDetail.updateContent(description, byteCount);
     }
 
-    public StudentRecordDetail getRecordDetailById(final long recordId) {
+    public StudentRecordDetail getRecordDetail(final long memberId, final long recordId) {
+        StudentRecordDetail existingDetail = getRecordDetailById(recordId);
+        validatePermission(existingDetail.getMemberStudentRecord(), memberId);
+        return existingDetail;
+    }
+
+    private StudentRecordDetail getRecordDetailById(final long recordId) {
         return studentRecordDetailRepository.findById(recordId)
-                .orElseThrow(() -> new StudentRecordDetailNotFoundException(
-                        StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
+                .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 
     public List<StudentRecordDetail> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
@@ -61,6 +68,12 @@ public class StudentRecordService {
                         INITIAL_DESCRIPTION, INITIAL_BYTE_COUNT))
                 .toList();
         studentRecordDetailRepository.saveAll(details);
+    }
+
+    private void validatePermission(final MemberStudentRecord memberRecord, final long memberId) {
+        if (memberRecord.getMember().getId() != memberId) {
+            throw new UpdatePermissionDeniedException(StudentRecordErrorCode.UPDATE_PERMISSION_DENIED);
+        }
     }
 
     private void validateSemesterPattern(final String semester) {

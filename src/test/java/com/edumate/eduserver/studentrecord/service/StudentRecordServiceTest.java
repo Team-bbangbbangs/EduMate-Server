@@ -11,6 +11,7 @@ import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
+import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
 import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.util.ServiceTest;
@@ -36,11 +37,12 @@ class StudentRecordServiceTest extends ServiceTest {
     void updateStudentRecordSuccess() {
         // given
         long studentRecordId = defaultRecordDetail.getId();
+        long memberId = defaultTeacher.getId();
         String newDescription = "생활기록부 내용이 변경되었습니다. 학생은 매우 성실하고 학습 의욕이 높습니다.";
         int newByteCount = 20;
 
         // when
-        studentRecordService.update(studentRecordId, newDescription, newByteCount);
+        studentRecordService.update(memberId, studentRecordId, newDescription, newByteCount);
 
         // then
         StudentRecordDetail updated = studentRecordDetailRepository.findById(studentRecordId).get();
@@ -52,9 +54,10 @@ class StudentRecordServiceTest extends ServiceTest {
     void getStudentRecordStudentRecordDetail() {
         // given
         long studentRecordId = defaultRecordDetail.getId();
+        long memberId = defaultTeacher.getId();
 
         // when
-        StudentRecordDetail recordDetail = studentRecordService.getRecordDetailById(studentRecordId);
+        StudentRecordDetail recordDetail = studentRecordService.getRecordDetail(memberId, studentRecordId);
 
         // then
         assertAll(
@@ -137,13 +140,25 @@ class StudentRecordServiceTest extends ServiceTest {
     @DisplayName("존재하지 않는 학생 상세 기록에 대해 업데이트 시도시 예외가 발생한다.")
     void updateWithNonExistingStudentRecordDetail() {
         // given
+        long memberId = defaultTeacher.getId();
         long nonExistingStudentRecordId = 999L;
         String newDescription = "새로운 내용";
         int newByteCount = 10;
 
         // when & then
         assertThatThrownBy(() ->
-                studentRecordService.update(nonExistingStudentRecordId, newDescription, newByteCount)
+                studentRecordService.update(memberId, nonExistingStudentRecordId, newDescription, newByteCount)
         ).isInstanceOf(StudentRecordDetailNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("업데이트 권한이 없는 경우 예외가 발생한다.")
+    void updateWithPermissionDenied() {
+        long otherMemberId = 12L;
+
+        // when & then
+        assertThatThrownBy(() ->
+                studentRecordService.update(otherMemberId, defaultRecordDetail.getId(), "변경된 내용", 15)
+        ).isInstanceOf(UpdatePermissionDeniedException.class);
     }
 }
