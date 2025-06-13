@@ -3,6 +3,7 @@ package com.edumate.eduserver.common.config;
 import com.edumate.eduserver.auth.security.jwt.JwtParser;
 import com.edumate.eduserver.auth.security.jwt.JwtValidator;
 import com.edumate.eduserver.common.security.CustomPasswordEncoder;
+import com.edumate.eduserver.common.security.JwtAccessDeniedHandler;
 import com.edumate.eduserver.common.security.JwtAuthenticationEntryPoint;
 import com.edumate.eduserver.common.security.filter.ExceptionHandlerFilter;
 import com.edumate.eduserver.common.security.filter.JwtAuthenticationFilter;
@@ -26,12 +27,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final MemberAuthenticationService memberAuthService;
     private final JwtValidator jwtValidator;
     private final JwtParser jwtParser;
 
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/signup",
+            "/api/v1/auth/login",
             "/api/v1/auth/reissue",
             "/api/v1/auth/verify-email",
             "/actuator/health"
@@ -42,21 +45,21 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagementConfigurer ->
-                        sessionManagementConfigurer
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exceptionHandlingConfigurer ->
-                        exceptionHandlingConfigurer
-                                .authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry
-                                .anyRequest()
-                                .authenticated())
+                .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/student-records/**").hasAnyRole("TEACHER", "ADMIN")
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(memberAuthService, jwtValidator, jwtParser),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
