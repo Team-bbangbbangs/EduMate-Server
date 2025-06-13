@@ -1,5 +1,6 @@
 package com.edumate.eduserver.auth.security.jwt;
 
+import com.edumate.eduserver.auth.exception.ExpiredTokenException;
 import com.edumate.eduserver.auth.exception.IllegalTokenException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import io.jsonwebtoken.Claims;
@@ -21,6 +22,8 @@ public class JwtValidator {
             validateClaims(claims, type);
         } catch (ExpiredJwtException e) {
             throw getExpiredTokenException(type);
+        } catch (IllegalTokenException e) {
+            throw e;
         } catch (Exception e) {
             throw getInvalidTokenException(type);
         }
@@ -37,11 +40,11 @@ public class JwtValidator {
         }
     }
 
-    private IllegalTokenException getExpiredTokenException(final TokenType type) {
+    private ExpiredTokenException getExpiredTokenException(final TokenType type) {
         if (type == TokenType.ACCESS) {
-            return new IllegalTokenException(AuthErrorCode.EXPIRED_ACCESS_TOKEN);
+            return new ExpiredTokenException(AuthErrorCode.EXPIRED_ACCESS_TOKEN);
         } else {
-            return new IllegalTokenException(AuthErrorCode.EXPIRED_REFRESH_TOKEN);
+            return new ExpiredTokenException(AuthErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
 

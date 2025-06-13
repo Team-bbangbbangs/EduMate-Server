@@ -18,10 +18,13 @@ public class MemberAuthenticationService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(final String memberUuid) throws UsernameNotFoundException {
-        Member member = getMemberByUuid(memberUuid);
-
-        return new User(member.getMemberUuid(), member.getPassword(), member.getAuthorities());
+    public UserDetails loadUserByUsername(final String memberUuid) {
+        try {
+            Member member = getMemberByUuid(memberUuid);
+            return new User(member.getMemberUuid(), member.getPassword(), member.getAuthorities());
+        } catch (MemberNotFoundException e) {
+            throw new UsernameNotFoundException("Member not found with UUID: " + memberUuid, e);
+        }
     }
 
     private Member getMemberByUuid(final String memberUuid) {
