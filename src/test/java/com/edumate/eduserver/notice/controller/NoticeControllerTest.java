@@ -56,7 +56,7 @@ class NoticeControllerTest extends ControllerTest {
 
         //given
         NoticeCategory noticeCategory = NoticeCategory.NOTICE;
-        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime createdAt = LocalDateTime.of(2024, 1, 1, 15, 30, 45);
         int totalPages = 1;
 
         NoticeResponse olderNotice = NoticeResponse.of(
