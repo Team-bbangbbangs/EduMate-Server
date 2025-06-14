@@ -124,7 +124,7 @@ class NoticeControllerTest extends ControllerTest {
         String category = NoticeCategory.NOTICE.getText();
         String title    = "테스트 공지 제목";
         String content  = "여기는 공지 상세 내용입니다.";
-        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime createdAt = LocalDateTime.of(2024, 1, 1, 15, 30, 45);
 
         NoticeGetResponse noticeGetResponse = new NoticeGetResponse(
                 noticeId, category, title, content, createdAt
