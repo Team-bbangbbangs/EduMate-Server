@@ -64,3 +64,13 @@ operation::student-record/fail/member-record-not-found[snippets="http-response"]
 
 ==== 실패: 유효하지 않은 학기 형식
 operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
+=== 생활기록부 한 명 추가
+
+==== 성공
+
+operation::student-record/create-one-success[snippets="path-parameters,http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]

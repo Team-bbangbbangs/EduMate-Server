@@ -2,6 +2,7 @@ package com.edumate.eduserver.studentrecord.facade;
 
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
+import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
@@ -55,5 +56,12 @@ public class StudentRecordFacade {
                                      final List<StudentRecordInfo> studentRecordInfos) {
         Member member = memberService.getMemberByUuid(memberUuid);
         studentRecordService.createStudentRecords(member.getId(), recordType, semester, studentRecordInfos);
+    }
+
+    @Transactional
+    public void createStudentRecord(final String memberUuid, final StudentRecordType recordType, final String semester,
+                                    final StudentRecordCreateInfo studentRecordCreateInfo) {
+        Member member = memberService.getMemberByUuid(memberUuid);
+        studentRecordService.createStudentRecord(member.getId(), recordType, semester, studentRecordCreateInfo);
     }
 }

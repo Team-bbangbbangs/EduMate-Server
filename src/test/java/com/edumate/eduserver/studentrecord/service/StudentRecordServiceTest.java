@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
@@ -160,5 +161,38 @@ class StudentRecordServiceTest extends ServiceTest {
         assertThatThrownBy(() ->
                 studentRecordService.update(otherMemberId, defaultRecordDetail.getId(), "변경된 내용", 15)
         ).isInstanceOf(UpdatePermissionDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("생활기록부 한 개를 생성한다.")
+    void createStudentRecord() {
+        // given
+        long memberId = 1L;
+        StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
+        String semester = "2025-1";
+        String studentNumber = "2023002";
+        String studentName = "유태근";
+        String description = "생활기록부 내용";
+        int byteCount = 22;
+        StudentRecordCreateInfo studentRecordCreateInfo = StudentRecordCreateInfo.of(
+                studentNumber, studentName, description, byteCount
+        );
+
+        // when
+        StudentRecordDetail studentRecord = studentRecordService.createStudentRecord(memberId, recordType, semester,
+                studentRecordCreateInfo);
+
+        // then
+        MemberStudentRecord memberStudentRecord = memberStudentRecordRepository
+                .findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
+                .orElseThrow();
+
+        assertAll(
+                () -> assertThat(memberStudentRecord.getSemester()).isEqualTo(semester),
+                () -> assertThat(studentRecord.getStudentNumber()).isEqualTo(studentNumber),
+                () -> assertThat(studentRecord.getStudentName()).isEqualTo(studentName),
+                () -> assertThat(studentRecord.getDescription()).isEqualTo(description),
+                () -> assertThat(studentRecord.getByteCount()).isEqualTo(byteCount)
+        );
     }
 }

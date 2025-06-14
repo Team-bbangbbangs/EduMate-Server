@@ -25,8 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCreateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
@@ -410,6 +412,45 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("에러 코드"),
                                 fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("생기부 한 개를 성공적으로 저장한다.")
+    void insertStudentRecord() throws Exception {
+        // given
+        StudentRecordCreateRequest request = new StudentRecordCreateRequest(
+                "2025-1", new StudentRecordCreateInfo("2020123", "유태근", "프로그래밍 동아리에서 웹 프로젝트를 진행하며 백엔드 개발을 맡아 로그인 기능과 데이터 저장 기능을 구현함.", 149)
+        );
+        doNothing().when(studentRecordFacade)
+                .createStudentRecord(anyString(), any(StudentRecordType.class), anyString(), any());
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/{recordType}/students", RECORD_TYPE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.code").value("EDMT-201"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "create-one-success",
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        requestFields(
+                                fieldWithPath("semester").description("학기 정보"),
+                                fieldWithPath("studentRecord").description("생활기록부 정보 객체"),
+                                fieldWithPath("studentRecord.studentNumber").description("학번"),
+                                fieldWithPath("studentRecord.studentName").description("학생 이름"),
+                                fieldWithPath("studentRecord.description").description("기록 내용"),
+                                fieldWithPath("studentRecord.byteCount").description("기록 데이터 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
                         )
                 ));
     }
