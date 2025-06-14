@@ -7,10 +7,12 @@ import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.common.ApiResponse;
+import com.edumate.eduserver.common.annotation.MemberUuid;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,4 +51,11 @@ public class AuthController {
         MemberLoginResponse response = authFacade.login(request.email().strip(), request.password().strip());
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
+
+    @PatchMapping("/logout")
+    public ApiResponse<Void> logout(@MemberUuid final String memberUuid) {
+        authFacade.logout(memberUuid.strip());
+        return ApiResponse.success(CommonSuccessCode.OK);
+    }
+
 }

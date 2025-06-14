@@ -72,4 +72,10 @@ public class AuthFacade {
         String refreshToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.REFRESH);
         return MemberLoginResponse.of(accessToken, refreshToken);
     }
+
+    @Transactional
+    public void logout(final String memberUuid) {
+        Member member = memberService.getMemberByUuid(memberUuid);
+        authService.logout(member);
+    }
 }

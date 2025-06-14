@@ -35,6 +35,11 @@ public class AuthService {
         authorizationCodeRepository.save(authorizationCode);
     }
 
+    @Transactional
+    public void logout(final Member member) {
+        member.updateRefreshToken(null);
+    }
+
     public void checkAlreadyRegistered(final String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
