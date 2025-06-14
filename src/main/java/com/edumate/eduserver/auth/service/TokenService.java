@@ -14,11 +14,17 @@ public class TokenService {
 
     private final JwtGenerator jwtGenerator;
 
+    private static final String BEARER_PREFIX = "Bearer ";
+
     @Transactional
     public Token generateTokens(final Member member) {
         String accessToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.ACCESS);
         String refreshToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.REFRESH);
         member.updateRefreshToken(refreshToken);
         return Token.of(accessToken, refreshToken);
+    }
+
+    public String getRemovedBearerPrefixToken(final String token) {
+        return token.substring(BEARER_PREFIX.length());
     }
 }

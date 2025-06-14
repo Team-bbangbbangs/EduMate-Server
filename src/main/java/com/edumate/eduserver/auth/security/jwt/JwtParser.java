@@ -22,6 +22,11 @@ public class JwtParser {
                 .getBody();
     }
 
+    public String getMemberUuidFromToken(final String refreshToken, final TokenType tokenType) {
+        Claims claims = parseClaims(refreshToken);
+        return claims.getSubject();
+    }
+
     private Key getSigningKey() {
         byte[] keyBytes = Base64.getDecoder().decode(jwtProperties.secretKey());
         return Keys.hmacShaKeyFor(keyBytes);

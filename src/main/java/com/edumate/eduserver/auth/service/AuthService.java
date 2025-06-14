@@ -22,6 +22,8 @@ public class AuthService {
     private final AuthorizationCodeRepository authorizationCodeRepository;
     private final MemberRepository memberRepository;
 
+    private static final String EMPTY_REFRESH_TOKEN = null;
+
     @Transactional
     public void verifyEmailCode(final Member member, final String inputCode) {
         AuthorizationCode authorizationCode = getValidCodeByMember(member.getId());
@@ -37,7 +39,7 @@ public class AuthService {
 
     @Transactional
     public void logout(final Member member) {
-        member.updateRefreshToken(null);
+        member.updateRefreshToken(EMPTY_REFRESH_TOKEN);
     }
 
     public void checkAlreadyRegistered(final String email) {
