@@ -63,7 +63,7 @@ public class AuthController {
 
     @PatchMapping("/reissue")
     public ApiResponse<MemberReissueResponse> reissue(@RequestHeader(HttpHeaders.AUTHORIZATION) final String refreshToken) {
-        MemberReissueResponse response = authFacade.reissue(refreshToken);
+        MemberReissueResponse response = authFacade.reissue(refreshToken.strip());
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 }

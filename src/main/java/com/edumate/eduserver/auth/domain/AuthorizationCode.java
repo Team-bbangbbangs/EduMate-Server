@@ -79,11 +79,4 @@ public class AuthorizationCode {
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiredAt);
     }
-
-    public void updateCode(final String code) {
-        this.authorizationCode = code;
-        this.createdAt = LocalDateTime.now();
-        this.expiredAt = LocalDateTime.now().plusMinutes(MINUTES_TO_EXPIRE);
-        this.status = AuthorizeStatus.REVOKED;
-    }
 }
