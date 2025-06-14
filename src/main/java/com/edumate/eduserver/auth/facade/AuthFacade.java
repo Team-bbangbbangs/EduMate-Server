@@ -1,7 +1,9 @@
 package com.edumate.eduserver.auth.facade;
 
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
+import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
+import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.security.jwt.TokenType;
@@ -9,10 +11,10 @@ import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.EmailService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
-import com.edumate.eduserver.subject.domain.Subject;
-import com.edumate.eduserver.subject.service.SubjectService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
+import com.edumate.eduserver.subject.domain.Subject;
+import com.edumate.eduserver.subject.service.SubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,5 +61,15 @@ public class AuthFacade {
         } catch (DataIntegrityViolationException e) {
             throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
         }
+    }
+
+    public MemberLoginResponse login(final String email, final String password) {
+        Member member = memberService.getMemberByEmail(email);
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new MismatchedPasswordException(AuthErrorCode.MISMATCHED_PASSWORD);
+        }
+        String accessToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.ACCESS);
+        String refreshToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.REFRESH);
+        return MemberLoginResponse.of(accessToken, refreshToken);
     }
 }

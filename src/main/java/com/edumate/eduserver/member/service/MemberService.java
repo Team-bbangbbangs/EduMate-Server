@@ -41,4 +41,9 @@ public class MemberService {
         return memberRepository.findByMemberUuid(memberUuid)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
+
+    public Member getMemberByEmail(final String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
 }

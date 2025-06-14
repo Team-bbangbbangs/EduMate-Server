@@ -13,6 +13,7 @@ public enum AuthErrorCode implements ErrorCode {
     INVALID_CODE("EDMT-4000103", "유효하지 않은 인증 코드입니다."),
     INVALID_PASSWORD_LENGTH("EDMT-4000104", "비밀번호는 8자 이상 16자 이하로 입력해주세요."),
     INVALID_PASSWORD_FORMAT("EDMT-4000105", "영문, 숫자, 특수문자 중 2종류 이상을 포함해야하며 같은 문자를 3번 이상 연속해서 사용할 수 없습니다."),
+    MISMATCHED_PASSWORD("EDMT-4000106", "비밀번호가 일치하지 않습니다."),
 
     // 401 Unauthorized,
     INVALID_TOKEN_VALUE("EDMT-4010101", "유효하지 않은 엑세스 토큰입니다."),
