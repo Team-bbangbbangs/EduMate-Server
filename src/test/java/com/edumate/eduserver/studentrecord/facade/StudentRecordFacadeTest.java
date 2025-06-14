@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
+import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
@@ -112,6 +113,20 @@ class StudentRecordFacadeTest {
         willDoNothing().given(studentRecordService).createStudentRecords(500L, type, semester, infos);
         studentRecordFacade.createStudentRecords(memberUuid, type, semester, infos);
         verify(studentRecordService).createStudentRecords(500L, type, semester, infos);
+    }
+
+    @Test
+    @DisplayName("학생 기록 생성이 정상 동작한다.")
+    void createStudentRecord() {
+        String memberUuid = "uuid-5";
+        StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
+        String semester = "2024-2";
+        StudentRecordCreateInfo info = mock(StudentRecordCreateInfo.class);
+        Member member = mock(Member.class);
+        given(memberService.getMemberByUuid(memberUuid)).willReturn(member);
+        given(member.getId()).willReturn(500L);
+        studentRecordFacade.createStudentRecord(memberUuid, type, semester, info);
+        verify(studentRecordService).createStudentRecord(500L, type, semester, info);
     }
 }
 
