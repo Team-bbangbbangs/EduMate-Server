@@ -3,6 +3,7 @@ package com.edumate.eduserver.studentrecord.controller;
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.annotation.MemberUuid;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
@@ -64,6 +65,14 @@ public class StudentRecordController {
                                                   @PathVariable final StudentRecordType recordType,
                                                   @RequestBody @Valid final StudentRecordsCreateRequest request) {
         studentRecordFacade.createStudentRecords(memberUuid.strip(), recordType, request.semester().strip(), request.studentRecords());
+        return ApiResponse.success(CommonSuccessCode.CREATED);
+    }
+
+    @PostMapping("/{recordType}/students")
+    public ApiResponse<Void> createStudentRecord(@MemberUuid final String memberUuid,
+                                                 @PathVariable final StudentRecordType recordType,
+                                                 @RequestBody @Valid final StudentRecordCreateRequest request) {
+        studentRecordFacade.createStudentRecord(memberUuid.strip(), recordType, request.semester().trim(), request.studentRecord()); // 멤버 아이디 하드코딩
         return ApiResponse.success(CommonSuccessCode.CREATED);
     }
 }
