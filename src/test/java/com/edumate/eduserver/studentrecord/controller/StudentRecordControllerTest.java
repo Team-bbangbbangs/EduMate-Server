@@ -430,6 +430,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/{recordType}/students", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -473,6 +474,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(patch(BASE_URL + "/{recordId}", 1L)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
