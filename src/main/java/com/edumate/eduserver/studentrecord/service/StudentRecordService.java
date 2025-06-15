@@ -74,6 +74,7 @@ public class StudentRecordService {
     @Transactional
     public StudentRecordDetail createStudentRecord(final long memberId, final StudentRecordType recordType, final String semester,
                                     final StudentRecordCreateInfo studentRecordCreateInfo) {
+        validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         StudentRecordDetail studentRecordDetail = StudentRecordDetail.create(memberStudentRecord,
                 studentRecordCreateInfo.studentNumber(), studentRecordCreateInfo.studentName(),
