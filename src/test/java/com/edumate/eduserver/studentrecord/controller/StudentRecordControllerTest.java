@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
@@ -446,6 +448,47 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("studentRecord.studentName").description("학생 이름"),
                                 fieldWithPath("studentRecord.description").description("기록 내용"),
                                 fieldWithPath("studentRecord.byteCount").description("기록 데이터 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("학생 생활기록부 전체 내용을 성공적으로 업데이트 한다.")
+    void updateStudentRecordOverview() throws Exception {
+        // given
+        StudentRecordOverviewUpdateRequest request = new StudentRecordOverviewUpdateRequest(
+                "2020123",
+                "유태근",
+                "수정된 생활기록부 내용",
+                149
+        );
+
+        doNothing().when(studentRecordFacade)
+                .updateStudentRecordOverview(anyString(), anyLong(), anyString(), anyString(), anyString(), anyInt());
+
+        // when & then
+        mockMvc.perform(patch(BASE_URL + "/{recordId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-overview-success",
+                        pathParameters(
+                                parameterWithName("recordId").description("기록 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("studentNumber").description("학번"),
+                                fieldWithPath("studentName").description("학생 이름"),
+                                fieldWithPath("description").description("생기부 내용"),
+                                fieldWithPath("byteCount").description("기록 데이터 크기")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),

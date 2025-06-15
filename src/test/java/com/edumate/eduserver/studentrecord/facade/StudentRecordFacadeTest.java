@@ -128,5 +128,24 @@ class StudentRecordFacadeTest {
         studentRecordFacade.createStudentRecord(memberUuid, type, semester, info);
         verify(studentRecordService).createStudentRecord(500L, type, semester, info);
     }
+
+    @Test
+    @DisplayName("생활기록부 전체 수정이 정상 동작한다.")
+    void updateStudentRecordOverview() {
+        String memberUuid = "uuid-2";
+        long recordId = 2L;
+        String studentNumber = "20204567";
+        String studentName = "김철수";
+        String description = "리더십을 발휘하여 팀 프로젝트를 성공적으로 완수함.";
+        int byteCount = 120;
+        Member member = mock(Member.class);
+        given(memberService.getMemberByUuid(memberUuid)).willReturn(member);
+        given(member.getId()).willReturn(200L);
+        willDoNothing().given(studentRecordService)
+                .updateStudentRecordOverview(200L, recordId, studentNumber, studentName, description, byteCount);
+        studentRecordFacade.updateStudentRecordOverview(memberUuid, recordId, studentNumber, studentName, description, byteCount);
+        verify(studentRecordService)
+                .updateStudentRecordOverview(200L, recordId, studentNumber, studentName, description, byteCount);
+    }
 }
 

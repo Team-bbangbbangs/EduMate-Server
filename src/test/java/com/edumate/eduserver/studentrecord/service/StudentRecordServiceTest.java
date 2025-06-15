@@ -195,4 +195,43 @@ class StudentRecordServiceTest extends ServiceTest {
                 () -> assertThat(studentRecord.getByteCount()).isEqualTo(byteCount)
         );
     }
+
+    @Test
+    @DisplayName("생활기록부 한 개를 수정한다.")
+    void updateStudentRecordOverview() {
+        // given
+        long memberId = 1L;
+        StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
+        String semester = "2025-1";
+        String originalStudentNumber = "2023002";
+        String originalStudentName = "유태근";
+        String originalDescription = "기존 내용";
+        int originalByteCount = 22;
+
+        StudentRecordCreateInfo createInfo = StudentRecordCreateInfo.of(
+                originalStudentNumber, originalStudentName, originalDescription, originalByteCount
+        );
+        StudentRecordDetail savedRecord = studentRecordService.createStudentRecord(memberId, recordType, semester, createInfo);
+        long recordId = savedRecord.getId();
+
+        String updatedStudentNumber = "2023111";
+        String updatedStudentName = "홍길동";
+        String updatedDescription = "수정된 생활기록부 내용";
+        int updatedByteCount = 45;
+
+        // when
+        studentRecordService.updateStudentRecordOverview(memberId, recordId,
+                updatedStudentNumber, updatedStudentName, updatedDescription, updatedByteCount);
+
+        // then
+        StudentRecordDetail updated = studentRecordDetailRepository.findById(recordId)
+                .orElseThrow();
+
+        assertAll(
+                () -> assertThat(updated.getStudentNumber()).isEqualTo(updatedStudentNumber),
+                () -> assertThat(updated.getStudentName()).isEqualTo(updatedStudentName),
+                () -> assertThat(updated.getDescription()).isEqualTo(updatedDescription),
+                () -> assertThat(updated.getByteCount()).isEqualTo(updatedByteCount)
+        );
+    }
 }
