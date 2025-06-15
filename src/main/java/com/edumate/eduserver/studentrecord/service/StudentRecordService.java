@@ -81,6 +81,14 @@ public class StudentRecordService {
         return studentRecordDetailRepository.save(studentRecordDetail);
     }
 
+    @Transactional
+    public void updateStudentRecordOverview(final long memberId, final long recordId, final String studentNumber,
+                                            final String studentName, final String description, final int byteCount) {
+        StudentRecordDetail existingDetail = getRecordDetailById(recordId);
+        validatePermission(existingDetail.getMemberStudentRecord(), memberId);
+        existingDetail.update(studentNumber, studentName, description, byteCount);
+    }
+
     private void validatePermission(final MemberStudentRecord memberRecord, final long memberId) {
         if (memberRecord.getMember().getId() != memberId) {
             throw new UpdatePermissionDeniedException(StudentRecordErrorCode.UPDATE_PERMISSION_DENIED);

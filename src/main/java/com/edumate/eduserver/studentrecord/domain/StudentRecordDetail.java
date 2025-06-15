@@ -45,6 +45,13 @@ public class StudentRecordDetail extends BaseEntity {
         this.byteCount = byteCount;
     }
 
+    public void update(final String studentNumber, String studentName, String description, int byteCount) {
+        this.studentNumber = studentNumber;
+        this.studentName = studentName;
+        this.description = description;
+        this.byteCount = byteCount;
+    }
+
     @Builder
     private StudentRecordDetail(final MemberStudentRecord memberStudentRecord, final String studentNumber,
                                 final String studentName, final String description, final int byteCount) {
