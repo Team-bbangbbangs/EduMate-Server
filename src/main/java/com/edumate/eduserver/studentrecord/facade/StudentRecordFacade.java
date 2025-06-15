@@ -64,4 +64,12 @@ public class StudentRecordFacade {
         Member member = memberService.getMemberByUuid(memberUuid);
         studentRecordService.createStudentRecord(member.getId(), recordType, semester, studentRecordCreateInfo);
     }
+
+    @Transactional
+    public void updateStudentRecordOverview(final String memberUuid, final long recordId, final String studentNumber,
+                                            final String studentName, final String description, final int byteCount) {
+        Member member = memberService.getMemberByUuid(memberUuid);
+        studentRecordService.updateStudentRecordOverview(member.getId(), recordId, studentNumber, studentName,
+                description, byteCount);
+    }
 }

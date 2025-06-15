@@ -4,6 +4,7 @@ import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.annotation.MemberUuid;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
@@ -14,6 +15,7 @@ import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverview
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,5 +76,14 @@ public class StudentRecordController {
                                                  @RequestBody @Valid final StudentRecordCreateRequest request) {
         studentRecordFacade.createStudentRecord(memberUuid.strip(), recordType, request.semester().trim(), request.studentRecord()); // 멤버 아이디 하드코딩
         return ApiResponse.success(CommonSuccessCode.CREATED);
+    }
+
+    @PatchMapping("/{recordId}")
+    public ApiResponse<Void> updateStudentRecordOverview(@MemberUuid final String memberUuid,
+                                                         @PathVariable final long recordId,
+                                                         @RequestBody @Valid final StudentRecordOverviewUpdateRequest request) {
+        studentRecordFacade.updateStudentRecordOverview(memberUuid.strip(), recordId, request.studentNumber(),
+                request.studentName(), request.description(), request.byteCount());
+        return ApiResponse.success(CommonSuccessCode.OK);
     }
 }
