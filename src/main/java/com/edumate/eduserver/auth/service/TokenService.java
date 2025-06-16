@@ -1,5 +1,7 @@
 package com.edumate.eduserver.auth.service;
 
+import com.edumate.eduserver.auth.exception.IllegalTokenException;
+import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.security.jwt.TokenType;
 import com.edumate.eduserver.member.domain.Member;
@@ -25,6 +27,9 @@ public class TokenService {
     }
 
     public String getRemovedBearerPrefixToken(final String token) {
-        return token.substring(BEARER_PREFIX.length());
+        if (token != null && token.startsWith(BEARER_PREFIX)) {
+            return token.substring(BEARER_PREFIX.length());
+        }
+        throw new IllegalTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE);
     }
 }

@@ -16,7 +16,8 @@ public enum AuthErrorCode implements ErrorCode {
     MISMATCHED_PASSWORD("EDMT-4000106", "비밀번호가 일치하지 않습니다."),
 
     // 401 Unauthorized,
-    INVALID_TOKEN_VALUE("EDMT-4010101", "유효하지 않은 엑세스 토큰입니다."),
+    INVALID_ACCESS_TOKEN_VALUE("EDMT-4010101", "유효하지 않은 엑세스 토큰입니다."),
+    INVALID_REFRESH_TOKEN_VALUE("EDMT-4010107", "유효하지 않은 리프레시 토큰입니다."),
     EXPIRED_TOKEN("EDMT-4010102", "이미 만료된 토큰입니다."),
     UNAUTHORIZED("EDMT-4010103", "인증되지 않은 사용자입니다."),
     MISSED_TOKEN("EDMT-4010104", "인증 토큰이 누락되었습니다."),
