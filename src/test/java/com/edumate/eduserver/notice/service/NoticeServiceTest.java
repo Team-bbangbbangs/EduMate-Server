@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.edumate.eduserver.notice.domain.Notice;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
+import com.edumate.eduserver.notice.exception.InvalidNoticeCategoryException;
 import com.edumate.eduserver.notice.exception.NoticeNotFoundException;
 import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
 import com.edumate.eduserver.notice.repository.NoticeRepository;
@@ -29,16 +30,8 @@ class NoticeServiceTest extends ServiceTest {
     @DisplayName("모든 카테고리 조회 시 전체 공지를 생성일 내림차순으로 반환한다.")
     void getNotices_AllCategory_Success() {
         // given
-        Notice older = Notice.builder()
-                .category(NoticeCategory.NOTICE)
-                .title("오래된 공지")
-                .content("내용1")
-                .build();
-        Notice newer = Notice.builder()
-                .category(NoticeCategory.NOTICE)
-                .title("최신 공지")
-                .content("내용2")
-                .build();
+        Notice older = Notice.create(NoticeCategory.NOTICE, "오래된 공지", "내용1");
+        Notice newer = Notice.create(NoticeCategory.NOTICE, "최신 공지", "내용2");
         List<Notice> saved = noticeRepository.saveAll(List.of(older, newer));
         Notice savedOlder = saved.get(0);
         Notice savedNewer = saved.get(1);
@@ -56,21 +49,9 @@ class NoticeServiceTest extends ServiceTest {
     @DisplayName("특정 카테고리 조회 시 해당 카테고리 공지만 생성일 내림차순으로 반환한다.")
     void getNotices_ByCategory_Success() {
         // given
-        Notice eventOld = Notice.builder()
-                .category(NoticeCategory.EVENT)
-                .title("이벤트 공지1")
-                .content("내용A")
-                .build();
-        Notice eventNew = Notice.builder()
-                .category(NoticeCategory.EVENT)
-                .title("이벤트 공지2")
-                .content("내용B")
-                .build();
-        Notice other = Notice.builder()
-                .category(NoticeCategory.NOTICE)
-                .title("일반 공지")
-                .content("내용C")
-                .build();
+        Notice eventOld = Notice.create(NoticeCategory.EVENT, "이벤트 공지1", "내용A");
+        Notice eventNew = Notice.create(NoticeCategory.EVENT, "이벤트 공지2", "내용B");
+        Notice other = Notice.create(NoticeCategory.NOTICE, "일반 공지", "내용C");
         List<Notice> saved = noticeRepository.saveAll(List.of(eventOld, eventNew, other));
         Notice savedEventOld = saved.get(0);
         Notice savedEventNew = saved.get(1);
@@ -101,11 +82,7 @@ class NoticeServiceTest extends ServiceTest {
     void getNotices_SecondPage_Success() {
         // given
         List<Notice> allNotices = IntStream.rangeClosed(1, 11)
-                .mapToObj(i -> Notice.builder()
-                        .category(NoticeCategory.NOTICE)
-                        .title("공지 " + i)
-                        .content("내용 " + i)
-                        .build())
+                .mapToObj(i -> Notice.create(NoticeCategory.NOTICE, "공지 " + i, "내용 " + i))
                 .toList();
         List<Notice> savedAll = noticeRepository.saveAll(allNotices);
         Notice oldest = savedAll.get(0);
@@ -117,5 +94,39 @@ class NoticeServiceTest extends ServiceTest {
         assertThat(secondPage.getContent())
                 .extracting(Notice::getId)
                 .containsExactly(oldest.getId());
+    }
+
+    @Test
+    @DisplayName("공지사항 작성이 정상 동작한다.")
+    void createNotice_Success() {
+        // given
+        NoticeCategory category = NoticeCategory.NOTICE;
+        String title = "새 공지사항 제목";
+        String content = "새 공지사항 내용";
+
+        // when
+        noticeService.createNotice(category, title, content);
+
+        // then
+        List<Notice> all = noticeRepository.findAll();
+        assertThat(all).hasSize(1);
+        Notice saved = all.get(0);
+        assertThat(saved.getCategory()).isEqualTo(category);
+        assertThat(saved.getTitle()).isEqualTo(title);
+        assertThat(saved.getContent()).isEqualTo(content);
+    }
+
+    @Test
+    @DisplayName("작성 불가능한 카테고리로 공지사항 작성 시 예외가 발생한다.")
+    void createNotice_InvalidCategory_ThrowsException() {
+        // given
+        NoticeCategory invalidCategory = NoticeCategory.ALL;
+        String title = "잘못된 공지";
+        String content = "내용";
+
+        // when & then
+        assertThatThrownBy(() -> noticeService.createNotice(invalidCategory, title, content))
+                .isInstanceOf(InvalidNoticeCategoryException.class)
+                .hasMessage(NoticeErrorCode.UNWRITABLE_NOTICE_CATEGORY.getMessage());
     }
 }
