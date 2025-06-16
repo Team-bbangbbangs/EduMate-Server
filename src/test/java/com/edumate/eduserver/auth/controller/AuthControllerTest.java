@@ -19,12 +19,15 @@ import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
+import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
+import com.edumate.eduserver.member.exception.MemberNotFoundException;
+import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -339,6 +342,62 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("data.accessToken").description("액세스 토큰"),
                                 fieldWithPath("data.refreshToken").description("리프레시 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("로그인에 실패한다 - 잘못된 비밀번호")
+    void loginFailWrongPassword() throws Exception {
+        MemberLoginRequest request = new MemberLoginRequest("test@email.com", "wrongpassword");
+        when(authFacade.login(request.email().strip(), request.password().strip()))
+                .thenThrow(new MismatchedPasswordException(AuthErrorCode.INVALID_PASSWORD));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "login-fail/invalid-password",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("회원 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("로그인에 실패한다 - 존재하지 않는 이메일")
+    void loginFailNotFoundEmail() throws Exception {
+        MemberLoginRequest request = new MemberLoginRequest("notfound@email.com", "password123");
+        when(authFacade.login(request.email().strip(), request.password().strip()))
+                .thenThrow(new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.code").value(MemberErrorCode.MEMBER_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(MemberErrorCode.MEMBER_NOT_FOUND.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "login-fail/member-not-found",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("회원 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
     }
