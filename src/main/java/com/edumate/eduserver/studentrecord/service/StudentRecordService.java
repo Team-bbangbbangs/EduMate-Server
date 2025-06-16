@@ -90,6 +90,13 @@ public class StudentRecordService {
         existingDetail.update(studentNumber, studentName, description, byteCount);
     }
 
+    @Transactional
+    public void deleteStudentRecord(final long memberId, final long recordId) {
+        StudentRecordDetail existingDetail = getRecordDetailById(recordId);
+        validatePermission(existingDetail.getMemberStudentRecord(), memberId);
+        studentRecordDetailRepository.deleteById(recordId);
+    }
+
     private void validatePermission(final MemberStudentRecord memberRecord, final long memberId) {
         if (memberRecord.getMember().getId() != memberId) {
             throw new UpdatePermissionDeniedException(StudentRecordErrorCode.UPDATE_PERMISSION_DENIED);
