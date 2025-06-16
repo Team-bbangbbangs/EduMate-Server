@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import com.edumate.eduserver.auth.exception.InvalidPasswordFormatException;
 import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
-import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.EmailService;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
@@ -38,8 +37,6 @@ class AuthFacadeTest {
     SubjectService subjectService;
     @Mock
     TokenService tokenService;
-    @Mock
-    JwtGenerator jwtGenerator;
     @Mock
     PasswordEncoder passwordEncoder;
     @Mock
