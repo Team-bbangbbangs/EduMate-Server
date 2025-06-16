@@ -6,9 +6,6 @@ import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
-import com.edumate.eduserver.auth.security.jwt.JwtParser;
-import com.edumate.eduserver.auth.security.jwt.JwtValidator;
-import com.edumate.eduserver.auth.security.jwt.TokenType;
 import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.EmailService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
@@ -16,7 +13,6 @@ import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.auth.service.Token;
 import com.edumate.eduserver.auth.service.TokenService;
 import com.edumate.eduserver.member.domain.Member;
-import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
@@ -35,8 +31,6 @@ public class AuthFacade {
     private final MemberService memberService;
     private final SubjectService subjectService;
     private final TokenService tokenService;
-    private final JwtValidator jwtValidator;
-    private final JwtParser jwtParser;
     private final PasswordEncoder passwordEncoder;
     private final RandomCodeGenerator randomCodeGenerator;
 
@@ -74,23 +68,21 @@ public class AuthFacade {
     public MemberLoginResponse login(final String email, final String password) {
         Member member = memberService.getMemberByEmail(email);
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new MismatchedPasswordException(MemberErrorCode.MEMBER_NOT_FOUND);
+            throw new MismatchedPasswordException(AuthErrorCode.INVALID_PASSWORD);
         }
         Token token = tokenService.generateTokens(member);
         return MemberLoginResponse.of(token.accessToken(), token.refreshToken());
     }
 
     @Transactional
-    public void logout(final String memberUuid) {
-        Member member = memberService.getMemberByUuid(memberUuid);
+    public void logout(final long memberId) {
+        Member member = memberService.getMemberById(memberId);
         authService.logout(member);
     }
 
     @Transactional
-    public MemberReissueResponse reissue(final String inputRefreshToken) {
-        String refreshToken = tokenService.getRemovedBearerPrefixToken(inputRefreshToken);
-        jwtValidator.validateToken(refreshToken, TokenType.REFRESH);
-        String memberUuid = jwtParser.getMemberUuidFromToken(refreshToken);
+    public MemberReissueResponse reissue(final String refreshToken) {
+        String memberUuid = tokenService.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
         Token token = tokenService.generateTokens(member);
         return MemberReissueResponse.of(token.accessToken(), token.refreshToken());

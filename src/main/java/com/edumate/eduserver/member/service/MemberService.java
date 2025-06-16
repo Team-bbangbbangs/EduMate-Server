@@ -37,6 +37,11 @@ public class MemberService {
         return member.getMemberUuid();
     }
 
+    public Member getMemberById(final long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
+    }
+
     public Member getMemberByUuid(final String memberUuid) {
         return memberRepository.findByMemberUuid(memberUuid)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));

@@ -1,7 +1,5 @@
 package com.edumate.eduserver.studentrecord.facade;
 
-import com.edumate.eduserver.member.domain.Member;
-import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
@@ -21,61 +19,53 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentRecordFacade {
 
     private final StudentRecordService studentRecordService;
-    private final MemberService memberService;
 
     @Transactional
-    public void updateStudentRecord(final String memberUuId, final long recordId, final String description,
+    public void updateStudentRecord(final long memberId, final long recordId, final String description,
                                     final int byteCount) {
-        Member member = memberService.getMemberByUuid(memberUuId);
-        studentRecordService.update(member.getId(), recordId, description, byteCount);
+        studentRecordService.update(memberId, recordId, description, byteCount);
     }
 
-    public StudentRecordDetailResponse getStudentRecord(final String memberUuid, final long recordId) {
-        Member member = memberService.getMemberByUuid(memberUuid);
-        StudentRecordDetail recordDetail = studentRecordService.getRecordDetail(member.getId(), recordId);
+    public StudentRecordDetailResponse getStudentRecord(final long memberId, final long recordId) {
+        StudentRecordDetail recordDetail = studentRecordService.getRecordDetail(memberId, recordId);
         return StudentRecordDetailResponse.of(recordDetail.getDescription(), recordDetail.getByteCount());
     }
 
-    public StudentRecordOverviewsResponse getStudentRecordOverviews(final String memberUuId,
+    public StudentRecordOverviewsResponse getStudentRecordOverviews(final long memberId,
                                                                     final StudentRecordType recordType,
                                                                     final String semester) {
-        Member member = memberService.getMemberByUuid(memberUuId);
-        List<StudentRecordDetail> recordOverview = studentRecordService.getAll(member.getId(), recordType, semester);
+        List<StudentRecordDetail> recordOverview = studentRecordService.getAll(memberId, recordType, semester);
         return StudentRecordOverviewsResponse.of(recordOverview);
     }
 
-    public StudentNamesResponse getStudentDetails(final String memberUuid, final StudentRecordType recordType,
+    public StudentNamesResponse getStudentDetails(final long memberId, final StudentRecordType recordType,
                                                   final String semester) {
-        Member member = memberService.getMemberByUuid(memberUuid);
-        List<StudentRecordDetail> studentRecordDetails = studentRecordService.getStudentNames(member.getId(), recordType, semester);
+        List<StudentRecordDetail> studentRecordDetails = studentRecordService.getStudentNames(memberId, recordType,
+                semester);
         return StudentNamesResponse.of(studentRecordDetails);
     }
 
     @Transactional
-    public void createStudentRecords(final String memberUuid, final StudentRecordType recordType, final String semester,
+    public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
                                      final List<StudentRecordInfo> studentRecordInfos) {
-        Member member = memberService.getMemberByUuid(memberUuid);
-        studentRecordService.createStudentRecords(member.getId(), recordType, semester, studentRecordInfos);
+        studentRecordService.createStudentRecords(memberId, recordType, semester, studentRecordInfos);
     }
 
     @Transactional
-    public void createStudentRecord(final String memberUuid, final StudentRecordType recordType, final String semester,
+    public void createStudentRecord(final long memberId, final StudentRecordType recordType, final String semester,
                                     final StudentRecordCreateInfo studentRecordCreateInfo) {
-        Member member = memberService.getMemberByUuid(memberUuid);
-        studentRecordService.createStudentRecord(member.getId(), recordType, semester, studentRecordCreateInfo);
+        studentRecordService.createStudentRecord(memberId, recordType, semester, studentRecordCreateInfo);
     }
 
     @Transactional
-    public void updateStudentRecordOverview(final String memberUuid, final long recordId, final String studentNumber,
+    public void updateStudentRecordOverview(final long memberId, final long recordId, final String studentNumber,
                                             final String studentName, final String description, final int byteCount) {
-        Member member = memberService.getMemberByUuid(memberUuid);
-        studentRecordService.updateStudentRecordOverview(member.getId(), recordId, studentNumber, studentName,
+        studentRecordService.updateStudentRecordOverview(memberId, recordId, studentNumber, studentName,
                 description, byteCount);
     }
 
     @Transactional
-    public void deleteStudentRecord(final String memberUuid, final long recordId) {
-        Member member = memberService.getMemberByUuid(memberUuid);
-        studentRecordService.deleteStudentRecord(member.getId(), recordId);
+    public void deleteStudentRecord(final long memberId, final long recordId) {
+        studentRecordService.deleteStudentRecord(memberId, recordId);
     }
 }

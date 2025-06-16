@@ -3,12 +3,15 @@
 === 회원 가입
 
 ==== 성공
+
 operation::auth/signup-success[snippets="http-request,request-fields,http-response,response-fields"]
 
 ==== 실패: 이미 가입한 회원
+
 operation::auth/signup-fail/duplicate-email[snippets="http-request,http-response"]
 
 ==== 실패: 유효하지 않은 비밀번호 형식
+
 include::{snippets}/auth/signup-fail/invalid-password-format/response-body.adoc[]
 include::{snippets}/auth/signup-fail/invalid-password-length/response-body.adoc[]
 include::{snippets}/auth/signup-fail/invalid-password-repetition/response-body.adoc[]
@@ -30,3 +33,27 @@ operation::auth/verify-email-fail/expired-code[snippets="query-parameters,http-r
 ==== 실패: 유효한 인증 코드가 존재하지 않음
 
 operation::auth/verify-email-fail/auth-code-not-found[snippets="query-parameters,http-request,http-response"]
+
+=== 로그인
+
+==== 성공
+
+operation::auth/login-success[snippets="http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 비밀번호가 일치하지 않음
+operation::auth/login-fail/invalid-password[snippets="http-request,http-response"]
+
+==== 실패: 존재하지 않는 회원
+operation::auth/login-fail/member-not-found[snippets="http-request,http-response"]
+
+=== 로그아웃
+
+==== 성공
+
+operation::auth/logout-success[snippets="http-request,http-response"]
+
+=== 엑세스 토큰 재발급
+
+==== 성공
+
+operation::auth/reissue-success[snippets="http-request,http-response,response-fields"]

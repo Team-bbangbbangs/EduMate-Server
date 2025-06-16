@@ -22,6 +22,7 @@ public enum AuthErrorCode implements ErrorCode {
     MISSED_TOKEN("EDMT-4010104", "인증 토큰이 누락되었습니다."),
     INVALID_TOKEN_TYPE("EDMT-4010105", "잘못된 유형의 토큰입니다. 요청에는 엑세스 토큰이 필요합니다."),
     INVALID_SIGNATURE_TOKEN("EDMT-4010106", "토큰의 서명이 유효하지 않습니다."),
+    INVALID_PASSWORD("EDMT-4010107", "비밀번호가 일치하지 않습니다."),
 
     // 403 Forbidden
     FORBIDDEN("EDMT-4030101", "권한이 부족한 사용자입니다."),

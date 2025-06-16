@@ -1,11 +1,11 @@
 package com.edumate.eduserver.auth.exception;
 
-import com.edumate.eduserver.common.exception.BadRequestException;
-import com.edumate.eduserver.member.exception.code.MemberErrorCode;
+import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
+import com.edumate.eduserver.common.exception.UnauthorizedException;
 
-public class MismatchedPasswordException extends BadRequestException {
+public class MismatchedPasswordException extends UnauthorizedException {
 
-    public MismatchedPasswordException(final MemberErrorCode errorCode) {
+    public MismatchedPasswordException(final AuthErrorCode errorCode) {
         super(errorCode);
     }
 }
