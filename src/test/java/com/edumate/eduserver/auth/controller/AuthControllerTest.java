@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
+import com.edumate.eduserver.auth.controller.request.MemberLoginRequest;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
@@ -21,6 +22,8 @@ import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
+import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
+import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
@@ -304,6 +307,85 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("에러 코드"),
                                 fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("로그인에 성공한다.")
+    void loginSuccess() throws Exception {
+        MemberLoginRequest request = new MemberLoginRequest("test@email.com", "password123");
+        MemberLoginResponse response = new MemberLoginResponse("access-token", "refresh-token");
+        when(authFacade.login(request.email().strip(), request.password().strip())).thenReturn(response);
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andExpect(jsonPath("$.data.accessToken").value("access-token"))
+                .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "login-success",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("회원 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data.accessToken").description("액세스 토큰"),
+                                fieldWithPath("data.refreshToken").description("리프레시 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("로그아웃에 성공한다.")
+    void logoutSuccess() throws Exception {
+        doNothing().when(authFacade).logout(org.mockito.ArgumentMatchers.anyLong());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/logout")
+                        .header("Authorization", "Bearer access-token"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "logout-success",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("토큰 재발급에 성공한다.")
+    void reissueSuccess() throws Exception {
+        MemberReissueResponse response = new MemberReissueResponse("new-access-token", "new-refresh-token");
+        when(authFacade.reissue(org.mockito.ArgumentMatchers.anyString())).thenReturn(response);
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
+                        .header("Authorization", "Bearer refresh-token"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andExpect(jsonPath("$.data.accessToken").value("new-access-token"))
+                .andExpect(jsonPath("$.data.refreshToken").value("new-refresh-token"))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-success",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data.accessToken").description("새로운 액세스 토큰"),
+                                fieldWithPath("data.refreshToken").description("새로운 리프레시 토큰")
                         )
                 ));
     }
