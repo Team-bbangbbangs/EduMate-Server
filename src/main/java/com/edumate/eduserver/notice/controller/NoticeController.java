@@ -2,9 +2,9 @@ package com.edumate.eduserver.notice.controller;
 
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
-import com.edumate.eduserver.notice.facade.response.NoticeGetResponse;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
 import com.edumate.eduserver.notice.facade.NoticeFacade;
+import com.edumate.eduserver.notice.facade.response.NoticeGetResponse;
 import com.edumate.eduserver.notice.facade.response.NoticesGetResponse;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/notices")
 @RequiredArgsConstructor
 public class NoticeController {
 
     private final NoticeFacade noticeFacade;
 
-    @GetMapping("/notices")
+    @GetMapping
     public ApiResponse<NoticesGetResponse> getNotices(
             @RequestParam(name = "categoryId", required = false) Integer categoryId,
             @RequestParam(name = "page", required = false, defaultValue = "1") @Min(1) int page
@@ -33,7 +33,7 @@ public class NoticeController {
         );
     }
 
-    @GetMapping("/notices/{noticeId}")
+    @GetMapping("/{noticeId}")
     public ApiResponse<NoticeGetResponse> getNotice(
             @PathVariable final long noticeId
     ) {
