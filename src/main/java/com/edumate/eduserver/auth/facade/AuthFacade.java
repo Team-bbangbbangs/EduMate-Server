@@ -69,6 +69,7 @@ public class AuthFacade {
         }
     }
 
+    @Transactional
     public MemberLoginResponse login(final String email, final String password) {
         Member member = memberService.getMemberByEmail(email);
         if (!passwordEncoder.matches(password, member.getPassword())) {
