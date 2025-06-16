@@ -43,7 +43,7 @@ public class NoticeService {
     }
 
     private void validateCategory(final NoticeCategory category) {
-        if (!category.isCreatable()) {
+        if (category == null || !category.isCreatable()) {
             throw new InvalidNoticeCategoryException(NoticeErrorCode.UNWRITABLE_NOTICE_CATEGORY);
         }
     }
