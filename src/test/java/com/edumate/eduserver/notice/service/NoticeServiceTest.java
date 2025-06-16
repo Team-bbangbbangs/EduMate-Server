@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.edumate.eduserver.notice.domain.Notice;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
+import com.edumate.eduserver.notice.exception.InvalidNoticeCategoryException;
 import com.edumate.eduserver.notice.exception.NoticeNotFoundException;
 import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
 import com.edumate.eduserver.notice.repository.NoticeRepository;
@@ -117,5 +118,39 @@ class NoticeServiceTest extends ServiceTest {
         assertThat(secondPage.getContent())
                 .extracting(Notice::getId)
                 .containsExactly(oldest.getId());
+    }
+
+    @Test
+    @DisplayName("공지사항 작성이 정상 동작한다.")
+    void createNotice_Success() {
+        // given
+        NoticeCategory category = NoticeCategory.NOTICE;
+        String title = "새 공지사항 제목";
+        String content = "새 공지사항 내용";
+
+        // when
+        noticeService.createNotice(category, title, content);
+
+        // then
+        List<Notice> all = noticeRepository.findAll();
+        assertThat(all).hasSize(1);
+        Notice saved = all.get(0);
+        assertThat(saved.getCategory()).isEqualTo(category);
+        assertThat(saved.getTitle()).isEqualTo(title);
+        assertThat(saved.getContent()).isEqualTo(content);
+    }
+
+    @Test
+    @DisplayName("작성 불가능한 카테고리로 공지사항 작성 시 예외가 발생한다.")
+    void createNotice_InvalidCategory_ThrowsException() {
+        // given
+        NoticeCategory invalidCategory = NoticeCategory.ALL;
+        String title = "잘못된 공지";
+        String content = "내용";
+
+        // when & then
+        assertThatThrownBy(() -> noticeService.createNotice(invalidCategory, title, content))
+                .isInstanceOf(InvalidNoticeCategoryException.class)
+                .hasMessage(NoticeErrorCode.UNWRITABLE_NOTICE_CATEGORY.getMessage());
     }
 }
