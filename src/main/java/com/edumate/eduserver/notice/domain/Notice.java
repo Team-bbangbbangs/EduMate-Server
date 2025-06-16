@@ -38,7 +38,7 @@ public class Notice extends BaseEntity {
 
     private LocalDateTime deletedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Notice(final NoticeCategory category, final String title, final String content) {
         this.category = category;
         this.title = title;
