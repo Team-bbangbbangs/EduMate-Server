@@ -1,7 +1,5 @@
 package com.edumate.eduserver.common.security.filter;
 
-import com.edumate.eduserver.auth.exception.MissingTokenException;
-import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.security.jwt.JwtParser;
 import com.edumate.eduserver.auth.security.jwt.JwtValidator;
 import com.edumate.eduserver.auth.security.jwt.TokenType;
@@ -22,8 +20,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String BEARER = "Bearer ";
-
     private final MemberAuthenticationService memberAuthService;
     private final JwtValidator jwtValidator;
     private final JwtParser jwtParser;
@@ -31,7 +27,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
-        String token = resolveToken(request);
+        String requestedToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = jwtParser.resolveToken(requestedToken);
         jwtValidator.validateToken(token, TokenType.ACCESS);
         String memberUuid = jwtParser.parseClaims(token).getSubject();
         UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
@@ -40,13 +37,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
-    }
-
-    private String resolveToken(final HttpServletRequest request) {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (token != null && token.startsWith(BEARER)) {
-            return token.substring(BEARER.length());
-        }
-        throw new MissingTokenException(AuthErrorCode.MISSED_TOKEN);
     }
 }

@@ -6,9 +6,6 @@ import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
-import com.edumate.eduserver.auth.security.jwt.JwtParser;
-import com.edumate.eduserver.auth.security.jwt.JwtValidator;
-import com.edumate.eduserver.auth.security.jwt.TokenType;
 import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.EmailService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
@@ -35,8 +32,6 @@ public class AuthFacade {
     private final MemberService memberService;
     private final SubjectService subjectService;
     private final TokenService tokenService;
-    private final JwtValidator jwtValidator;
-    private final JwtParser jwtParser;
     private final PasswordEncoder passwordEncoder;
     private final RandomCodeGenerator randomCodeGenerator;
 
@@ -87,10 +82,8 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberReissueResponse reissue(final String inputRefreshToken) {
-        String refreshToken = tokenService.getRemovedBearerPrefixToken(inputRefreshToken);
-        jwtValidator.validateToken(refreshToken, TokenType.REFRESH);
-        String memberUuid = jwtParser.getMemberUuidFromToken(refreshToken);
+    public MemberReissueResponse reissue(final String refreshToken) {
+        String memberUuid = tokenService.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
         Token token = tokenService.generateTokens(member);
         return MemberReissueResponse.of(token.accessToken(), token.refreshToken());

@@ -34,64 +34,67 @@ public class StudentRecordController {
     private static final String DEFAULT_SEMESTER = "2025-1";
 
     @PostMapping("/detail/{recordId}")
-    public ApiResponse<Void> updateStudentRecord(@MemberId final String memberUuid, @PathVariable final long recordId,
+    public ApiResponse<Void> updateStudentRecord(@MemberId final long memberId, @PathVariable final long recordId,
                                                  @RequestBody @Valid final StudentRecordUpdateRequest request) {
-        studentRecordFacade.updateStudentRecord(memberUuid.strip(), recordId, request.description().strip(), request.byteCount());
+        studentRecordFacade.updateStudentRecord(memberId, recordId, request.description().strip(), request.byteCount());
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
     @GetMapping("/detail/{recordId}")
-    public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@MemberId final String memberUuid,
+    public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@MemberId final long memberId,
                                                                      @PathVariable final long recordId) {
-        StudentRecordDetailResponse response = studentRecordFacade.getStudentRecord(memberUuid.strip(), recordId);
+        StudentRecordDetailResponse response = studentRecordFacade.getStudentRecord(memberId, recordId);
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 
     @GetMapping("/{recordType}")
-    public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@MemberId final String memberUuid,
+    public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@MemberId final long memberId,
                                                                                  @PathVariable final StudentRecordType recordType,
                                                                                  @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
-        StudentRecordOverviewsResponse response = studentRecordFacade.getStudentRecordOverviews(memberUuid.strip(), recordType, semester.strip());
+        StudentRecordOverviewsResponse response = studentRecordFacade.getStudentRecordOverviews(memberId, recordType,
+                semester.strip());
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 
     @GetMapping("/{recordType}/students")
-    public ApiResponse<StudentNamesResponse> getStudentDetails(@MemberId final String memberUuid,
+    public ApiResponse<StudentNamesResponse> getStudentDetails(@MemberId final long memberId,
                                                                @PathVariable final StudentRecordType recordType,
                                                                @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
-        StudentNamesResponse response = studentRecordFacade.getStudentDetails(memberUuid.strip(), recordType, semester.strip());
+        StudentNamesResponse response = studentRecordFacade.getStudentDetails(memberId, recordType, semester.strip());
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 
     @PostMapping("/{recordType}/students/batch")
-    public ApiResponse<Void> createStudentRecords(@MemberId final String memberUuid,
+    public ApiResponse<Void> createStudentRecords(@MemberId final long memberId,
                                                   @PathVariable final StudentRecordType recordType,
                                                   @RequestBody @Valid final StudentRecordsCreateRequest request) {
-        studentRecordFacade.createStudentRecords(memberUuid.strip(), recordType, request.semester().strip(), request.studentRecords());
+        studentRecordFacade.createStudentRecords(memberId, recordType, request.semester().strip(),
+                request.studentRecords());
         return ApiResponse.success(CommonSuccessCode.CREATED);
     }
 
     @PostMapping("/{recordType}/students")
-    public ApiResponse<Void> createStudentRecord(@MemberId final String memberUuid,
+    public ApiResponse<Void> createStudentRecord(@MemberId final long memberId,
                                                  @PathVariable final StudentRecordType recordType,
                                                  @RequestBody @Valid final StudentRecordCreateRequest request) {
-        studentRecordFacade.createStudentRecord(memberUuid.strip(), recordType, request.semester().trim(), request.studentRecord()); // 멤버 아이디 하드코딩
+        studentRecordFacade.createStudentRecord(memberId, recordType, request.semester().strip(),
+                request.studentRecord());
         return ApiResponse.success(CommonSuccessCode.CREATED);
     }
 
     @PatchMapping("/{recordId}")
-    public ApiResponse<Void> updateStudentRecordOverview(@MemberId final String memberUuid,
+    public ApiResponse<Void> updateStudentRecordOverview(@MemberId final long memberId,
                                                          @PathVariable final long recordId,
                                                          @RequestBody @Valid final StudentRecordOverviewUpdateRequest request) {
-        studentRecordFacade.updateStudentRecordOverview(memberUuid.strip(), recordId, request.studentNumber(),
-                request.studentName(), request.description(), request.byteCount());
+        studentRecordFacade.updateStudentRecordOverview(memberId, recordId, request.studentNumber().strip(),
+                request.studentName().strip(), request.description().strip(), request.byteCount());
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
     @DeleteMapping("/{recordId}")
-    public ApiResponse<Void> deleteStudentRecord(@MemberId final String memberUuid,
+    public ApiResponse<Void> deleteStudentRecord(@MemberId final long memberId,
                                                  @PathVariable final long recordId) {
-        studentRecordFacade.deleteStudentRecord(memberUuid.strip(), recordId);
+        studentRecordFacade.deleteStudentRecord(memberId, recordId);
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 }
