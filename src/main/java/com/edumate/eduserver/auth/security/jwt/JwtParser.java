@@ -22,7 +22,7 @@ public class JwtParser {
                 .getBody();
     }
 
-    public String getMemberUuidFromToken(final String refreshToken, final TokenType tokenType) {
+    public String getMemberUuidFromToken(final String refreshToken) {
         Claims claims = parseClaims(refreshToken);
         return claims.getSubject();
     }

@@ -16,6 +16,7 @@ import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.auth.service.Token;
 import com.edumate.eduserver.auth.service.TokenService;
 import com.edumate.eduserver.member.domain.Member;
+import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
@@ -73,7 +74,7 @@ public class AuthFacade {
     public MemberLoginResponse login(final String email, final String password) {
         Member member = memberService.getMemberByEmail(email);
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new MismatchedPasswordException(AuthErrorCode.MISMATCHED_PASSWORD);
+            throw new MismatchedPasswordException(MemberErrorCode.MEMBER_NOT_FOUND);
         }
         Token token = tokenService.generateTokens(member);
         return MemberLoginResponse.of(token.accessToken(), token.refreshToken());
@@ -89,7 +90,7 @@ public class AuthFacade {
     public MemberReissueResponse reissue(final String inputRefreshToken) {
         String refreshToken = tokenService.getRemovedBearerPrefixToken(inputRefreshToken);
         jwtValidator.validateToken(refreshToken, TokenType.REFRESH);
-        String memberUuid= jwtParser.getMemberUuidFromToken(refreshToken, TokenType.REFRESH);
+        String memberUuid = jwtParser.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
         Token token = tokenService.generateTokens(member);
         return MemberReissueResponse.of(token.accessToken(), token.refreshToken());

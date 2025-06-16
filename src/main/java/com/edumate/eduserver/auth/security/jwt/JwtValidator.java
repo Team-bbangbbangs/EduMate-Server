@@ -48,11 +48,15 @@ public class JwtValidator {
         String memberUuid = claims.getSubject();
         String parsedTokenType = claims.get(TOKEN_TYPE_CLAIM, String.class);
 
-        if (memberUuid == null || memberUuid.isBlank()) {
-            throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
-        }
         if (!expectedType.getType().equals(parsedTokenType)) {
             throw new IllegalTokenTypeException(AuthErrorCode.INVALID_TOKEN_TYPE);
+        }
+
+        if (memberUuid == null || memberUuid.isBlank()) {
+            if (expectedType == TokenType.ACCESS) {
+                throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
+            }
+            throw new IllegalTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE);
         }
     }
 }
