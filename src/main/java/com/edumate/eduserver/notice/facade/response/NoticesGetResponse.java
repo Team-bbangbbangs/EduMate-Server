@@ -1,18 +1,15 @@
 package com.edumate.eduserver.notice.facade.response;
 
-import com.edumate.eduserver.notice.service.dto.NoticeDto;
 import java.util.List;
 
 public record NoticesGetResponse(
         int totalPages,
         List<NoticeResponse> notices
 ) {
-    public static NoticesGetResponse of(final int totalPages, final List<NoticeDto> notices) {
+    public static NoticesGetResponse of(final int totalPages, final List<NoticeResponse> notices) {
         return new NoticesGetResponse(
                 totalPages,
-                notices.stream().map(notice -> NoticeResponse.of(
-                        notice.noticeId(), notice.category().getText(), notice.title(), notice.createdAt()
-                )).toList()
+                notices
         );
     }
 }
