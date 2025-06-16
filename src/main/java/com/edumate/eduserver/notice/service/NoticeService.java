@@ -2,6 +2,7 @@ package com.edumate.eduserver.notice.service;
 
 import com.edumate.eduserver.notice.domain.Notice;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
+import com.edumate.eduserver.notice.exception.InvalidNoticeCategoryException;
 import com.edumate.eduserver.notice.exception.NoticeNotFoundException;
 import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
 import com.edumate.eduserver.notice.repository.NoticeRepository;
@@ -34,4 +35,16 @@ public class NoticeService {
                 .orElseThrow(() -> new NoticeNotFoundException(NoticeErrorCode.NOTICE_NOT_FOUND));
     }
 
+    @Transactional
+    public void createNotice(final NoticeCategory category, final String title, final String content) {
+        validateCategory(category);
+        Notice notice = Notice.create(category, title, content);
+        noticeRepository.save(notice);
+    }
+
+    private void validateCategory(final NoticeCategory category) {
+        if (!category.isCreatable()) {
+            throw new InvalidNoticeCategoryException(NoticeErrorCode.UNWRITABLE_NOTICE_CATEGORY);
+        }
+    }
 }

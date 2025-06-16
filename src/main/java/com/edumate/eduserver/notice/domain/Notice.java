@@ -39,9 +39,17 @@ public class Notice extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    public Notice(NoticeCategory category, String title, String content) {
+    private Notice(final NoticeCategory category, final String title, final String content) {
         this.category = category;
         this.title = title;
         this.content = content;
+    }
+
+    public static Notice create(final NoticeCategory category, final String title, final String content) {
+        return Notice.builder()
+                .category(category)
+                .title(title)
+                .content(content)
+                .build();
     }
 }

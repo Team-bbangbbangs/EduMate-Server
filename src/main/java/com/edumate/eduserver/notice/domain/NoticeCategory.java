@@ -25,4 +25,8 @@ public enum NoticeCategory {
                 .findFirst()
                 .orElseThrow(() -> new InvalidNoticeCategoryException(NoticeErrorCode.INVALID_NOTICE_CATEGORY));
     }
+
+    public boolean isCreatable() {
+        return this != ALL;
+    }
 }

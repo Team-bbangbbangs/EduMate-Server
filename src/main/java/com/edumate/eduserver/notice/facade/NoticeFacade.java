@@ -41,4 +41,9 @@ public class NoticeFacade {
                 notice.getCreatedAt()
         );
     }
+
+    @Transactional
+    public void createNotice(final NoticeCategory category, final String title, final String content) {
+        noticeService.createNotice(category, title, content);
+    }
 }
