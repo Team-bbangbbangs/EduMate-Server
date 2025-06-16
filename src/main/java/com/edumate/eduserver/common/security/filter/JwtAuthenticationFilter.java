@@ -35,7 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwtValidator.validateToken(token, TokenType.ACCESS);
         String memberUuid = jwtParser.parseClaims(token).getSubject();
         UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
-        MemberAuthentication authentication = MemberAuthentication.create(memberUuid, userDetails.getAuthorities());
+        long memberId = Long.parseLong(userDetails.getUsername());
+        MemberAuthentication authentication = MemberAuthentication.create(memberId, userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);

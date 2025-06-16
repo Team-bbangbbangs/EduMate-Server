@@ -21,7 +21,8 @@ public class MemberAuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(final String memberUuid) {
         try {
             Member member = getMemberByUuid(memberUuid);
-            return new User(member.getMemberUuid(), member.getPassword(), member.getAuthorities());
+            String memberId = String.valueOf(member.getId());
+            return new User(memberId, member.getPassword(), member.getAuthorities());
         } catch (MemberNotFoundException e) {
             throw new UsernameNotFoundException("Member not found with UUID: " + memberUuid, e);
         }

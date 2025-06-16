@@ -1,7 +1,7 @@
 package com.edumate.eduserver.studentrecord.controller;
 
 import com.edumate.eduserver.common.ApiResponse;
-import com.edumate.eduserver.common.annotation.MemberUuid;
+import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
@@ -34,21 +34,21 @@ public class StudentRecordController {
     private static final String DEFAULT_SEMESTER = "2025-1";
 
     @PostMapping("/detail/{recordId}")
-    public ApiResponse<Void> updateStudentRecord(@MemberUuid final String memberUuid, @PathVariable final long recordId,
+    public ApiResponse<Void> updateStudentRecord(@MemberId final String memberUuid, @PathVariable final long recordId,
                                                  @RequestBody @Valid final StudentRecordUpdateRequest request) {
         studentRecordFacade.updateStudentRecord(memberUuid.strip(), recordId, request.description().strip(), request.byteCount());
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
     @GetMapping("/detail/{recordId}")
-    public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@MemberUuid final String memberUuid,
+    public ApiResponse<StudentRecordDetailResponse> getStudentRecord(@MemberId final String memberUuid,
                                                                      @PathVariable final long recordId) {
         StudentRecordDetailResponse response = studentRecordFacade.getStudentRecord(memberUuid.strip(), recordId);
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 
     @GetMapping("/{recordType}")
-    public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@MemberUuid final String memberUuid,
+    public ApiResponse<StudentRecordOverviewsResponse> getStudentRecordOverviews(@MemberId final String memberUuid,
                                                                                  @PathVariable final StudentRecordType recordType,
                                                                                  @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
         StudentRecordOverviewsResponse response = studentRecordFacade.getStudentRecordOverviews(memberUuid.strip(), recordType, semester.strip());
@@ -56,7 +56,7 @@ public class StudentRecordController {
     }
 
     @GetMapping("/{recordType}/students")
-    public ApiResponse<StudentNamesResponse> getStudentDetails(@MemberUuid final String memberUuid,
+    public ApiResponse<StudentNamesResponse> getStudentDetails(@MemberId final String memberUuid,
                                                                @PathVariable final StudentRecordType recordType,
                                                                @RequestParam(defaultValue = DEFAULT_SEMESTER) final String semester) {
         StudentNamesResponse response = studentRecordFacade.getStudentDetails(memberUuid.strip(), recordType, semester.strip());
@@ -64,7 +64,7 @@ public class StudentRecordController {
     }
 
     @PostMapping("/{recordType}/students/batch")
-    public ApiResponse<Void> createStudentRecords(@MemberUuid final String memberUuid,
+    public ApiResponse<Void> createStudentRecords(@MemberId final String memberUuid,
                                                   @PathVariable final StudentRecordType recordType,
                                                   @RequestBody @Valid final StudentRecordsCreateRequest request) {
         studentRecordFacade.createStudentRecords(memberUuid.strip(), recordType, request.semester().strip(), request.studentRecords());
@@ -72,7 +72,7 @@ public class StudentRecordController {
     }
 
     @PostMapping("/{recordType}/students")
-    public ApiResponse<Void> createStudentRecord(@MemberUuid final String memberUuid,
+    public ApiResponse<Void> createStudentRecord(@MemberId final String memberUuid,
                                                  @PathVariable final StudentRecordType recordType,
                                                  @RequestBody @Valid final StudentRecordCreateRequest request) {
         studentRecordFacade.createStudentRecord(memberUuid.strip(), recordType, request.semester().trim(), request.studentRecord()); // 멤버 아이디 하드코딩
@@ -80,7 +80,7 @@ public class StudentRecordController {
     }
 
     @PatchMapping("/{recordId}")
-    public ApiResponse<Void> updateStudentRecordOverview(@MemberUuid final String memberUuid,
+    public ApiResponse<Void> updateStudentRecordOverview(@MemberId final String memberUuid,
                                                          @PathVariable final long recordId,
                                                          @RequestBody @Valid final StudentRecordOverviewUpdateRequest request) {
         studentRecordFacade.updateStudentRecordOverview(memberUuid.strip(), recordId, request.studentNumber(),
@@ -89,7 +89,7 @@ public class StudentRecordController {
     }
 
     @DeleteMapping("/{recordId}")
-    public ApiResponse<Void> deleteStudentRecord(@MemberUuid final String memberUuid,
+    public ApiResponse<Void> deleteStudentRecord(@MemberId final String memberUuid,
                                                  @PathVariable final long recordId) {
         studentRecordFacade.deleteStudentRecord(memberUuid.strip(), recordId);
         return ApiResponse.success(CommonSuccessCode.OK);

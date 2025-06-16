@@ -8,7 +8,7 @@ import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.common.ApiResponse;
-import com.edumate.eduserver.common.annotation.MemberUuid;
+import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public class AuthController {
     }
 
     @PatchMapping("/logout")
-    public ApiResponse<Void> logout(@MemberUuid final String memberUuid) {
+    public ApiResponse<Void> logout(@MemberId final String memberUuid) {
         authFacade.logout(memberUuid.strip());
         return ApiResponse.success(CommonSuccessCode.OK);
     }

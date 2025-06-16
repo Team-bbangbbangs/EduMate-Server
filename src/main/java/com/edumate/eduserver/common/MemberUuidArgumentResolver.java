@@ -1,6 +1,6 @@
 package com.edumate.eduserver.common;
 
-import com.edumate.eduserver.common.annotation.MemberUuid;
+import com.edumate.eduserver.common.annotation.MemberId;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,9 @@ public class MemberUuidArgumentResolver implements HandlerMethodArgumentResolver
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        boolean hasMemberUuIdAnnotation = parameter.hasParameterAnnotation(MemberUuid.class);
-        boolean isStringType = parameter.getParameterType().equals(String.class);
-        return hasMemberUuIdAnnotation && isStringType;
+        boolean hasMemberUuIdAnnotation = parameter.hasParameterAnnotation(MemberId.class);
+        boolean isLongType = parameter.getParameterType().equals(Long.class);
+        return hasMemberUuIdAnnotation && isLongType;
     }
 
     @Override

@@ -99,6 +99,10 @@ public class Member extends BaseEntity {
                 .build();
     }
 
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Role.toGrantedAuthorities(Set.of(role));
+    }
+
     public void verifyAsTeacher() {
         this.role = Role.TEACHER;
         this.verifiedAt = LocalDateTime.now();
@@ -106,10 +110,6 @@ public class Member extends BaseEntity {
 
     public void updateRefreshToken(final String refreshToken) {
         this.refreshToken = refreshToken;
-    }
-
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Role.toGrantedAuthorities(Set.of(role));
     }
 
     public void updateNickname(final String nickname) {
