@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.edumate.eduserver.common.MemberIdArgumentResolver;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
@@ -48,12 +47,10 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @DisplayName("학생 생활기록부 컨트롤러 테스트")
-@Import(MemberIdArgumentResolver.class)
 @WebMvcTest(StudentRecordController.class)
 class StudentRecordControllerTest extends ControllerTest {
 

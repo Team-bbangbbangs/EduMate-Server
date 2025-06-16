@@ -4,6 +4,7 @@ import com.edumate.eduserver.common.security.MemberAuthentication;
 import com.edumate.eduserver.config.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -33,6 +34,11 @@ public class ControllerTest {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         MemberAuthentication authentication = MemberAuthentication.create(memberId, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
     }
 
     protected String toJson(Object obj) throws Exception {
