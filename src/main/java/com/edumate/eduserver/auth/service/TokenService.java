@@ -28,7 +28,7 @@ public class TokenService {
 
     public String getMemberUuidFromToken(final String refreshToken) {
         String prefixRemovedToken = jwtParser.resolveToken(refreshToken);
-        jwtValidator.validateToken(refreshToken, TokenType.REFRESH);
+        jwtValidator.validateToken(prefixRemovedToken, TokenType.REFRESH);
         return jwtParser.getMemberUuidFromToken(prefixRemovedToken);
     }
 }

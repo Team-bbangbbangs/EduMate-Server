@@ -6,7 +6,6 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
@@ -44,12 +43,9 @@ class StudentRecordFacadeTest {
         long recordId = 1L;
         String description = "안녕하세요";
         int byteCount = 10;
-        Member member = mock(Member.class);
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(100L);
-        willDoNothing().given(studentRecordService).update(100L, recordId, description, byteCount);
+        willDoNothing().given(studentRecordService).update(memberId, recordId, description, byteCount);
         studentRecordFacade.updateStudentRecord(memberId, recordId, description, byteCount);
-        verify(studentRecordService).update(100L, recordId, description, byteCount);
+        verify(studentRecordService).update(memberId, recordId, description, byteCount);
     }
 
     @Test
@@ -57,14 +53,13 @@ class StudentRecordFacadeTest {
     void getStudentRecord() {
         long memberId = 200L;
         long recordId = 2L;
-        Member member = mock(Member.class);
         StudentRecordDetail detail = mock(StudentRecordDetail.class);
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(200L);
-        given(studentRecordService.getRecordDetail(200L, recordId)).willReturn(detail);
+        given(studentRecordService.getRecordDetail(memberId, recordId)).willReturn(detail);
         given(detail.getDescription()).willReturn("desc");
         given(detail.getByteCount()).willReturn(20);
+
         StudentRecordDetailResponse response = studentRecordFacade.getStudentRecord(memberId, recordId);
+
         assertThat(response.description()).isEqualTo("desc");
         assertThat(response.byteCount()).isEqualTo(20);
     }
@@ -75,13 +70,12 @@ class StudentRecordFacadeTest {
         long memberId = 300L;
         StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
         String semester = "2024-1";
-        Member member = mock(Member.class);
         List<StudentRecordDetail> details = List.of(mock(StudentRecordDetail.class));
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(300L);
-        given(studentRecordService.getAll(300L, type, semester)).willReturn(details);
+        given(studentRecordService.getAll(memberId, type, semester)).willReturn(details);
+
         StudentRecordOverviewsResponse response = studentRecordFacade.getStudentRecordOverviews(memberId, type,
                 semester);
+
         assertThat(response).isNotNull();
     }
 
@@ -91,12 +85,11 @@ class StudentRecordFacadeTest {
         long memberId = 400L;
         StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
         String semester = "2024-2";
-        Member member = mock(Member.class);
         List<StudentRecordDetail> details = List.of(mock(StudentRecordDetail.class));
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(400L);
-        given(studentRecordService.getStudentNames(400L, type, semester)).willReturn(details);
+        given(studentRecordService.getStudentNames(memberId, type, semester)).willReturn(details);
+
         StudentNamesResponse response = studentRecordFacade.getStudentDetails(memberId, type, semester);
+
         assertThat(response).isNotNull();
     }
 
@@ -107,12 +100,11 @@ class StudentRecordFacadeTest {
         StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
         String semester = "2024-2";
         List<StudentRecordInfo> infos = List.of(mock(StudentRecordInfo.class));
-        Member member = mock(Member.class);
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(500L);
-        willDoNothing().given(studentRecordService).createStudentRecords(500L, type, semester, infos);
+        willDoNothing().given(studentRecordService).createStudentRecords(memberId, type, semester, infos);
+
         studentRecordFacade.createStudentRecords(memberId, type, semester, infos);
-        verify(studentRecordService).createStudentRecords(500L, type, semester, infos);
+
+        verify(studentRecordService).createStudentRecords(memberId, type, semester, infos);
     }
 
     @Test
@@ -122,11 +114,10 @@ class StudentRecordFacadeTest {
         StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
         String semester = "2024-2";
         StudentRecordCreateInfo info = mock(StudentRecordCreateInfo.class);
-        Member member = mock(Member.class);
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(500L);
+
         studentRecordFacade.createStudentRecord(memberId, type, semester, info);
-        verify(studentRecordService).createStudentRecord(500L, type, semester, info);
+
+        verify(studentRecordService).createStudentRecord(memberId, type, semester, info);
     }
 
     @Test
@@ -138,14 +129,15 @@ class StudentRecordFacadeTest {
         String studentName = "김철수";
         String description = "리더십을 발휘하여 팀 프로젝트를 성공적으로 완수함.";
         int byteCount = 120;
-        Member member = mock(Member.class);
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(200L);
+
         willDoNothing().given(studentRecordService)
-                .updateStudentRecordOverview(200L, recordId, studentNumber, studentName, description, byteCount);
-        studentRecordFacade.updateStudentRecordOverview(memberId, recordId, studentNumber, studentName, description, byteCount);
+                .updateStudentRecordOverview(memberId, recordId, studentNumber, studentName, description, byteCount);
+
+        studentRecordFacade.updateStudentRecordOverview(memberId, recordId, studentNumber, studentName, description,
+                byteCount);
+
         verify(studentRecordService)
-                .updateStudentRecordOverview(200L, recordId, studentNumber, studentName, description, byteCount);
+                .updateStudentRecordOverview(memberId, recordId, studentNumber, studentName, description, byteCount);
     }
 
     @Test
@@ -153,12 +145,12 @@ class StudentRecordFacadeTest {
     void deleteStudentRecordFacade() {
         long memberId = 300L;
         long recordId = 3L;
-        Member member = mock(Member.class);
-        given(memberService.getMemberById(memberId)).willReturn(member);
-        given(member.getId()).willReturn(300L);
-        willDoNothing().given(studentRecordService).deleteStudentRecord(300L, recordId);
+
+        willDoNothing().given(studentRecordService).deleteStudentRecord(memberId, recordId);
+
         studentRecordFacade.deleteStudentRecord(memberId, recordId);
-        verify(studentRecordService).deleteStudentRecord(300L, recordId);
+
+        verify(studentRecordService).deleteStudentRecord(memberId, recordId);
     }
 }
 
