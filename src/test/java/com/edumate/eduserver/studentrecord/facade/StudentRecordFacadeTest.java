@@ -147,5 +147,18 @@ class StudentRecordFacadeTest {
         verify(studentRecordService)
                 .updateStudentRecordOverview(200L, recordId, studentNumber, studentName, description, byteCount);
     }
+
+    @Test
+    @DisplayName("생활기록부 삭제가 정상 동작한다.")
+    void deleteStudentRecordFacade() {
+        String memberUuid = "uuid-3";
+        long recordId = 3L;
+        Member member = mock(Member.class);
+        given(memberService.getMemberByUuid(memberUuid)).willReturn(member);
+        given(member.getId()).willReturn(300L);
+        willDoNothing().given(studentRecordService).deleteStudentRecord(300L, recordId);
+        studentRecordFacade.deleteStudentRecord(memberUuid, recordId);
+        verify(studentRecordService).deleteStudentRecord(300L, recordId);
+    }
 }
 

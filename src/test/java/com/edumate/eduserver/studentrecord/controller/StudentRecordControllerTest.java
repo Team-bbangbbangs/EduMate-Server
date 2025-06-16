@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -491,6 +492,33 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("studentName").description("학생 이름"),
                                 fieldWithPath("description").description("생기부 내용"),
                                 fieldWithPath("byteCount").description("기록 데이터 크기")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("학생 생활기록부를 성공적으로 삭제한다.")
+    void deleteStudentRecord() throws Exception {
+        // given
+        long recordId = 1L;
+        doNothing().when(studentRecordFacade).deleteStudentRecord(anyString(), anyLong());
+
+        // when & then
+        mockMvc.perform(delete(BASE_URL + "/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "delete-success",
+                        pathParameters(
+                                parameterWithName("recordId").description("삭제할 생활기록부 ID")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
