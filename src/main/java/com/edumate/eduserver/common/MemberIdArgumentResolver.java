@@ -14,9 +14,10 @@ public class MemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        boolean hasMemberUuIdAnnotation = parameter.hasParameterAnnotation(MemberId.class);
-        boolean isLongType = parameter.getParameterType().equals(long.class);
-        return hasMemberUuIdAnnotation && isLongType;
+        boolean hasMemberIdAnnotation = parameter.hasParameterAnnotation(MemberId.class);
+        Class<?> type = parameter.getParameterType();
+        boolean isLongType = type.equals(long.class) || type.equals(Long.class);
+        return hasMemberIdAnnotation && isLongType;
     }
 
     @Override
