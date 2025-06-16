@@ -22,7 +22,7 @@ public class NoticeFacade {
     public NoticesGetResponse getNotices(final NoticeCategory category, final int page) {
         int zeroBasedPage = page - 1;
         Page<Notice> noticePages = noticeService.getNotices(category, zeroBasedPage);
-        List<NoticeResponse> notices = noticePages.stream()
+        List<NoticeResponse> notices = noticePages.getContent().stream()
                 .map(notice -> new NoticeResponse(notice.getId(), notice.getCategory().getText(), notice.getTitle(),
                         notice.getCreatedAt())).toList();
         return NoticesGetResponse.of(
