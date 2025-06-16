@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.edumate.eduserver.common.MemberIdArgumentResolver;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
@@ -47,10 +48,12 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @DisplayName("학생 생활기록부 컨트롤러 테스트")
+@Import(MemberIdArgumentResolver.class)
 @WebMvcTest(StudentRecordController.class)
 class StudentRecordControllerTest extends ControllerTest {
 
@@ -64,13 +67,13 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("학생 생활기록부 내용을 성공적으로 업데이트 한다.")
-    void updateStudentRecord_Success() throws Exception {
+    void updateStudentRecord() throws Exception {
         // given
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("학생의 행동 특성에 대한 기록", 100);
         long recordId = 1L;
 
         doNothing().when(studentRecordFacade)
-                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
@@ -100,12 +103,12 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("학생 생활기록부 내용을 성공적으로 불러온다.")
-    void getStudentRecord_Success() throws Exception {
+    void getStudentRecord() throws Exception {
         // given
         long recordId = 1L;
 
         StudentRecordDetailResponse dummyRecordResponse = new StudentRecordDetailResponse("이 학생은 바르고 성실한 학생입니다.", 15);
-        when(studentRecordFacade.getStudentRecord(anyString(), anyLong()))
+        when(studentRecordFacade.getStudentRecord(anyLong(), anyLong()))
                 .thenReturn(dummyRecordResponse);
 
         // when & then
@@ -138,7 +141,7 @@ class StudentRecordControllerTest extends ControllerTest {
         StudentDetail detail2 = new StudentDetail(2L, "이승섭");
         StudentNamesResponse dummyResponse = new StudentNamesResponse(List.of(detail1, detail2));
 
-        when(studentRecordFacade.getStudentDetails(anyString(), any(StudentRecordType.class), any(String.class)))
+        when(studentRecordFacade.getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class)))
                 .thenReturn(dummyResponse);
         String recordType = StudentRecordType.ABILITY_DETAIL.getValue().toLowerCase();
 
@@ -175,7 +178,7 @@ class StudentRecordControllerTest extends ControllerTest {
                 List.of(new StudentRecordInfo("2020123", "김가연"), new StudentRecordInfo("2931232", "김지안"))
         );
         doNothing().when(studentRecordFacade)
-                .createStudentRecords(anyString(), any(StudentRecordType.class), anyString(), anyList());
+                .createStudentRecords(anyLong(), any(StudentRecordType.class), anyString(), anyList());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/{recordType}/students/batch", RECORD_TYPE)
@@ -207,14 +210,14 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("존재하지 않은 학생 레코드 ID로 요청을 보내면 실패한다.")
-    void updateStudentRecord_RecordNotFound() throws Exception {
+    void recordNotFound() throws Exception {
         // given
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("2023-1", 100);
         long recordId = 999L;
 
         doThrow(new StudentRecordDetailNotFoundException(STUDENT_RECORD_DETAIL_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
@@ -245,14 +248,14 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("존재하지 않은 학생 생활기록부 관련 요청을 보내면 실패한다.")
-    void updateStudentRecord_MemberRecordNotFound() throws Exception {
+    void memberRecordNotFound() throws Exception {
         // given
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("학생의 행동 특성에 대한 기록", 100);
         long recordId = 1L;
 
         doThrow(new MemberStudentRecordNotFoundException(MEMBER_STUDENT_RECORD_NOT_FOUND))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
@@ -283,7 +286,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("description 필드 누락하여 요청을 보내면 실패한다.")
-    void updateStudentRecord_MissingDescription() throws Exception {
+    void missingDescription() throws Exception {
         // given
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest(null, 100);
         long recordId = 1L;
@@ -316,7 +319,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("음수 byteCount를 보내면 요청에 실패한다.")
-    void updateStudentRecord_NegativeByteCount() throws Exception {
+    void negativeByteCount() throws Exception {
         // given
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("학생의 행동 특성에 대한 기록", -1);
         long recordId = 1L;
@@ -355,7 +358,7 @@ class StudentRecordControllerTest extends ControllerTest {
 
         doThrow(new InvalidSemesterFormatException(INVALID_SEMESTER_FORMAT, invalidSemester))
                 .when(studentRecordFacade)
-                .getStudentDetails(anyString(), any(StudentRecordType.class), any(String.class));
+                .getStudentDetails(anyLong(), any(StudentRecordType.class), any(String.class));
 
         // when & then
         mockMvc.perform(get(BASE_URL + "/{recordType}/students", RECORD_TYPE)
@@ -384,14 +387,14 @@ class StudentRecordControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("권한이 없는 사용자가 생기부 수정 시 UpdatePermissionDeniedException이 발생한다.")
-    void updateStudentRecord_PermissionDenied() throws Exception {
+    void permissionDenied() throws Exception {
         // given
         StudentRecordUpdateRequest request = new StudentRecordUpdateRequest("허용되지 않은 수정", 100);
         long recordId = 99L;
         doThrow(new UpdatePermissionDeniedException(
                 UPDATE_PERMISSION_DENIED))
                 .when(studentRecordFacade)
-                .updateStudentRecord(anyString(), anyLong(), anyString(), anyInt());
+                .updateStudentRecord(anyLong(), anyLong(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/detail/{recordId}", recordId)
@@ -424,10 +427,11 @@ class StudentRecordControllerTest extends ControllerTest {
     void insertStudentRecord() throws Exception {
         // given
         StudentRecordCreateRequest request = new StudentRecordCreateRequest(
-                "2025-1", new StudentRecordCreateInfo("2020123", "유태근", "프로그래밍 동아리에서 웹 프로젝트를 진행하며 백엔드 개발을 맡아 로그인 기능과 데이터 저장 기능을 구현함.", 149)
+                "2025-1", new StudentRecordCreateInfo("2020123", "유태근",
+                "프로그래밍 동아리에서 웹 프로젝트를 진행하며 백엔드 개발을 맡아 로그인 기능과 데이터 저장 기능을 구현함.", 149)
         );
         doNothing().when(studentRecordFacade)
-                .createStudentRecord(anyString(), any(StudentRecordType.class), anyString(), any());
+                .createStudentRecord(anyLong(), any(StudentRecordType.class), anyString(), any());
 
         // when & then
         mockMvc.perform(post(BASE_URL + "/{recordType}/students", RECORD_TYPE)
@@ -471,7 +475,7 @@ class StudentRecordControllerTest extends ControllerTest {
         );
 
         doNothing().when(studentRecordFacade)
-                .updateStudentRecordOverview(anyString(), anyLong(), anyString(), anyString(), anyString(), anyInt());
+                .updateStudentRecordOverview(anyLong(), anyLong(), anyString(), anyString(), anyString(), anyInt());
 
         // when & then
         mockMvc.perform(patch(BASE_URL + "/{recordId}", 1L)
@@ -506,7 +510,7 @@ class StudentRecordControllerTest extends ControllerTest {
     void deleteStudentRecord() throws Exception {
         // given
         long recordId = 1L;
-        doNothing().when(studentRecordFacade).deleteStudentRecord(anyString(), anyLong());
+        doNothing().when(studentRecordFacade).deleteStudentRecord(anyLong(), anyLong());
 
         // when & then
         mockMvc.perform(delete(BASE_URL + "/{recordId}", recordId)
