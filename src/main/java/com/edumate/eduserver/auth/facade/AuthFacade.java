@@ -81,8 +81,8 @@ public class AuthFacade {
     }
 
     @Transactional
-    public void logout(final String memberUuid) {
-        Member member = memberService.getMemberByUuid(memberUuid);
+    public void logout(final long memberId) {
+        Member member = memberService.getMemberById(memberId);
         authService.logout(member);
     }
 
