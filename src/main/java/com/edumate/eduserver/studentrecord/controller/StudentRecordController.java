@@ -14,6 +14,7 @@ import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailRe
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -84,6 +85,13 @@ public class StudentRecordController {
                                                          @RequestBody @Valid final StudentRecordOverviewUpdateRequest request) {
         studentRecordFacade.updateStudentRecordOverview(memberUuid.strip(), recordId, request.studentNumber(),
                 request.studentName(), request.description(), request.byteCount());
+        return ApiResponse.success(CommonSuccessCode.OK);
+    }
+
+    @DeleteMapping("/{recordId}")
+    public ApiResponse<Void> deleteStudentRecord(@MemberUuid final String memberUuid,
+                                                 @PathVariable final long recordId) {
+        studentRecordFacade.deleteStudentRecord(memberUuid.strip(), recordId);
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 }

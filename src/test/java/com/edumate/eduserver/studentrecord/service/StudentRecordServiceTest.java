@@ -234,4 +234,24 @@ class StudentRecordServiceTest extends ServiceTest {
                 () -> assertThat(updated.getByteCount()).isEqualTo(updatedByteCount)
         );
     }
+
+    @Test
+    @DisplayName("생활기록부 한 개를 삭제한다.")
+    void deleteStudentRecordService() {
+        // given
+        long memberId = 1L;
+        StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
+        String semester = "2025-1";
+        StudentRecordCreateInfo info = StudentRecordCreateInfo.of("2023002", "유태근", "삭제될 생기부", 22);
+
+        StudentRecordDetail created = studentRecordService.createStudentRecord(memberId, recordType, semester, info);
+        long recordId = created.getId();
+
+        // when
+        studentRecordService.deleteStudentRecord(memberId, recordId);
+
+        // then
+        boolean exists = studentRecordDetailRepository.findById(recordId).isPresent();
+        assertThat(exists).isFalse();
+    }
 }

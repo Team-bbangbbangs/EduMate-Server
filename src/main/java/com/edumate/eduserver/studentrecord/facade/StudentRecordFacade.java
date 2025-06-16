@@ -72,4 +72,10 @@ public class StudentRecordFacade {
         studentRecordService.updateStudentRecordOverview(member.getId(), recordId, studentNumber, studentName,
                 description, byteCount);
     }
+
+    @Transactional
+    public void deleteStudentRecord(final String memberUuid, final long recordId) {
+        Member member = memberService.getMemberByUuid(memberUuid);
+        studentRecordService.deleteStudentRecord(member.getId(), recordId);
+    }
 }

@@ -74,6 +74,7 @@ public class StudentRecordService {
     @Transactional
     public StudentRecordDetail createStudentRecord(final long memberId, final StudentRecordType recordType, final String semester,
                                     final StudentRecordCreateInfo studentRecordCreateInfo) {
+        validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         StudentRecordDetail studentRecordDetail = StudentRecordDetail.create(memberStudentRecord,
                 studentRecordCreateInfo.studentNumber(), studentRecordCreateInfo.studentName(),
@@ -87,6 +88,13 @@ public class StudentRecordService {
         StudentRecordDetail existingDetail = getRecordDetailById(recordId);
         validatePermission(existingDetail.getMemberStudentRecord(), memberId);
         existingDetail.update(studentNumber, studentName, description, byteCount);
+    }
+
+    @Transactional
+    public void deleteStudentRecord(final long memberId, final long recordId) {
+        StudentRecordDetail existingDetail = getRecordDetailById(recordId);
+        validatePermission(existingDetail.getMemberStudentRecord(), memberId);
+        studentRecordDetailRepository.deleteById(recordId);
     }
 
     private void validatePermission(final MemberStudentRecord memberRecord, final long memberId) {
