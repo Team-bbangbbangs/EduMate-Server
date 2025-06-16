@@ -30,7 +30,10 @@ public class JwtValidator {
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-            throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
+            if (type == TokenType.ACCESS) {
+                throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
+            }
+            throw new IllegalTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE);
         } catch (SignatureException e) {
             throw new InvalidSignatureTokenException(AuthErrorCode.INVALID_SIGNATURE_TOKEN);
         } catch (IllegalTokenException | IllegalTokenTypeException e) {
