@@ -16,6 +16,12 @@ include::{snippets}/auth/signup-fail/invalid-password-format/response-body.adoc[
 include::{snippets}/auth/signup-fail/invalid-password-length/response-body.adoc[]
 include::{snippets}/auth/signup-fail/invalid-password-repetition/response-body.adoc[]
 
+=== 교사 인증을 위한 이메일 전송
+
+==== 성공
+
+operation::auth/send-email-success[snippets="http-request,request-headers,http-response,response-fields"]
+
 === 이메일 인증 코드 인증
 
 ==== 성공
@@ -41,19 +47,21 @@ operation::auth/verify-email-fail/auth-code-not-found[snippets="query-parameters
 operation::auth/login-success[snippets="http-request,request-fields,http-response,response-fields"]
 
 ==== 실패: 비밀번호가 일치하지 않음
+
 operation::auth/login-fail/invalid-password[snippets="http-request,http-response"]
 
 ==== 실패: 존재하지 않는 회원
+
 operation::auth/login-fail/member-not-found[snippets="http-request,http-response"]
 
 === 로그아웃
 
 ==== 성공
 
-operation::auth/logout-success[snippets="http-request,http-response"]
+operation::auth/logout-success[snippets="http-request,request-headers,http-response"]
 
 === 엑세스 토큰 재발급
 
 ==== 성공
 
-operation::auth/reissue-success[snippets="http-request,http-response,response-fields"]
+operation::auth/reissue-success[snippets="http-request,request-headers,http-response,response-fields"]
