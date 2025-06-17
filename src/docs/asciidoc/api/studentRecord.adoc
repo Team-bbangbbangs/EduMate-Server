@@ -115,3 +115,6 @@ operation::student-record/create-semester-success[snippets="request-headers,path
 
 ==== 실패: 잘못된 학기 형식
 operation::student-record/create-semester-fail/invalid-semester-format[snippets="http-request,http-response"]
+
+==== 실패: 이미 존재하는 학기
+operation::student-record/create-semester-fail/already-exists[snippets="http-request,http-response"]
