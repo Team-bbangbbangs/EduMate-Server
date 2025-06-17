@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,13 +19,9 @@ public class MemberAuthenticationService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String memberUuid) {
-        try {
-            Member member = getMemberByUuid(memberUuid);
-            String memberId = String.valueOf(member.getId());
-            return new User(memberId, member.getPassword(), member.getAuthorities());
-        } catch (MemberNotFoundException e) {
-            throw new UsernameNotFoundException("Member not found with UUID: " + memberUuid, e);
-        }
+        Member member = getMemberByUuid(memberUuid);
+        String memberId = String.valueOf(member.getId());
+        return new User(memberId, member.getPassword(), member.getAuthorities());
     }
 
     private Member getMemberByUuid(final String memberUuid) {
