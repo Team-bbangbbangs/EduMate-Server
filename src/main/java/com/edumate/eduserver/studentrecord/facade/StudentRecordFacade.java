@@ -1,5 +1,7 @@
 package com.edumate.eduserver.studentrecord.facade;
 
+import com.edumate.eduserver.member.domain.Member;
+import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentRecordFacade {
 
     private final StudentRecordService studentRecordService;
+    private final MemberService memberService;
 
     @Transactional
     public void updateStudentRecord(final long memberId, final long recordId, final String description,
@@ -67,5 +70,11 @@ public class StudentRecordFacade {
     @Transactional
     public void deleteStudentRecord(final long memberId, final long recordId) {
         studentRecordService.deleteStudentRecord(memberId, recordId);
+    }
+
+    @Transactional
+    public void createSemesterRecord(final long memberId, final StudentRecordType recordType, final String semester) {
+        Member member = memberService.getMemberById(memberId);
+        studentRecordService.createSemesterRecord(member, recordType, semester);
     }
 }

@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,20 +15,17 @@ import org.springframework.stereotype.Service;
 public class MemberAuthenticationService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+    private static final boolean NOT_WITHDRAWN = false;
 
     @Override
     public UserDetails loadUserByUsername(final String memberUuid) {
-        try {
-            Member member = getMemberByUuid(memberUuid);
-            String memberId = String.valueOf(member.getId());
-            return new User(memberId, member.getPassword(), member.getAuthorities());
-        } catch (MemberNotFoundException e) {
-            throw new UsernameNotFoundException("Member not found with UUID: " + memberUuid, e);
-        }
+        Member member = getMemberByUuid(memberUuid);
+        String memberId = String.valueOf(member.getId());
+        return new User(memberId, member.getPassword(), member.getAuthorities());
     }
 
     private Member getMemberByUuid(final String memberUuid) {
-        return memberRepository.findByMemberUuid(memberUuid)
+        return memberRepository.findByMemberUuidAndIsDeleted(memberUuid, NOT_WITHDRAWN)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }

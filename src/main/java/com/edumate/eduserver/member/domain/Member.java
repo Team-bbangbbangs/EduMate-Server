@@ -119,4 +119,13 @@ public class Member extends BaseEntity {
     public boolean isVerifyTeacher() {
         return this.role != Role.PENDING_TEACHER;
     }
+
+    public void restore(final String password, final Subject subject, final School school) {
+        this.isDeleted = false;
+        this.deletedAt = null;
+        this.password = password;
+        this.subject = subject;
+        this.school = school;
+        this.role = Role.PENDING_TEACHER;
+    }
 }

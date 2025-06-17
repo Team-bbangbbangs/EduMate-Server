@@ -1,10 +1,12 @@
 package com.edumate.eduserver.studentrecord.service;
 
+import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
+import com.edumate.eduserver.studentrecord.exception.AlreadyExistingRecordException;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
@@ -45,16 +47,19 @@ public class StudentRecordService {
 
     private StudentRecordDetail getRecordDetailById(final long recordId) {
         return studentRecordDetailRepository.findById(recordId)
-                .orElseThrow(() -> new StudentRecordDetailNotFoundException(StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
+                .orElseThrow(() -> new StudentRecordDetailNotFoundException(
+                        StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND));
     }
 
-    public List<StudentRecordDetail> getAll(final long memberId, final StudentRecordType recordType, final String semester) {
+    public List<StudentRecordDetail> getAll(final long memberId, final StudentRecordType recordType,
+                                            final String semester) {
         validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         return findRecordDetails(memberStudentRecord);
     }
 
-    public List<StudentRecordDetail> getStudentNames(final long memberId, final StudentRecordType recordType, final String semester) {
+    public List<StudentRecordDetail> getStudentNames(final long memberId, final StudentRecordType recordType,
+                                                     final String semester) {
         validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         return findRecordDetails(memberStudentRecord);
@@ -65,15 +70,17 @@ public class StudentRecordService {
                                      final List<StudentRecordInfo> studentRecordInfos) {
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         List<StudentRecordDetail> details = studentRecordInfos.stream()
-                .map(studentRecord -> StudentRecordDetail.create(memberStudentRecord, studentRecord.studentNumber(), studentRecord.studentName(),
+                .map(studentRecord -> StudentRecordDetail.create(memberStudentRecord, studentRecord.studentNumber(),
+                        studentRecord.studentName(),
                         INITIAL_DESCRIPTION, INITIAL_BYTE_COUNT))
                 .toList();
         studentRecordDetailRepository.saveAll(details);
     }
 
     @Transactional
-    public StudentRecordDetail createStudentRecord(final long memberId, final StudentRecordType recordType, final String semester,
-                                    final StudentRecordCreateInfo studentRecordCreateInfo) {
+    public StudentRecordDetail createStudentRecord(final long memberId, final StudentRecordType recordType,
+                                                   final String semester,
+                                                   final StudentRecordCreateInfo studentRecordCreateInfo) {
         validateSemesterPattern(semester);
         MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
         StudentRecordDetail studentRecordDetail = StudentRecordDetail.create(memberStudentRecord,
@@ -97,6 +104,21 @@ public class StudentRecordService {
         studentRecordDetailRepository.deleteById(recordId);
     }
 
+    @Transactional
+    public void createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
+        validateSemesterPattern(semester);
+        validateExistingRecord(member.getId(), recordType, semester);
+        MemberStudentRecord studentRecord = MemberStudentRecord.create(member, recordType, semester);
+        memberStudentRecordRepository.save(studentRecord);
+    }
+
+    private void validateExistingRecord(final long memberId, final StudentRecordType recordType, final String semester) {
+        memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
+                .ifPresent(record -> {
+                    throw new AlreadyExistingRecordException(StudentRecordErrorCode.RECORD_ALREADY_EXISTS);
+                });
+    }
+
     private void validatePermission(final MemberStudentRecord memberRecord, final long memberId) {
         if (memberRecord.getMember().getId() != memberId) {
             throw new UpdatePermissionDeniedException(StudentRecordErrorCode.UPDATE_PERMISSION_DENIED);
@@ -109,8 +131,10 @@ public class StudentRecordService {
         }
     }
 
-    private MemberStudentRecord getMemberStudentRecord(final long memberId, final StudentRecordType recordType, final String semester) {
-        return memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
+    private MemberStudentRecord getMemberStudentRecord(final long memberId, final StudentRecordType recordType,
+                                                       final String semester) {
+        return memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType,
+                        semester)
                 .orElseThrow(() -> new MemberStudentRecordNotFoundException(
                         StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND));
     }
