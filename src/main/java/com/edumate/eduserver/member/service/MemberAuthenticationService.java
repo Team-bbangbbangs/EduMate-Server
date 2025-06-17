@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class MemberAuthenticationService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+    private static final boolean NOT_WITHDRAWN = false;
 
     @Override
     public UserDetails loadUserByUsername(final String memberUuid) {
@@ -29,7 +30,7 @@ public class MemberAuthenticationService implements UserDetailsService {
     }
 
     private Member getMemberByUuid(final String memberUuid) {
-        return memberRepository.findByMemberUuid(memberUuid)
+        return memberRepository.findByMemberUuidAndIsDeleted(memberUuid, NOT_WITHDRAWN)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }
