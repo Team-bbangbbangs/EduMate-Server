@@ -51,4 +51,8 @@ public class MemberService {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
+
+    public boolean isAdmin(final Member member) {
+        return member.getRole() == Role.ADMIN;
+    }
 }
