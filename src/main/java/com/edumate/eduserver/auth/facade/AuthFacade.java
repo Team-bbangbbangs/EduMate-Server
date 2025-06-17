@@ -34,11 +34,11 @@ public class AuthFacade {
     private final PasswordEncoder passwordEncoder;
     private final RandomCodeGenerator randomCodeGenerator;
 
-    public void sendVerificationEmail(final String memberUuid) {
-        Member member = memberService.getMemberByUuid(memberUuid);
+    public void sendVerificationEmail(final long memberId) {
+        Member member = memberService.getMemberById(memberId);
         String verificationCode = randomCodeGenerator.generate();
         authService.saveCode(member, verificationCode);
-        emailService.sendEmail(member.getEmail(), memberUuid, verificationCode);
+        emailService.sendEmail(member.getEmail(), member.getMemberUuid(), verificationCode);
     }
 
     @Transactional

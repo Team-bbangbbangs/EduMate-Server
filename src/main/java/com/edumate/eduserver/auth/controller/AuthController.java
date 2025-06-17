@@ -1,6 +1,5 @@
 package com.edumate.eduserver.auth.controller;
 
-import com.edumate.eduserver.auth.controller.request.EmailSendRequest;
 import com.edumate.eduserver.auth.controller.request.MemberLoginRequest;
 import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
 import com.edumate.eduserver.auth.facade.AuthFacade;
@@ -30,8 +29,8 @@ public class AuthController {
     private final AuthFacade authFacade;
 
     @PostMapping("/email/send-verification")
-    public ApiResponse<Void> sendVerificationEmail(@RequestBody @Valid final EmailSendRequest request) {
-        authFacade.sendVerificationEmail(request.memberUuid().strip());
+    public ApiResponse<Void> sendVerificationEmail(@MemberId final long memberId) {
+        authFacade.sendVerificationEmail(memberId);
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 

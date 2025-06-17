@@ -4,7 +4,7 @@
 
 ==== 성공
 
-operation::student-record/update-success[snippets="path-parameters,http-request,request-fields,http-response,response-fields"]
+operation::student-record/update-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
 
 ==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
 
@@ -15,6 +15,7 @@ operation::student-record/fail/member-record-not-found[snippets="http-request,ht
 operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
 
 ==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
 operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
 
 ==== 실패: 유효하지 않은 요청 값
@@ -26,7 +27,7 @@ include::{snippets}/student-record/update-fail/negative-byte-count/http-response
 
 ==== 성공
 
-operation::student-record/get-success[snippets="path-parameters,http-request,http-response"]
+operation::student-record/get-success[snippets="request-headers,path-parameters,http-request,http-response"]
 
 ==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
 
@@ -37,13 +38,14 @@ operation::student-record/fail/member-record-not-found[snippets="http-response"]
 operation::student-record/fail/record-not-found[snippets="http-response"]
 
 ==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
 operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
 
 === 학생 이름 불러오기
 
 ==== 성공
 
-operation::student-record/get-names-success[snippets="path-parameters,query-parameters,http-request,http-response"]
+operation::student-record/get-names-success[snippets="request-headers,path-parameters,query-parameters,http-request,http-response"]
 
 ==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
 
@@ -57,19 +59,21 @@ operation::student-record/get-names-fail/invalid-semester-format[snippets=http-r
 
 ==== 성공
 
-operation::student-record/create-success[snippets="path-parameters,http-request,request-fields,http-response,response-fields"]
+operation::student-record/create-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
 
 ==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
 operation::student-record/fail/member-record-not-found[snippets="http-response"]
 
 ==== 실패: 유효하지 않은 학기 형식
+
 operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
 
 === 생활기록부 한 명 추가
 
 ==== 성공
 
-operation::student-record/create-one-success[snippets="path-parameters,http-request,request-fields,http-response,response-fields"]
+operation::student-record/create-one-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
 
 ==== 실패: 유효하지 않은 학기 형식
 
@@ -79,24 +83,26 @@ operation::student-record/get-names-fail/invalid-semester-format[snippets=http-r
 
 ==== 성공
 
-operation::student-record/update-overview-success[snippets="path-parameters,http-request,request-fields,http-response,response-fields"]
+operation::student-record/update-overview-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
 
 ==== 실패: 특정 학생의 생기부가 존재하지 않음
 
 operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
 
 ==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
 operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
 
 === 생활기록부 한 명 삭제
 
 ==== 성공
 
-operation::student-record/delete-success[snippets="path-parameters,http-request,http-response,response-fields"]
+operation::student-record/delete-success[snippets="request-headers,path-parameters,http-request,http-response,response-fields"]
 
 ==== 실패: 특정 학생의 생기부가 존재하지 않음
 
 operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
 
 ==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
 operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
