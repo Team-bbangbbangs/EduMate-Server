@@ -1,10 +1,12 @@
 package com.edumate.eduserver.auth.controller;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -14,8 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
 import com.edumate.eduserver.auth.controller.request.MemberLoginRequest;
+import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
@@ -23,9 +25,9 @@ import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
-import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
+import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
@@ -416,6 +418,9 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "logout-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("인증된 액세스 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
@@ -440,6 +445,9 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.data.accessToken").value("new-access-token"))
                 .andExpect(jsonPath("$.data.refreshToken").value("new-refresh-token"))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("리프레시 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
@@ -463,6 +471,9 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "send-email-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),

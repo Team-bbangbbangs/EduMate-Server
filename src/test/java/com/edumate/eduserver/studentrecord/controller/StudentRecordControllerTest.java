@@ -12,6 +12,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
@@ -83,6 +85,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
                         ),
@@ -117,6 +122,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("학생 레코드 ID")
                         ),
@@ -131,7 +139,7 @@ class StudentRecordControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 정�� 목록을 성공적으로 불러온다.")
+    @DisplayName("특정 학기 특정 생활기록부 항목에 작성된 학생 정보 목록을 성공적으로 불러온다.")
     void getStudentName() throws Exception {
         // given
         StudentDetail detail1 = new StudentDetail(1L, "김가연");
@@ -151,6 +159,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordType").description("생활기록부 항목 타입")
                         ),
@@ -188,6 +199,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-201"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "create-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordType").description("생활기록부 항목 타입")
                         ),
@@ -228,6 +242,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.message").value(
                         STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/record-not-found",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
                         ),
@@ -266,6 +283,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.message").value(
                         MEMBER_STUDENT_RECORD_NOT_FOUND.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "fail/member-record-not-found",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
                         ),
@@ -299,6 +319,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-4002"))
                 .andExpect(jsonPath("$.message").value("null 값은 허용되지 않습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/missing-description",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
                         ),
@@ -332,6 +355,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-4002"))
                 .andExpect(jsonPath("$.message").value("바이트 수는 0 이상이어야 합니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/negative-byte-count",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
                         ),
@@ -368,6 +394,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.message").value(
                         String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", invalidSemester)))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-fail/invalid-semester-format",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordType").description("생활기록부 항목 타입")
                         ),
@@ -404,6 +433,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value(UPDATE_PERMISSION_DENIED.getCode()))
                 .andExpect(jsonPath("$.message").value(UPDATE_PERMISSION_DENIED.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-fail/permission-denied",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("학생의 생기부 레코드 ID")
                         ),
@@ -441,6 +473,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-201"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "create-one-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordType").description("생활기록부 항목 타입")
                         ),
@@ -485,6 +520,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-overview-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("기록 ID")
                         ),
@@ -518,6 +556,9 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "delete-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
                         pathParameters(
                                 parameterWithName("recordId").description("삭제할 생활기록부 ID")
                         ),
