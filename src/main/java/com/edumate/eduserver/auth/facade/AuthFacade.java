@@ -92,7 +92,7 @@ public class AuthFacade {
         String memberUuid = tokenService.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
         try {
-            tokenService.validateToken(refreshToken, member.getRefreshToken());
+            tokenService.checkTokenEquality(refreshToken, member.getRefreshToken());
             Token token = tokenService.generateTokens(member);
             return MemberReissueResponse.of(token.accessToken(), token.refreshToken());
         } catch (Exception e) {

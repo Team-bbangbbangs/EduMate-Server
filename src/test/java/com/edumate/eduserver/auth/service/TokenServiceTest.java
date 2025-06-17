@@ -40,7 +40,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰이 정상적으로 생성된다.")
-    void generateTokens_success() {
+    void generateTokens() {
         Member member = mock(Member.class);
         when(member.getMemberUuid()).thenReturn("uuid-1234");
         when(jwtGenerator.generateToken("uuid-1234", TokenType.ACCESS)).thenReturn("access-token");
@@ -55,7 +55,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("refreshToken에서 memberUuid를 정상적으로 추출한다.")
-    void getMemberUuidFromToken_success() {
+    void getMemberUuidFromToken() {
         String refreshToken = "Bearer refresh-token";
         String resolvedToken = "refresh-token";
         when(jwtParser.resolveToken(refreshToken)).thenReturn(resolvedToken);
@@ -68,7 +68,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰이 정상적으로 검증된다.")
-    void validateToken_success() {
+    void checkTokenEquality() {
         // given
         String requestRefreshToken = "Bearer refresh-token";
         String storedRefreshToken = "refresh-token";
@@ -78,13 +78,13 @@ class TokenServiceTest {
         doNothing().when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
 
         // when & then
-        tokenService.validateToken(requestRefreshToken, storedRefreshToken);
+        tokenService.checkTokenEquality(requestRefreshToken, storedRefreshToken);
         verify(jwtParser).resolveToken(requestRefreshToken);
     }
 
     @Test
     @DisplayName("저장된 토큰과 요청 토큰이 불일치하면 예외가 발생한다.")
-    void validateToken_fail_tokenMismatch() {
+    void tokenEqualityMismatch() {
         // given
         String requestRefreshToken = "Bearer refresh-token";
         String storedRefreshToken = "different-refresh-token";
@@ -94,7 +94,7 @@ class TokenServiceTest {
         doNothing().when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
 
         // when & then
-        assertThatThrownBy(() -> tokenService.validateToken(requestRefreshToken, storedRefreshToken))
+        assertThatThrownBy(() -> tokenService.checkTokenEquality(requestRefreshToken, storedRefreshToken))
             .isInstanceOf(MismatchedTokenException.class);
     }
 }
