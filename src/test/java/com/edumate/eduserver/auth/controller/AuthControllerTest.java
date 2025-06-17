@@ -412,7 +412,7 @@ class AuthControllerTest extends ControllerTest {
     void logoutSuccess() throws Exception {
         doNothing().when(authFacade).logout(anyLong());
 
-        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/logout")
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/logout")
                         .header("Authorization", "Bearer access-token"))
                 .andDo(print())
                 .andExpect(status().isOk())
