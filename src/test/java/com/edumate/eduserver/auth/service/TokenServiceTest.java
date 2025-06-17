@@ -2,13 +2,13 @@ package com.edumate.eduserver.auth.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.edumate.eduserver.auth.exception.MismatchedTokenException;
 import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.security.jwt.JwtParser;
 import com.edumate.eduserver.auth.security.jwt.JwtValidator;
@@ -67,14 +67,34 @@ class TokenServiceTest {
     }
 
     @Test
-    @DisplayName("refreshToken이 유효하지 않으면 예외가 발생한다.")
-    void getMemberUuidFromToken_invalidToken() {
-        String refreshToken = "Bearer invalid-token";
-        String resolvedToken = "invalid-token";
-        when(jwtParser.resolveToken(refreshToken)).thenReturn(resolvedToken);
-        doThrow(new IllegalArgumentException("유효하지 않은 토큰입니다.")).when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
+    @DisplayName("토큰이 정상적으로 검증된다.")
+    void validateToken_success() {
+        // given
+        String requestRefreshToken = "Bearer refresh-token";
+        String storedRefreshToken = "refresh-token";
+        String resolvedToken = "refresh-token";
 
-        assertThrows(IllegalArgumentException.class, () -> tokenService.getMemberUuidFromToken(refreshToken));
+        when(jwtParser.resolveToken(requestRefreshToken)).thenReturn(resolvedToken);
+        doNothing().when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
+
+        // when & then
+        tokenService.validateToken(requestRefreshToken, storedRefreshToken);
+        verify(jwtParser).resolveToken(requestRefreshToken);
+    }
+
+    @Test
+    @DisplayName("저장된 토큰과 요청 토큰이 불일치하면 예외가 발생한다.")
+    void validateToken_fail_tokenMismatch() {
+        // given
+        String requestRefreshToken = "Bearer refresh-token";
+        String storedRefreshToken = "different-refresh-token";
+        String resolvedToken = "refresh-token";
+
+        when(jwtParser.resolveToken(requestRefreshToken)).thenReturn(resolvedToken);
+        doNothing().when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
+
+        // when & then
+        assertThatThrownBy(() -> tokenService.validateToken(requestRefreshToken, storedRefreshToken))
+            .isInstanceOf(MismatchedTokenException.class);
     }
 }
-
