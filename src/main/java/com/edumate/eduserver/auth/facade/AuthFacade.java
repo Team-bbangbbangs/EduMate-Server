@@ -52,25 +52,6 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName,
-                                       final String school) {
-        authService.checkAlreadyRegistered(email);
-        PasswordValidator.validate(password);
-        String encodedPassword = passwordEncoder.encode(password);
-        Subject subject = subjectService.getSubjectByName(subjectName);
-        try {
-            String memberUuid = memberService.saveMember(email, encodedPassword, subject, school);
-            Token token = tokenService.generateTokens(memberService.getMemberByUuid(memberUuid));
-
-            String code = randomCodeGenerator.generate();
-            eventPublisher.publishEvent(MemberSignedUpEvent.of(email, memberUuid, code));
-            return MemberSignUpResponse.of(token.accessToken(), token.refreshToken());
-        } catch (DataIntegrityViolationException e) {
-            throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
-        }
-    }
-
-    @Transactional
     public MemberLoginResponse login(final String email, final String password) {
         Member member = memberService.getMemberByEmail(email);
         if (!passwordEncoder.matches(password, member.getPassword())) {
@@ -99,5 +80,36 @@ public class AuthFacade {
             logout(member.getId());
             throw e;
         }
+    }
+
+    @Transactional
+    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName,
+                                       final String school) {
+        checkPreconditions(email, password);
+        Subject subject = subjectService.getSubjectByName(subjectName);
+        Member member = createMember(email, password, subject, school);
+        Token token = tokenService.generateTokens(member);
+        issueVerificationCode(member);
+        return MemberSignUpResponse.of(token.accessToken(), token.refreshToken());
+    }
+
+    private void checkPreconditions(final String email, final String password) {
+        authService.checkAlreadyRegistered(email);
+        PasswordValidator.validate(password);
+    }
+
+    private Member createMember(final String email, final String password, final Subject subject, final String school) {
+        String encodedPassword = passwordEncoder.encode(password);
+        try {
+            return memberService.saveMember(email, encodedPassword, subject, school);
+        } catch (DataIntegrityViolationException e) {
+            throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
+        }
+    }
+
+    private void issueVerificationCode(final Member member) {
+        String code = randomCodeGenerator.generate();
+        authService.saveCode(member, code);
+        eventPublisher.publishEvent(MemberSignedUpEvent.of(member.getEmail(), member.getMemberUuid(), code));
     }
 }

@@ -21,8 +21,6 @@ public class PasswordValidator {
                     "[A-Za-z\\d!@#$%^&*()\\-_=+\\[\\]{};:'\",.<>/?`~]*$" // 허용 문자만
     );
 
-    private static final Pattern REPEATED_CHAR_PATTERN = Pattern.compile("(.)\\1\\1");
-
     public static void validate(final String password) {
         if (!LENGTH_PATTERN.matcher(password).matches()) {
             throw new InvalidPasswordLengthException(AuthErrorCode.INVALID_PASSWORD_LENGTH);
