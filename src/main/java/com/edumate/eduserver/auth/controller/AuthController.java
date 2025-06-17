@@ -54,7 +54,7 @@ public class AuthController {
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 
-    @PatchMapping("/logout")
+    @PostMapping("/logout")
     public ApiResponse<Void> logout(@MemberId final long memberId) {
         authFacade.logout(memberId);
         return ApiResponse.success(CommonSuccessCode.OK);
