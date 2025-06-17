@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum School {
-    MIDDLE_SCHOOL("MIDDLE"),
-    HIGH_SCHOOL("HIGH");
+    MIDDLE_SCHOOL("middle"),
+    HIGH_SCHOOL("high");
 
     private final String name;
 

@@ -8,6 +8,8 @@ import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.domain.School;
 import com.edumate.eduserver.member.facade.response.MemberProfileGetResponse;
 import com.edumate.eduserver.member.service.MemberService;
+import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
+import com.edumate.eduserver.studentrecord.service.StudentRecordService;
 import com.edumate.eduserver.subject.domain.Subject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,8 @@ import org.mockito.MockitoAnnotations;
 public class MemberFacadeTest {
     @Mock
     MemberService memberService;
+    @Mock
+    StudentRecordService studentRecordService;
     @InjectMocks
     MemberFacade memberFacade;
 
@@ -34,6 +38,7 @@ public class MemberFacadeTest {
         Member member = mock(Member.class);
         Subject subject = mock(Subject.class);
         School school = mock(School.class);
+        MemberStudentRecord memberStudentRecord = mock(MemberStudentRecord.class);
         given(subject.getName()).willReturn("수학");
         given(school.getName()).willReturn(School.HIGH_SCHOOL.getName());
         given(member.getSubject()).willReturn(subject);
@@ -41,6 +46,7 @@ public class MemberFacadeTest {
         given(member.isVerifyTeacher()).willReturn(true);
         given(member.getSchool()).willReturn(school);
         given(memberService.getMemberById(memberId)).willReturn(member);
+        given(studentRecordService.getLatestMemberStudentRecord(memberId)).willReturn(memberStudentRecord);
 
         // when
         MemberProfileGetResponse response = memberFacade.getMemberProfile(memberId);
