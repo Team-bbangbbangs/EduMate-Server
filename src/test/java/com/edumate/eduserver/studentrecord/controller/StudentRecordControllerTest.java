@@ -38,10 +38,12 @@ import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCrea
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
+import com.edumate.eduserver.studentrecord.exception.AlreadyExistingRecordException;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
+import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
@@ -645,6 +647,45 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 학기에 대한 생활기록부 생성 요청 시 실패한다.")
+    void createStudentRecordForSemesterWithExistingSemester() throws Exception {
+        // given
+        String existingSemester = "2025-1";
+        SemesterCreateRequest request = new SemesterCreateRequest(existingSemester);
+
+        doThrow(new AlreadyExistingRecordException(StudentRecordErrorCode.RECORD_ALREADY_EXISTS))
+                .when(studentRecordFacade)
+                .createSemesterRecord(anyLong(), any(StudentRecordType.class), eq(existingSemester.strip()));
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/{recordType}/semesters", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.code").value(StudentRecordErrorCode.RECORD_ALREADY_EXISTS.getCode()))
+                .andExpect(jsonPath("$.message").value(StudentRecordErrorCode.RECORD_ALREADY_EXISTS.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "create-semester-fail/already-exists",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        requestFields(
+                                fieldWithPath("semester").description("이미 존재하는 학기 정보")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
     }
