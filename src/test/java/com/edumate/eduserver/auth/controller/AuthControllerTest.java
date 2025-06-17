@@ -1,5 +1,6 @@
 package com.edumate.eduserver.auth.controller;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -201,10 +202,10 @@ class AuthControllerTest extends ControllerTest {
                 "duplicate@email.com", "password123", "수학", "middle");
         doThrow(new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED))
                 .when(authFacade).signUp(
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString()
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        anyString()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -231,10 +232,10 @@ class AuthControllerTest extends ControllerTest {
         doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordLengthException(
                 AuthErrorCode.INVALID_PASSWORD_LENGTH))
                 .when(authFacade).signUp(
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString()
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        anyString()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -261,10 +262,10 @@ class AuthControllerTest extends ControllerTest {
         doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordFormatException(
                 AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(authFacade).signUp(
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString()
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        anyString()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -291,10 +292,10 @@ class AuthControllerTest extends ControllerTest {
         doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordFormatException(
                 AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(authFacade).signUp(
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString(),
-                        org.mockito.ArgumentMatchers.anyString()
+                        anyString(),
+                        anyString(),
+                        anyString(),
+                        anyString()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -405,7 +406,7 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("로그아웃에 성공한다.")
     void logoutSuccess() throws Exception {
-        doNothing().when(authFacade).logout(org.mockito.ArgumentMatchers.anyLong());
+        doNothing().when(authFacade).logout(anyLong());
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/logout")
                         .header("Authorization", "Bearer access-token"))
@@ -427,7 +428,7 @@ class AuthControllerTest extends ControllerTest {
     @DisplayName("토큰 재발급에 성공한다.")
     void reissueSuccess() throws Exception {
         MemberReissueResponse response = new MemberReissueResponse("new-access-token", "new-refresh-token");
-        when(authFacade.reissue(org.mockito.ArgumentMatchers.anyString())).thenReturn(response);
+        when(authFacade.reissue(anyString())).thenReturn(response);
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
                         .header("Authorization", "Bearer refresh-token"))
@@ -445,6 +446,27 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("data.accessToken").description("새로운 액세스 토큰"),
                                 fieldWithPath("data.refreshToken").description("새로운 리프레시 토큰")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("이메일 인증 메일 전송에 성공한다.")
+    void sendVerificationEmailSuccess() throws Exception {
+        doNothing().when(authFacade).sendVerificationEmail(anyLong());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/email/send-verification")
+                        .header("Authorization", "Bearer access-token"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "send-email-success",
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
                         )
                 ));
     }
