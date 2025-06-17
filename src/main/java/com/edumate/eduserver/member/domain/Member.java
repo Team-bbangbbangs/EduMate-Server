@@ -115,4 +115,8 @@ public class Member extends BaseEntity {
     public void updateNickname(final String nickname) {
         this.nickname = nickname;
     }
+
+    public boolean isVerifyTeacher() {
+        return this.role != Role.PENDING_TEACHER;
+    }
 }

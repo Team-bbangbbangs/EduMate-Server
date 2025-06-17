@@ -9,3 +9,4 @@
 include::api/auth.adoc[]
 include::api/studentRecord.adoc[]
 include::api/notice.adoc[]
+include::api/member.adoc[]
