@@ -3,6 +3,7 @@ package com.edumate.eduserver.studentrecord.controller;
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
+import com.edumate.eduserver.studentrecord.controller.request.SemesterCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
@@ -96,5 +97,13 @@ public class StudentRecordController {
                                                  @PathVariable final long recordId) {
         studentRecordFacade.deleteStudentRecord(memberId, recordId);
         return ApiResponse.success(CommonSuccessCode.OK);
+    }
+
+    @PostMapping("/{recordType}/semesters")
+    public ApiResponse<Void> createStudentRecordForSemester(@MemberId final long memberId,
+                                                            @PathVariable final StudentRecordType recordType,
+                                                            @RequestBody final SemesterCreateRequest request) {
+        studentRecordFacade.createSemesterRecord(memberId, recordType, request.semester().strip());
+        return ApiResponse.success(CommonSuccessCode.CREATED);
     }
 }

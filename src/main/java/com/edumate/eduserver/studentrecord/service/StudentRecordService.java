@@ -1,5 +1,6 @@
 package com.edumate.eduserver.studentrecord.service;
 
+import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
@@ -95,6 +96,13 @@ public class StudentRecordService {
         StudentRecordDetail existingDetail = getRecordDetailById(recordId);
         validatePermission(existingDetail.getMemberStudentRecord(), memberId);
         studentRecordDetailRepository.deleteById(recordId);
+    }
+
+    @Transactional
+    public void createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
+        validateSemesterPattern(semester);
+        MemberStudentRecord studentRecord = MemberStudentRecord.create(member, recordType, semester);
+        memberStudentRecordRepository.save(studentRecord);
     }
 
     private void validatePermission(final MemberStudentRecord memberRecord, final long memberId) {
