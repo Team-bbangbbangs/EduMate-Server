@@ -102,7 +102,7 @@ public class StudentRecordController {
     @PostMapping("/{recordType}/semesters")
     public ApiResponse<Void> createStudentRecordForSemester(@MemberId final long memberId,
                                                             @PathVariable final StudentRecordType recordType,
-                                                            @RequestBody final SemesterCreateRequest request) {
+                                                            @RequestBody @Valid final SemesterCreateRequest request) {
         studentRecordFacade.createSemesterRecord(memberId, recordType, request.semester().strip());
         return ApiResponse.success(CommonSuccessCode.CREATED);
     }
