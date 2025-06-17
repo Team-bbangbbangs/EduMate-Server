@@ -85,7 +85,13 @@ public class AuthFacade {
     public MemberReissueResponse reissue(final String refreshToken) {
         String memberUuid = tokenService.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
-        Token token = tokenService.generateTokens(member);
-        return MemberReissueResponse.of(token.accessToken(), token.refreshToken());
+        try {
+            tokenService.validateToken(refreshToken, member.getRefreshToken());
+            Token token = tokenService.generateTokens(member);
+            return MemberReissueResponse.of(token.accessToken(), token.refreshToken());
+        } catch (Exception e) {
+            logout(member.getId());
+            throw e;
+        }
     }
 }

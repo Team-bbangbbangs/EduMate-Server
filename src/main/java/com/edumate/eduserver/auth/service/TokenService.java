@@ -1,5 +1,7 @@
 package com.edumate.eduserver.auth.service;
 
+import com.edumate.eduserver.auth.exception.MismatchedTokenException;
+import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.security.jwt.JwtParser;
 import com.edumate.eduserver.auth.security.jwt.JwtValidator;
@@ -29,7 +31,14 @@ public class TokenService {
 
     public String getMemberUuidFromToken(final String refreshToken) {
         String prefixRemovedToken = jwtParser.resolveToken(refreshToken);
-        jwtValidator.validateToken(prefixRemovedToken, TokenType.REFRESH);
         return jwtParser.getMemberUuidFromToken(prefixRemovedToken);
+    }
+
+    public void validateToken(final String requestRefreshToken, final String storedRefreshToken) {
+        String prefixRemovedToken = jwtParser.resolveToken(requestRefreshToken);
+        jwtValidator.validateToken(prefixRemovedToken, TokenType.REFRESH);
+        if (!storedRefreshToken.equals(prefixRemovedToken)) {
+            throw new MismatchedTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE);
+        }
     }
 }
