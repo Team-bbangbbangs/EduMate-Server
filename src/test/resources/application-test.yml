@@ -18,6 +18,10 @@ spring:
       ddl-auto: create-drop
     defer-datasource-initialization: false
 
+  ai:
+    openai:
+      api-key: testApiKeyForOpenAI
+
 security:
   jwt:
     token:
