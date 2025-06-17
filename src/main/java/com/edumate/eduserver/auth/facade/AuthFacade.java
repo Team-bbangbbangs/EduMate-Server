@@ -70,8 +70,9 @@ public class AuthFacade {
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new MismatchedPasswordException(AuthErrorCode.INVALID_PASSWORD);
         }
+        boolean isAdmin = memberService.isAdmin(member);
         Token token = tokenService.generateTokens(member);
-        return MemberLoginResponse.of(token.accessToken(), token.refreshToken());
+        return MemberLoginResponse.of(token.accessToken(), token.refreshToken(), isAdmin);
     }
 
     @Transactional

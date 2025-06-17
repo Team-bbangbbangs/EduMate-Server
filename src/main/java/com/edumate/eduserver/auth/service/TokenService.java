@@ -20,8 +20,9 @@ public class TokenService {
 
     @Transactional
     public Token generateTokens(final Member member) {
-        String accessToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.ACCESS);
-        String refreshToken = jwtGenerator.generateToken(member.getMemberUuid(), TokenType.REFRESH);
+        String memberUuid = member.getMemberUuid();
+        String accessToken = jwtGenerator.generateToken(memberUuid, TokenType.ACCESS);
+        String refreshToken = jwtGenerator.generateToken(memberUuid, TokenType.REFRESH);
         member.updateRefreshToken(refreshToken);
         return Token.of(accessToken, refreshToken);
     }

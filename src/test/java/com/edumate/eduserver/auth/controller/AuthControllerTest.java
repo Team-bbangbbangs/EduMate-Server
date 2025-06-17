@@ -322,7 +322,7 @@ class AuthControllerTest extends ControllerTest {
     @DisplayName("로그인에 성공한다.")
     void loginSuccess() throws Exception {
         MemberLoginRequest request = new MemberLoginRequest("test@email.com", "password123");
-        MemberLoginResponse response = new MemberLoginResponse("access-token", "refresh-token");
+        MemberLoginResponse response = new MemberLoginResponse("access-token", "refresh-token", false);
         when(authFacade.login(request.email().strip(), request.password().strip())).thenReturn(response);
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
@@ -345,7 +345,8 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("data.accessToken").description("액세스 토큰"),
-                                fieldWithPath("data.refreshToken").description("리프레시 토큰")
+                                fieldWithPath("data.refreshToken").description("리프레시 토큰"),
+                                fieldWithPath("data.isAdmin").description("관리자 여부")
                         )
                 ));
     }
