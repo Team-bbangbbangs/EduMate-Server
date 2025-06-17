@@ -17,8 +17,10 @@ public enum StudentRecordErrorCode implements ErrorCode {
 
     // 404 Not Found,
     STUDENT_RECORD_DETAIL_NOT_FOUND("EDMT-4040202", "해당 학생에 대한 생활기록부 기록이 존재하지 않습니다."),
-    MEMBER_STUDENT_RECORD_NOT_FOUND("EDMT-4040201", "해당 회원의 해당 학기 생활기록부가 존재하지 않습니다.")
-    ;
+    MEMBER_STUDENT_RECORD_NOT_FOUND("EDMT-4040201", "해당 회원의 해당 학기 생활기록부가 존재하지 않습니다."),
+
+    // 409 Conflict
+    RECORD_ALREADY_EXISTS("EDMT-4090201", "이미 해당 학기 생활기록부가 존재합니다. 중복된 기록을 추가할 수 없습니다."),;
 
     private final String code;
     private final String message;
