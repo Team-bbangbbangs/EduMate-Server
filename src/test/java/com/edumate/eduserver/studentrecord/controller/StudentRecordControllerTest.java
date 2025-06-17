@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
+import com.edumate.eduserver.studentrecord.controller.request.SemesterCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
@@ -561,6 +563,83 @@ class StudentRecordControllerTest extends ControllerTest {
                         ),
                         pathParameters(
                                 parameterWithName("recordId").description("삭제할 생활기록부 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("특정 학기에 대한 생활기록부를 성공적으로 생성한다.")
+    void createStudentRecordForSemester() throws Exception {
+        SemesterCreateRequest request = new SemesterCreateRequest("2025-2");
+
+        doNothing().when(studentRecordFacade)
+                .createSemesterRecord(anyLong(), any(StudentRecordType.class), anyString());
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/{recordType}/semesters", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value(201))
+                .andExpect(jsonPath("$.code").value("EDMT-201"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "create-semester-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        requestFields(
+                                fieldWithPath("semester").description("학기 정보 (YYYY-1 또는 YYYY-2 형식)")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 학기 형식으로 생활기록부 생성 요청 시 실패한다.")
+    void createStudentRecordForSemesterWithInvalidFormat() throws Exception {
+        // given
+        String invalidSemester = "2025-3";
+        SemesterCreateRequest request = new SemesterCreateRequest(invalidSemester);
+
+        doThrow(new InvalidSemesterFormatException(INVALID_SEMESTER_FORMAT, invalidSemester))
+                .when(studentRecordFacade)
+                .createSemesterRecord(anyLong(), any(StudentRecordType.class), eq(invalidSemester.strip()));
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/{recordType}/semesters", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value("EDMT-4000202"))
+                .andExpect(jsonPath("$.message").value(
+                        String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", invalidSemester)))
+                .andDo(CustomRestDocsUtils.documents(
+                        BASE_DOMAIN_PACKAGE + "create-semester-fail/invalid-semester-format",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        requestFields(
+                                fieldWithPath("semester").description("학기 정보 (YYYY-1 또는 YYYY-2 형식)")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
