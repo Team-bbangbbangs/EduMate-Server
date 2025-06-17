@@ -28,20 +28,20 @@ public class MemberService {
     }
 
     @Transactional
-    public String saveMember(final String email, final String password, final Subject subject,
+    public Member saveMember(final String email, final String password, final Subject subject,
                              final String schoolName) {
         School school = School.fromName(schoolName);
 
         Optional<Member> restored = restoreIfSoftDeletedMemberByEmail(email, password, subject, school);
         if (restored.isPresent()) {
-            return restored.get().getMemberUuid();
+            return restored.get();
         }
 
         Member newMember = Member.create(subject, email, password, DEFAULT_NICKNAME, school, INITIAL_ROLE);
         memberRepository.save(newMember);
         String generatedNickname = DEFAULT_NICKNAME + newMember.getId();
         newMember.updateNickname(generatedNickname);
-        return newMember.getMemberUuid();
+        return newMember;
     }
 
     private Optional<Member> restoreIfSoftDeletedMemberByEmail(final String email, final String password,

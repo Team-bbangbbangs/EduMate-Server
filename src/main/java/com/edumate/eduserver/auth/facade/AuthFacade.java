@@ -3,6 +3,7 @@ package com.edumate.eduserver.auth.facade;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
+import com.edumate.eduserver.auth.facade.dto.MemberSignedUpEvent;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
@@ -17,6 +18,7 @@ import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class AuthFacade {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final RandomCodeGenerator randomCodeGenerator;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void sendVerificationEmail(final long memberId) {
         Member member = memberService.getMemberById(memberId);
@@ -46,22 +49,6 @@ public class AuthFacade {
         Member member = memberService.getMemberByUuid(memberUuid);
         authService.verifyEmailCode(member, verificationCode);
         memberService.updateEmailVerified(member);
-    }
-
-    @Transactional
-    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName,
-                                       final String school) {
-        authService.checkAlreadyRegistered(email);
-        PasswordValidator.validate(password);
-        String encodedPassword = passwordEncoder.encode(password);
-        Subject subject = subjectService.getSubjectByName(subjectName);
-        try {
-            String memberUuid = memberService.saveMember(email, encodedPassword, subject, school);
-            Token token = tokenService.generateTokens(memberService.getMemberByUuid(memberUuid));
-            return MemberSignUpResponse.of(token.accessToken(), token.refreshToken());
-        } catch (DataIntegrityViolationException e) {
-            throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
-        }
     }
 
     @Transactional
@@ -85,7 +72,44 @@ public class AuthFacade {
     public MemberReissueResponse reissue(final String refreshToken) {
         String memberUuid = tokenService.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
+        try {
+            tokenService.checkTokenEquality(refreshToken, member.getRefreshToken());
+            Token token = tokenService.generateTokens(member);
+            return MemberReissueResponse.of(token.accessToken(), token.refreshToken());
+        } catch (Exception e) {
+            logout(member.getId());
+            throw e;
+        }
+    }
+
+    @Transactional
+    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName,
+                                       final String school) {
+        checkPreconditions(email, password);
+        Subject subject = subjectService.getSubjectByName(subjectName);
+        Member member = createMember(email, password, subject, school);
         Token token = tokenService.generateTokens(member);
-        return MemberReissueResponse.of(token.accessToken(), token.refreshToken());
+        issueVerificationCode(member);
+        return MemberSignUpResponse.of(token.accessToken(), token.refreshToken());
+    }
+
+    private void checkPreconditions(final String email, final String password) {
+        authService.checkAlreadyRegistered(email);
+        PasswordValidator.validate(password);
+    }
+
+    private Member createMember(final String email, final String password, final Subject subject, final String school) {
+        String encodedPassword = passwordEncoder.encode(password);
+        try {
+            return memberService.saveMember(email, encodedPassword, subject, school);
+        } catch (DataIntegrityViolationException e) {
+            throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
+        }
+    }
+
+    private void issueVerificationCode(final Member member) {
+        String code = randomCodeGenerator.generate();
+        authService.saveCode(member, code);
+        eventPublisher.publishEvent(MemberSignedUpEvent.of(member.getEmail(), member.getMemberUuid(), code));
     }
 }
