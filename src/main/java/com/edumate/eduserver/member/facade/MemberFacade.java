@@ -14,10 +14,13 @@ public class MemberFacade {
 
     private final MemberService memberService;
 
+    private static final String DEFAULT_SEMESTER = "2025-1";
+
     public MemberProfileGetResponse getMemberProfile(final long memberId) {
         Member member = memberService.getMemberById(memberId);
         return MemberProfileGetResponse.of(
-                member.getEmail(), member.getSubject().getName(), member.isVerifyTeacher(), member.getSchool().getName()
+                member.getEmail(), member.getSubject().getName(), member.isVerifyTeacher(),
+                member.getSchool().getName(), member.getNickname(), DEFAULT_SEMESTER
         );
     }
 }
