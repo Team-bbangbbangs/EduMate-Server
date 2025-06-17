@@ -3,6 +3,7 @@ package com.edumate.eduserver.auth.facade;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
+import com.edumate.eduserver.auth.facade.dto.MemberSignedUpEvent;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
@@ -17,6 +18,7 @@ import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class AuthFacade {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final RandomCodeGenerator randomCodeGenerator;
+    private final ApplicationEventPublisher eventPublisher;
 
     public void sendVerificationEmail(final long memberId) {
         Member member = memberService.getMemberById(memberId);
@@ -58,6 +61,9 @@ public class AuthFacade {
         try {
             String memberUuid = memberService.saveMember(email, encodedPassword, subject, school);
             Token token = tokenService.generateTokens(memberService.getMemberByUuid(memberUuid));
+
+            String code = randomCodeGenerator.generate();
+            eventPublisher.publishEvent(MemberSignedUpEvent.of(email, memberUuid, code));
             return MemberSignUpResponse.of(token.accessToken(), token.refreshToken());
         } catch (DataIntegrityViolationException e) {
             throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
