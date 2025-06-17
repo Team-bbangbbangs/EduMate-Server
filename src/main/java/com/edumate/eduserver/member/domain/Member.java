@@ -119,4 +119,8 @@ public class Member extends BaseEntity {
     public boolean isVerifyTeacher() {
         return this.role != Role.PENDING_TEACHER;
     }
+
+    public void resign() {
+        this.isDeleted = false;
+    }
 }

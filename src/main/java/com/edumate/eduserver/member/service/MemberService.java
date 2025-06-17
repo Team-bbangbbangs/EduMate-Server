@@ -7,6 +7,7 @@ import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.repository.MemberRepository;
 import com.edumate.eduserver.subject.domain.Subject;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,11 +31,28 @@ public class MemberService {
     public String saveMember(final String email, final String password, final Subject subject,
                              final String schoolName) {
         School school = School.fromName(schoolName);
-        Member member = Member.create(subject, email, password, DEFAULT_NICKNAME, school, INITIAL_ROLE);
-        memberRepository.save(member);
-        String generatedNickname = DEFAULT_NICKNAME + member.getId();
-        member.updateNickname(generatedNickname);
-        return member.getMemberUuid();
+
+        Optional<Member> restored = restoreIfSoftDeletedMemberByEmail(email);
+        if (restored.isPresent()) {
+            return restored.get().getMemberUuid();
+        }
+
+        Member newMember = Member.create(subject, email, password, DEFAULT_NICKNAME, school, INITIAL_ROLE);
+        memberRepository.save(newMember);
+
+        String generatedNickname = DEFAULT_NICKNAME + newMember.getId();
+        newMember.updateNickname(generatedNickname);
+
+        return newMember.getMemberUuid();
+    }
+
+    private Optional<Member> restoreIfSoftDeletedMemberByEmail(final String email) {
+        return memberRepository.findByEmail(email)
+                .filter(Member::isDeleted)
+                .map(member -> {
+                    member.resign();
+                    return member;
+                });
     }
 
     public Member getMemberById(final long memberId) {
