@@ -21,6 +21,8 @@ public class MemberService {
 
     private static final Role INITIAL_ROLE = Role.PENDING_TEACHER;
     private static final String DEFAULT_NICKNAME = "선생님";
+    private static final boolean NOT_DELETED = false;
+    private static final boolean DELETED = true;
 
     @Transactional
     public void updateEmailVerified(final Member member) {
@@ -46,12 +48,16 @@ public class MemberService {
 
     private Optional<Member> restoreIfSoftDeletedMemberByEmail(final String email, final String password,
                                                                final Subject subject, final School school) {
-        return memberRepository.findByEmail(email)
-                .filter(Member::isDeleted)
+        return memberRepository.findByEmailAndIsDeleted(email, DELETED)
                 .map(member -> {
                     member.restore(password, subject, school);
                     return member;
                 });
+    }
+
+    @Transactional
+    public void updatePassword(final Member member, final String encodedPassword) {
+        member.updatePassword(encodedPassword);
     }
 
     public Member getMemberById(final long memberId) {
@@ -65,7 +71,7 @@ public class MemberService {
     }
 
     public Member getMemberByEmail(final String email) {
-        return memberRepository.findByEmail(email)
+        return memberRepository.findByEmailAndIsDeleted(email, NOT_DELETED)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 

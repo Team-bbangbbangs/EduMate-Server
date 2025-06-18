@@ -19,11 +19,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.edumate.eduserver.auth.controller.request.MemberLoginRequest;
 import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
+import com.edumate.eduserver.auth.controller.request.UpdatePasswordRequest;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
+import com.edumate.eduserver.auth.exception.ExpiredTokenException;
+import com.edumate.eduserver.auth.exception.InvalidPasswordFormatException;
+import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
+import com.edumate.eduserver.auth.exception.MismatchedTokenException;
+import com.edumate.eduserver.auth.exception.PasswordSameAsOldException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
@@ -460,6 +466,55 @@ class AuthControllerTest extends ControllerTest {
                 ));
     }
 
+
+    @Test
+    @DisplayName("토큰 재발급 실패 - 만료된 리프레시 토큰")
+    void reissueFailWithExpiredToken() throws Exception {
+        when(authFacade.reissue(anyString())).thenThrow(new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
+                        .header("Authorization", "Bearer expired-refresh-token"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.EXPIRED_TOKEN.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.EXPIRED_TOKEN.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-fail/expired-token",
+                        requestHeaders(
+                                headerWithName("Authorization").description("만료된 리프레시 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("토큰 재발급 실패 - 유효하지 않은 리프레시 토큰")
+    void reissueFailWithInvalidToken() throws Exception {
+        when(authFacade.reissue(anyString())).thenThrow(new MismatchedTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
+                        .header("Authorization", "Bearer invalid-refresh-token"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-fail/invalid-token",
+                        requestHeaders(
+                                headerWithName("Authorization").description("데이터베이스에 저장된 토큰과 일치하지 않는 리프레시 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
     @Test
     @DisplayName("이메일 인증 메일 전송에 성공한다.")
     void sendVerificationEmailSuccess() throws Exception {
@@ -483,5 +538,148 @@ class AuthControllerTest extends ControllerTest {
                         )
                 ));
         verify(authFacade).sendVerificationEmail(anyLong());
+    }
+
+    @Test
+    @DisplayName("비밀번호 변경에 성공한다.")
+    void updatePasswordSuccess() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest("test@email.com", "newPassword123!");
+        doNothing().when(authFacade).updatePassword(request.email().strip(), request.password().strip());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-password-success",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("새 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+
+        verify(authFacade).updatePassword(request.email().strip(), request.password().strip());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원으로 비밀번호 변경 시 예외가 발생한다.")
+    void updatePasswordMemberNotFound() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest("notfound@email.com", "newPassword123!");
+        doThrow(new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND))
+                .when(authFacade).updatePassword(anyString(), anyString());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.code").value(MemberErrorCode.MEMBER_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(MemberErrorCode.MEMBER_NOT_FOUND.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-password-fail/member-not-found",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("새 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 길이 오류로 비밀번호 변경 시 예외가 발생한다.")
+    void updatePasswordInvalidPasswordLength() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest("test@email.com", "short");
+        doThrow(new InvalidPasswordLengthException(AuthErrorCode.INVALID_PASSWORD_LENGTH))
+                .when(authFacade).updatePassword(anyString(), anyString());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_LENGTH.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_LENGTH.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(
+                        BASE_DOMAIN_PACKAGE + "update-password-fail/invalid-password-length",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("새 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("비밀번호 형식 오류로 비밀번호 변경 시 예외가 발생한다.")
+    void updatePasswordInvalidPasswordFormat() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest("test@email.com", "password");
+        doThrow(new InvalidPasswordFormatException(AuthErrorCode.INVALID_PASSWORD_FORMAT))
+                .when(authFacade).updatePassword(anyString(), anyString());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(
+                        BASE_DOMAIN_PACKAGE + "update-password-fail/invalid-password-format",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("새 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("이전과 동일한 비밀번호 변경 시 예외가 발생한다.")
+    void updatePasswordWithSamePassword() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest("test@email.com", "password");
+        doThrow(new PasswordSameAsOldException(AuthErrorCode.SAME_PASSWORD))
+                .when(authFacade).updatePassword(anyString(), anyString());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.SAME_PASSWORD.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.SAME_PASSWORD.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-password-fail/password-repetition",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("새 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
     }
 }
