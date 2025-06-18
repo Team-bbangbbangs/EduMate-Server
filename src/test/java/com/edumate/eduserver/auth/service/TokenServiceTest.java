@@ -9,10 +9,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.edumate.eduserver.auth.exception.MismatchedTokenException;
-import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
-import com.edumate.eduserver.auth.security.jwt.JwtParser;
-import com.edumate.eduserver.auth.security.jwt.JwtValidator;
-import com.edumate.eduserver.auth.security.jwt.TokenType;
+import com.edumate.eduserver.auth.jwt.JwtGenerator;
+import com.edumate.eduserver.auth.jwt.JwtParser;
+import com.edumate.eduserver.auth.jwt.JwtValidator;
+import com.edumate.eduserver.auth.jwt.TokenType;
 import com.edumate.eduserver.member.domain.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

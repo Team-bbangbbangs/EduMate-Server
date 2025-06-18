@@ -1,4 +1,4 @@
-package com.edumate.eduserver.auth.security.jwt;
+package com.edumate.eduserver.auth.jwt;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

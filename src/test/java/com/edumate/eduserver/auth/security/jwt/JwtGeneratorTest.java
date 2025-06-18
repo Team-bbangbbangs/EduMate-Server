@@ -3,6 +3,9 @@ package com.edumate.eduserver.auth.security.jwt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.edumate.eduserver.auth.jwt.JwtGenerator;
+import com.edumate.eduserver.auth.jwt.JwtParser;
+import com.edumate.eduserver.auth.jwt.TokenType;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
