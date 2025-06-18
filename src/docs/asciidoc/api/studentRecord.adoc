@@ -69,6 +69,16 @@ operation::student-record/fail/member-record-not-found[snippets="http-response"]
 
 operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
 
+=== 생활기록부 목록 조회
+
+==== 성공
+
+operation::student-record/get-overviews-success[snippets="http-request,request-headers,path-parameters,query-parameters,http-response,response-fields"]
+
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
 === 생활기록부 한 명 추가
 
 ==== 성공

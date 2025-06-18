@@ -4,6 +4,7 @@ import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordEr
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND;
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND;
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.UPDATE_PERMISSION_DENIED;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -43,7 +44,9 @@ import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedExcep
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import com.edumate.eduserver.studentrecord.facade.response.vo.StudentDetail;
+import com.edumate.eduserver.studentrecord.facade.response.vo.StudentRecordOverview;
 import com.edumate.eduserver.util.ControllerTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -610,6 +613,50 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지")
                         )
+                ));
+    }
+
+    @Test
+    @DisplayName("생활기록부 목록을 성공적으로 불러온다.")
+    void getStudentRecordOverviews() throws Exception {
+        // given
+        StudentRecordOverviewsResponse dummyResponse = new StudentRecordOverviewsResponse(List.of(
+                StudentRecordOverview.of(1L, "2020123", "유태근", "프로그래밍 동아리 활동"),
+                StudentRecordOverview.of(2L, "2020456", "김지안", "봉사 동아리 리더")
+        ));
+        when(studentRecordFacade.getStudentRecordOverviews(anyLong(), any(StudentRecordType.class), anyString()))
+                .thenReturn(dummyResponse);
+
+        // when & then
+        mockMvc.perform(get(BASE_URL + "/{recordType}", RECORD_TYPE)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .param("semester", "2025-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andExpect(jsonPath("$.data.students", hasSize(2)))
+                .andExpect(jsonPath("$.data.students[0].studentNumber").value("2020123"))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-overviews-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordType").description("생활기록부 항목 타입")
+                        ),
+                        queryParameters(
+                                parameterWithName("semester").description("학기 (YYYY-1 또는 YYYY-2 형식)")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data.students[].recordDetailId").description("레코드 상세 ID"),
+                                fieldWithPath("data.students[].studentNumber").description("학번"),
+                                fieldWithPath("data.students[].studentName").description("학생 이름"),
+                                fieldWithPath("data.students[].description").description("생기부 내용")
+                        )
+
                 ));
     }
 }
