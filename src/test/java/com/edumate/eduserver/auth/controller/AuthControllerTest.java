@@ -22,11 +22,13 @@ import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
 import com.edumate.eduserver.auth.controller.request.UpdatePasswordRequest;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
+import com.edumate.eduserver.auth.exception.ExpiredTokenException;
 import com.edumate.eduserver.auth.exception.InvalidPasswordFormatException;
 import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
+import com.edumate.eduserver.auth.exception.MismatchedTokenException;
 import com.edumate.eduserver.auth.exception.PasswordSameAsOldException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
@@ -460,6 +462,55 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("data.accessToken").description("새로운 액세스 토큰"),
                                 fieldWithPath("data.refreshToken").description("새로운 리프레시 토큰")
+                        )
+                ));
+    }
+
+
+    @Test
+    @DisplayName("토큰 재발급 실패 - 만료된 리프레시 토큰")
+    void reissueFailWithExpiredToken() throws Exception {
+        when(authFacade.reissue(anyString())).thenThrow(new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
+                        .header("Authorization", "Bearer expired-refresh-token"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.EXPIRED_TOKEN.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.EXPIRED_TOKEN.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-fail/expired-token",
+                        requestHeaders(
+                                headerWithName("Authorization").description("만료된 리프레시 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("토큰 재발급 실패 - 유효하지 않은 리프레시 토큰")
+    void reissueFailWithInvalidToken() throws Exception {
+        when(authFacade.reissue(anyString())).thenThrow(new MismatchedTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE));
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
+                        .header("Authorization", "Bearer invalid-refresh-token"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.status").value(401))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-fail/invalid-token",
+                        requestHeaders(
+                                headerWithName("Authorization").description("데이터베이스에 저장된 토큰과 일치하지 않는 리프레시 토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
                         )
                 ));
     }
