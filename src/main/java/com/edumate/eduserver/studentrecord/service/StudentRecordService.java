@@ -66,9 +66,7 @@ public class StudentRecordService {
     }
 
     @Transactional
-    public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
-                                     final List<StudentRecordInfo> studentRecordInfos) {
-        MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
+    public void createStudentRecords(final MemberStudentRecord memberStudentRecord, final List<StudentRecordInfo> studentRecordInfos) {
         List<StudentRecordDetail> details = studentRecordInfos.stream()
                 .map(studentRecord -> StudentRecordDetail.create(memberStudentRecord, studentRecord.studentNumber(),
                         studentRecord.studentName(),
@@ -78,11 +76,12 @@ public class StudentRecordService {
     }
 
     @Transactional
-    public void createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
+    public MemberStudentRecord createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
         validateSemesterPattern(semester);
         validateExistingRecord(member.getId(), recordType, semester);
         MemberStudentRecord studentRecord = MemberStudentRecord.create(member, recordType, semester);
         memberStudentRecordRepository.save(studentRecord);
+        return studentRecord;
     }
 
     @Transactional

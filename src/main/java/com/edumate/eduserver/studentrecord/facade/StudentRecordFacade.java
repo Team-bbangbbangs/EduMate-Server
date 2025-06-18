@@ -4,6 +4,7 @@ import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
+import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
@@ -52,8 +53,8 @@ public class StudentRecordFacade {
     public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
                                      final List<StudentRecordInfo> studentRecordInfos) {
         Member member = memberService.getMemberById(memberId);
-        studentRecordService.createSemesterRecord(member, recordType, semester);
-        studentRecordService.createStudentRecords(memberId, recordType, semester, studentRecordInfos);
+        MemberStudentRecord studentRecord = studentRecordService.createSemesterRecord(member, recordType, semester);
+        studentRecordService.createStudentRecords(studentRecord, studentRecordInfos);
     }
 
     @Transactional
