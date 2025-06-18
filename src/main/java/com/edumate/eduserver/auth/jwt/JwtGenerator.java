@@ -1,4 +1,4 @@
-package com.edumate.eduserver.auth.security.jwt;
+package com.edumate.eduserver.auth.jwt;
 
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;

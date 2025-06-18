@@ -2,10 +2,10 @@ package com.edumate.eduserver.auth.service;
 
 import com.edumate.eduserver.auth.exception.MismatchedTokenException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
-import com.edumate.eduserver.auth.security.jwt.JwtGenerator;
-import com.edumate.eduserver.auth.security.jwt.JwtParser;
-import com.edumate.eduserver.auth.security.jwt.JwtValidator;
-import com.edumate.eduserver.auth.security.jwt.TokenType;
+import com.edumate.eduserver.auth.jwt.JwtGenerator;
+import com.edumate.eduserver.auth.jwt.JwtParser;
+import com.edumate.eduserver.auth.jwt.JwtValidator;
+import com.edumate.eduserver.auth.jwt.TokenType;
 import com.edumate.eduserver.member.domain.Member;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

@@ -1,4 +1,4 @@
-package com.edumate.eduserver.auth.security.jwt;
+package com.edumate.eduserver.auth.jwt;
 
 import com.edumate.eduserver.auth.exception.MissingTokenException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
