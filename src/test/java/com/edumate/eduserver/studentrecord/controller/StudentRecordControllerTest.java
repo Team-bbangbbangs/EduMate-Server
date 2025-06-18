@@ -4,6 +4,7 @@ import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordEr
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND;
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND;
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.UPDATE_PERMISSION_DENIED;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -634,6 +635,8 @@ class StudentRecordControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.code").value("EDMT-200"))
                 .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andExpect(jsonPath("$.data.students", hasSize(2)))
+                .andExpect(jsonPath("$.data.students[0].studentNumber").value("2020123"))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-overviews-success",
                         requestHeaders(
                                 headerWithName("Authorization").description("액세스 토큰")

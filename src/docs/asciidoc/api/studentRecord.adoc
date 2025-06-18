@@ -75,6 +75,10 @@ operation::student-record/get-names-fail/invalid-semester-format[snippets=http-r
 
 operation::student-record/get-overviews-success[snippets="http-request,request-headers,path-parameters,query-parameters,http-response,response-fields"]
 
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
 === 생활기록부 한 명 추가
 
 ==== 성공
