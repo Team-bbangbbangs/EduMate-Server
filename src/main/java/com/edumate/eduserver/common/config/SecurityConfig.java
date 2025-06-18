@@ -1,13 +1,15 @@
 package com.edumate.eduserver.common.config;
 
-import com.edumate.eduserver.auth.security.jwt.JwtParser;
-import com.edumate.eduserver.auth.security.jwt.JwtValidator;
+import com.edumate.eduserver.auth.jwt.JwtParser;
+import com.edumate.eduserver.auth.jwt.JwtValidator;
 import com.edumate.eduserver.common.security.CustomPasswordEncoder;
 import com.edumate.eduserver.common.security.JwtAccessDeniedHandler;
 import com.edumate.eduserver.common.security.JwtAuthenticationEntryPoint;
 import com.edumate.eduserver.common.security.filter.ExceptionHandlerFilter;
 import com.edumate.eduserver.common.security.filter.JwtAuthenticationFilter;
 import com.edumate.eduserver.member.service.MemberAuthenticationService;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,12 +18,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -52,8 +54,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(
@@ -62,21 +64,26 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.GET, BUSINESS_WHITE_LIST).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/student-records/**").hasAnyRole("TEACHER", "ADMIN")
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(memberAuthService, jwtValidator, jwtParser),
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(memberAuthService, new AntPathMatcher(), jwtValidator, jwtParser,
+                                getWhitelistPaths()),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                 .build();
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring()
-                .requestMatchers(AUTH_WHITELIST)
-                .requestMatchers(HttpMethod.GET, BUSINESS_WHITE_LIST);
+    private String[] getWhitelistPaths() {
+        List<String> allWhitelist = new ArrayList<>();
+        allWhitelist.addAll(Arrays.asList(AUTH_WHITELIST));
+        allWhitelist.addAll(Arrays.asList(BUSINESS_WHITE_LIST));
+        return allWhitelist.toArray(new String[0]);
     }
 
     @Bean
