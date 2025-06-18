@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  app:
+    image: ${DOCKER_REPO_NAME}:${DOCKER_IMAGE_VERSION_TAG}
+    environment:
+      PROFILE: prod
+      TZ: Asia/Seoul
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    restart: always
