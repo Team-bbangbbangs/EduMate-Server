@@ -51,6 +51,8 @@ public class StudentRecordFacade {
     @Transactional
     public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
                                      final List<StudentRecordInfo> studentRecordInfos) {
+        Member member = memberService.getMemberById(memberId);
+        studentRecordService.createSemesterRecord(member, recordType, semester);
         studentRecordService.createStudentRecords(memberId, recordType, semester, studentRecordInfos);
     }
 
@@ -70,11 +72,5 @@ public class StudentRecordFacade {
     @Transactional
     public void deleteStudentRecord(final long memberId, final long recordId) {
         studentRecordService.deleteStudentRecord(memberId, recordId);
-    }
-
-    @Transactional
-    public void createSemesterRecord(final long memberId, final StudentRecordType recordType, final String semester) {
-        Member member = memberService.getMemberById(memberId);
-        studentRecordService.createSemesterRecord(member, recordType, semester);
     }
 }

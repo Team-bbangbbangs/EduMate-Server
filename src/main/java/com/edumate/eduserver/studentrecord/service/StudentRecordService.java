@@ -78,6 +78,14 @@ public class StudentRecordService {
     }
 
     @Transactional
+    public void createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
+        validateSemesterPattern(semester);
+        validateExistingRecord(member.getId(), recordType, semester);
+        MemberStudentRecord studentRecord = MemberStudentRecord.create(member, recordType, semester);
+        memberStudentRecordRepository.save(studentRecord);
+    }
+
+    @Transactional
     public StudentRecordDetail createStudentRecord(final long memberId, final StudentRecordType recordType,
                                                    final String semester,
                                                    final StudentRecordCreateInfo studentRecordCreateInfo) {
@@ -102,14 +110,6 @@ public class StudentRecordService {
         StudentRecordDetail existingDetail = getRecordDetailById(recordId);
         validatePermission(existingDetail.getMemberStudentRecord(), memberId);
         studentRecordDetailRepository.deleteById(recordId);
-    }
-
-    @Transactional
-    public void createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
-        validateSemesterPattern(semester);
-        validateExistingRecord(member.getId(), recordType, semester);
-        MemberStudentRecord studentRecord = MemberStudentRecord.create(member, recordType, semester);
-        memberStudentRecordRepository.save(studentRecord);
     }
 
     public MemberStudentRecord getLatestMemberStudentRecord(final long memberId) {
