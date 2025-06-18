@@ -65,3 +65,26 @@ operation::auth/logout-success[snippets="http-request,request-headers,http-respo
 ==== 성공
 
 operation::auth/reissue-success[snippets="http-request,request-headers,http-response,response-fields"]
+
+==== 실패: 리프레시 토큰 만료
+operation::auth/reissue-fail/expired-token[snippets="http-request,http-response"]
+
+==== 실패: 리프레시 토큰이 일치하지 않음
+operation::auth/reissue-fail/invalid-token[snippets="http-request,http-response"]
+
+=== 로그인 전 비밀번호 찾기(변경)
+
+==== 성공
+operation::auth/update-password-success[snippets="http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 유효하지 않은 비밀번호 형식
+operation::auth/update-password-fail/invalid-password-format[snippets="http-request,http-response"]
+
+==== 실패: 유효하지 않은 비밀번호 길이
+operation::auth/update-password-fail/invalid-password-length[snippets="http-request,http-response"]
+
+==== 실패: 사용자를 찾을 수 없음
+operation::auth/update-password-fail/member-not-found[snippets="http-request,http-response"]
+
+==== 실패: 이전과 동일한 비밀번호
+operation::auth/update-password-fail/password-repetition[snippets="http-request,http-response"]
