@@ -66,15 +66,22 @@ public class StudentRecordService {
     }
 
     @Transactional
-    public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
-                                     final List<StudentRecordInfo> studentRecordInfos) {
-        MemberStudentRecord memberStudentRecord = getMemberStudentRecord(memberId, recordType, semester);
+    public void createStudentRecords(final MemberStudentRecord memberStudentRecord, final List<StudentRecordInfo> studentRecordInfos) {
         List<StudentRecordDetail> details = studentRecordInfos.stream()
                 .map(studentRecord -> StudentRecordDetail.create(memberStudentRecord, studentRecord.studentNumber(),
                         studentRecord.studentName(),
                         INITIAL_DESCRIPTION, INITIAL_BYTE_COUNT))
                 .toList();
         studentRecordDetailRepository.saveAll(details);
+    }
+
+    @Transactional
+    public MemberStudentRecord createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
+        validateSemesterPattern(semester);
+        validateExistingRecord(member.getId(), recordType, semester);
+        MemberStudentRecord studentRecord = MemberStudentRecord.create(member, recordType, semester);
+        memberStudentRecordRepository.save(studentRecord);
+        return studentRecord;
     }
 
     @Transactional
@@ -102,14 +109,6 @@ public class StudentRecordService {
         StudentRecordDetail existingDetail = getRecordDetailById(recordId);
         validatePermission(existingDetail.getMemberStudentRecord(), memberId);
         studentRecordDetailRepository.deleteById(recordId);
-    }
-
-    @Transactional
-    public void createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
-        validateSemesterPattern(semester);
-        validateExistingRecord(member.getId(), recordType, semester);
-        MemberStudentRecord studentRecord = MemberStudentRecord.create(member, recordType, semester);
-        memberStudentRecordRepository.save(studentRecord);
     }
 
     public MemberStudentRecord getLatestMemberStudentRecord(final long memberId) {

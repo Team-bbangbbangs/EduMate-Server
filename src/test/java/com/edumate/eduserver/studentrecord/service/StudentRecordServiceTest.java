@@ -68,44 +68,7 @@ class StudentRecordServiceTest extends ServiceTest {
         );
     }
 
-    @Test
-    @DisplayName("여러 개의 생기부 항목을 생성한다.")
-    void createStudentRecords() {
-        // given
-        long memberId = 1L;
-        StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
-        String semester = "2025-1";
-        List<StudentRecordInfo> studentRecordInfos = List.of(
-                StudentRecordInfo.of("2023002", "김지안"),
-                StudentRecordInfo.of("2023003", "유태근")
-        );
 
-        // when
-        studentRecordService.createStudentRecords(memberId, recordType, semester, studentRecordInfos);
-
-        // then
-        MemberStudentRecord memberStudentRecord = memberStudentRecordRepository
-                .findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
-                .orElseThrow();
-
-        List<StudentRecordDetail> details = studentRecordDetailRepository
-                .findAllByMemberStudentRecordOrderByCreatedAtAsc(memberStudentRecord);
-
-        List<String> newNames = List.of("김지안", "유태근");
-
-        List<StudentRecordDetail> newDetails = details.stream()
-                .filter(d -> newNames.contains(d.getStudentName()))
-                .toList();
-
-        assertAll(
-                () -> assertThat(newDetails).hasSize(2),
-                () -> assertThat(newDetails)
-                        .extracting(StudentRecordDetail::getStudentName)
-                        .containsExactlyElementsOf(newNames),
-                () -> assertThat(newDetails).allMatch(d -> d.getDescription().isEmpty()),
-                () -> assertThat(newDetails).allMatch(d -> d.getByteCount() == 0)
-        );
-    }
 
     @Test
     @DisplayName("특정 학기의 특정 생기부 항목에 포함된 학생 이름 목록을 불러온다.")
@@ -232,6 +195,42 @@ class StudentRecordServiceTest extends ServiceTest {
                 () -> assertThat(updated.getStudentName()).isEqualTo(updatedStudentName),
                 () -> assertThat(updated.getDescription()).isEqualTo(updatedDescription),
                 () -> assertThat(updated.getByteCount()).isEqualTo(updatedByteCount)
+        );
+    }
+
+    @Test
+    @DisplayName("여러 개의 학생 생활기록부를 한번에 생성한다.")
+    void createStudentRecords() {
+        // given
+        StudentRecordType recordType = StudentRecordType.BEHAVIOR_OPINION;
+        String semester = "2025-2";
+
+        MemberStudentRecord memberStudentRecord = studentRecordService.createSemesterRecord(
+                defaultTeacher, recordType, semester);
+
+        List<StudentRecordInfo> studentRecordInfos = List.of(
+                new StudentRecordInfo("2023001", "김학생"),
+                new StudentRecordInfo("2023002", "이학생"),
+                new StudentRecordInfo("2023003", "박학생")
+        );
+
+        // when
+        studentRecordService.createStudentRecords(memberStudentRecord, studentRecordInfos);
+
+        // then
+        List<StudentRecordDetail> savedRecords = studentRecordDetailRepository
+                .findAllByMemberStudentRecordOrderByCreatedAtAsc(memberStudentRecord);
+
+        assertAll(
+                () -> assertThat(savedRecords).hasSize(3),
+                () -> assertThat(savedRecords.get(0).getStudentNumber()).isEqualTo("2023001"),
+                () -> assertThat(savedRecords.get(0).getStudentName()).isEqualTo("김학생"),
+                () -> assertThat(savedRecords.get(0).getDescription()).isEmpty(),
+                () -> assertThat(savedRecords.get(0).getByteCount()).isEqualTo(0),
+                () -> assertThat(savedRecords.get(1).getStudentNumber()).isEqualTo("2023002"),
+                () -> assertThat(savedRecords.get(1).getStudentName()).isEqualTo("이학생"),
+                () -> assertThat(savedRecords.get(2).getStudentNumber()).isEqualTo("2023003"),
+                () -> assertThat(savedRecords.get(2).getStudentName()).isEqualTo("박학생")
         );
     }
 

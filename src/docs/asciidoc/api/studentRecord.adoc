@@ -106,15 +106,3 @@ operation::student-record/fail/record-not-found[snippets="http-request,http-resp
 ==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
 
 operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
-
-=== 학기 추가
-
-==== 성공
-
-operation::student-record/create-semester-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
-
-==== 실패: 잘못된 학기 형식
-operation::student-record/create-semester-fail/invalid-semester-format[snippets="http-request,http-response"]
-
-==== 실패: 이미 존재하는 학기
-operation::student-record/create-semester-fail/already-exists[snippets="http-request,http-response"]

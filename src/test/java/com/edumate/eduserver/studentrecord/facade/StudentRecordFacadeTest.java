@@ -6,9 +6,11 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
+import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
@@ -94,17 +96,31 @@ class StudentRecordFacadeTest {
     }
 
     @Test
-    @DisplayName("학생 기록 생성이 정상 동작한다.")
+    @DisplayName("다수의 학생 기록 생성이 정상 동작한다.")
     void createStudentRecords() {
+        // given
         long memberId = 500L;
-        StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
-        String semester = "2024-2";
-        List<StudentRecordInfo> infos = List.of(mock(StudentRecordInfo.class));
-        willDoNothing().given(studentRecordService).createStudentRecords(memberId, type, semester, infos);
+        StudentRecordType type = StudentRecordType.BEHAVIOR_OPINION;
+        String semester = "2025-1";
+        List<StudentRecordInfo> studentRecordInfos = List.of(
+                new StudentRecordInfo("2023001", "김학생"),
+                new StudentRecordInfo("2023002", "이학생")
+        );
 
-        studentRecordFacade.createStudentRecords(memberId, type, semester, infos);
+        Member mockMember = mock(Member.class);
+        MemberStudentRecord mockRecord = mock(MemberStudentRecord.class);
 
-        verify(studentRecordService).createStudentRecords(memberId, type, semester, infos);
+        given(memberService.getMemberById(memberId)).willReturn(mockMember);
+        given(studentRecordService.createSemesterRecord(mockMember, type, semester)).willReturn(mockRecord);
+        willDoNothing().given(studentRecordService).createStudentRecords(mockRecord, studentRecordInfos);
+
+        // when
+        studentRecordFacade.createStudentRecords(memberId, type, semester, studentRecordInfos);
+
+        // then
+        verify(memberService).getMemberById(memberId);
+        verify(studentRecordService).createSemesterRecord(mockMember, type, semester);
+        verify(studentRecordService).createStudentRecords(mockRecord, studentRecordInfos);
     }
 
     @Test
@@ -141,7 +157,7 @@ class StudentRecordFacadeTest {
     }
 
     @Test
-    @DisplayName("생활기록부 삭제가 정상 동작한다.")
+    @DisplayName("생활기록부 삭제가 정상 동작��다.")
     void deleteStudentRecordFacade() {
         long memberId = 300L;
         long recordId = 3L;
@@ -153,4 +169,3 @@ class StudentRecordFacadeTest {
         verify(studentRecordService).deleteStudentRecord(memberId, recordId);
     }
 }
-

@@ -4,6 +4,7 @@ import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
+import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
@@ -51,7 +52,9 @@ public class StudentRecordFacade {
     @Transactional
     public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
                                      final List<StudentRecordInfo> studentRecordInfos) {
-        studentRecordService.createStudentRecords(memberId, recordType, semester, studentRecordInfos);
+        Member member = memberService.getMemberById(memberId);
+        MemberStudentRecord studentRecord = studentRecordService.createSemesterRecord(member, recordType, semester);
+        studentRecordService.createStudentRecords(studentRecord, studentRecordInfos);
     }
 
     @Transactional
@@ -70,11 +73,5 @@ public class StudentRecordFacade {
     @Transactional
     public void deleteStudentRecord(final long memberId, final long recordId) {
         studentRecordService.deleteStudentRecord(memberId, recordId);
-    }
-
-    @Transactional
-    public void createSemesterRecord(final long memberId, final StudentRecordType recordType, final String semester) {
-        Member member = memberService.getMemberById(memberId);
-        studentRecordService.createSemesterRecord(member, recordType, semester);
     }
 }
