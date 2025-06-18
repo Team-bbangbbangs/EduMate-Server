@@ -27,6 +27,7 @@ import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
+import com.edumate.eduserver.auth.exception.PasswordSameAsOldException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
@@ -560,7 +561,8 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_LENGTH.getCode()))
                 .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_LENGTH.getMessage()))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-password-fail/invalid-password-length",
+                .andDo(CustomRestDocsUtils.documents(
+                        BASE_DOMAIN_PACKAGE + "update-password-fail/invalid-password-length",
                         requestFields(
                                 fieldWithPath("email").description("회원 이메일"),
                                 fieldWithPath("password").description("새 비밀번호")
@@ -588,7 +590,36 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getCode()))
                 .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_PASSWORD_FORMAT.getMessage()))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-password-fail/invalid-password-format",
+                .andDo(CustomRestDocsUtils.documents(
+                        BASE_DOMAIN_PACKAGE + "update-password-fail/invalid-password-format",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일"),
+                                fieldWithPath("password").description("새 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("이전과 동일한 비밀번호 변경 시 예외가 발생한다.")
+    void updatePasswordWithSamePassword() throws Exception {
+        UpdatePasswordRequest request = new UpdatePasswordRequest("test@email.com", "password");
+        doThrow(new PasswordSameAsOldException(AuthErrorCode.SAME_PASSWORD))
+                .when(authFacade).updatePassword(anyString(), anyString());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").value(AuthErrorCode.SAME_PASSWORD.getCode()))
+                .andExpect(jsonPath("$.message").value(AuthErrorCode.SAME_PASSWORD.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-password-fail/password-repetition",
                         requestFields(
                                 fieldWithPath("email").description("회원 이메일"),
                                 fieldWithPath("password").description("새 비밀번호")
