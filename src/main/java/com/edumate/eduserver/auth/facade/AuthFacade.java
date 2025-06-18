@@ -2,6 +2,7 @@ package com.edumate.eduserver.auth.facade;
 
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MismatchedPasswordException;
+import com.edumate.eduserver.auth.exception.PasswordSameAsOldException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.facade.dto.MemberSignedUpEvent;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
@@ -54,7 +55,7 @@ public class AuthFacade {
     @Transactional
     public MemberLoginResponse login(final String email, final String password) {
         Member member = memberService.getMemberByEmail(email);
-        if (!passwordEncoder.matches(password, member.getPassword())) {
+        if (!isPasswordMatched(password, member.getPassword())) {
             throw new MismatchedPasswordException(AuthErrorCode.INVALID_PASSWORD);
         }
         boolean isAdmin = memberService.isAdmin(member);
@@ -95,7 +96,7 @@ public class AuthFacade {
 
     private void checkPreconditions(final String email, final String password) {
         authService.checkAlreadyRegistered(email);
-        PasswordValidator.validate(password);
+        PasswordValidator.validatePasswordFormat(password);
     }
 
     private Member createMember(final String email, final String password, final Subject subject, final String school) {
@@ -111,5 +112,19 @@ public class AuthFacade {
         String code = randomCodeGenerator.generate();
         authService.saveCode(member, code);
         eventPublisher.publishEvent(MemberSignedUpEvent.of(member.getEmail(), member.getMemberUuid(), code));
+    }
+
+    @Transactional
+    public void updatePassword(final String email, final String newPassword) {
+        PasswordValidator.validatePasswordFormat(newPassword);
+        Member member = memberService.getMemberByEmail(email);
+        if (isPasswordMatched(newPassword, member.getPassword())) {
+            throw new PasswordSameAsOldException(AuthErrorCode.SAME_PASSWORD);
+        }
+        memberService.updatePassword(member, passwordEncoder.encode(newPassword));
+    }
+
+    private boolean isPasswordMatched(final String rawPassword, final String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

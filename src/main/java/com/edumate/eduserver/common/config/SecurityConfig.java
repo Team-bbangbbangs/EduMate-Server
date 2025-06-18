@@ -43,6 +43,7 @@ public class SecurityConfig {
             "/api/v1/auth/signup",
             "/api/v1/auth/login",
             "/api/v1/auth/reissue",
+            "/api/v1/auth/password",
             "/api/v1/auth/verify-email",
             "/actuator/health"
     };

@@ -120,6 +120,10 @@ public class Member extends BaseEntity {
         return this.role != Role.PENDING_TEACHER;
     }
 
+    public void updatePassword(final String password) {
+        this.password = password;
+    }
+
     public void restore(final String password, final Subject subject, final School school) {
         this.isDeleted = false;
         this.deletedAt = null;
