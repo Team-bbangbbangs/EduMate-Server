@@ -1,7 +1,7 @@
-package com.edumate.eduserver.auth.service;
+package com.edumate.eduserver.external.aws.mail.event;
 
 import com.edumate.eduserver.auth.facade.dto.MemberSignedUpEvent;
-import com.edumate.eduserver.external.aws.ses.EmailService;
+import com.edumate.eduserver.external.aws.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

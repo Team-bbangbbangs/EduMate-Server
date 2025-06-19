@@ -14,7 +14,7 @@ import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.auth.service.TokenService;
-import com.edumate.eduserver.external.aws.ses.EmailService;
+import com.edumate.eduserver.external.aws.mail.EmailService;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;

@@ -1,6 +1,6 @@
-package com.edumate.eduserver.external.aws.ses.config;
+package com.edumate.eduserver.external.aws.mail.config;
 
-import com.edumate.eduserver.external.aws.ses.AwsSesProperties;
+import com.edumate.eduserver.external.aws.mail.AwsSesProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

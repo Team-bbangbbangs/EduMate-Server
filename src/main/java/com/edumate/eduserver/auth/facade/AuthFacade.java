@@ -13,7 +13,7 @@ import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.auth.service.TokenService;
-import com.edumate.eduserver.external.aws.ses.EmailService;
+import com.edumate.eduserver.external.aws.mail.EmailService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
