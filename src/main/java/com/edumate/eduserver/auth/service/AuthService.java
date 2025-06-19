@@ -49,10 +49,15 @@ public class AuthService {
     }
 
     public void validateEmail(final String email) {
-        List<String> validEmailList = getValidEmails();
-        if (!validEmailList.contains(email)) {
+        List<String> validEmails = getValidEmails();
+        String domain = extractEmailDomain(email);
+        if (!validEmails.contains(email)) {
             throw new InvalidEmailDomainException(AuthErrorCode.INVALID_EMAIL);
         }
+    }
+
+    private String extractEmailDomain(final String email) {
+        return email.substring(email.indexOf("@") + 1);
     }
 
     private List<String> getValidEmails() {
