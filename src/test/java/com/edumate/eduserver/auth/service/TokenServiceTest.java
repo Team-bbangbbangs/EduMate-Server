@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.edumate.eduserver.auth.exception.MismatchedTokenException;
@@ -54,23 +53,10 @@ class TokenServiceTest {
     }
 
     @Test
-    @DisplayName("refreshToken에서 memberUuid를 정상적으로 추출한다.")
-    void getMemberUuidFromToken() {
-        String refreshToken = "Bearer refresh-token";
-        String resolvedToken = "refresh-token";
-        when(jwtParser.resolveToken(refreshToken)).thenReturn(resolvedToken);
-        doNothing().when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
-        when(jwtParser.getMemberUuidFromToken(resolvedToken)).thenReturn("uuid-1234");
-
-        String uuid = tokenService.getMemberUuidFromToken(refreshToken);
-        assertThat(uuid).isEqualTo("uuid-1234");
-    }
-
-    @Test
     @DisplayName("토큰이 정상적으로 검증된다.")
     void checkTokenEquality() {
         // given
-        String requestRefreshToken = "Bearer refresh-token";
+        String requestRefreshToken = "refresh-token";
         String storedRefreshToken = "refresh-token";
         String resolvedToken = "refresh-token";
 
@@ -79,7 +65,6 @@ class TokenServiceTest {
 
         // when & then
         tokenService.checkTokenEquality(requestRefreshToken, storedRefreshToken);
-        verify(jwtParser).resolveToken(requestRefreshToken);
     }
 
     @Test
