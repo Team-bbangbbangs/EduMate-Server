@@ -1,15 +1,10 @@
 package com.edumate.eduserver.common.config;
 
-import com.edumate.eduserver.auth.jwt.JwtParser;
-import com.edumate.eduserver.auth.jwt.JwtValidator;
 import com.edumate.eduserver.common.security.CustomPasswordEncoder;
 import com.edumate.eduserver.common.security.JwtAccessDeniedHandler;
 import com.edumate.eduserver.common.security.JwtAuthenticationEntryPoint;
 import com.edumate.eduserver.common.security.filter.ExceptionHandlerFilter;
 import com.edumate.eduserver.common.security.filter.JwtAuthenticationFilter;
-import com.edumate.eduserver.member.service.MemberAuthenticationService;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +18,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -34,12 +28,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final MemberAuthenticationService memberAuthService;
-    private final JwtValidator jwtValidator;
-    private final JwtParser jwtParser;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
-    private static final String[] AUTH_WHITELIST = {
+    public static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/signup",
             "/api/v1/auth/login",
             "/api/v1/auth/reissue",
@@ -47,7 +40,7 @@ public class SecurityConfig {
             "/api/v1/auth/verify-email",
             "/actuator/health"
     };
-    private static final String[] BUSINESS_WHITE_LIST = {
+    public static final String[] BUSINESS_WHITE_LIST = {
             "/api/v1/notices",
             "/api/v1/notices/{noticeId:\\d+}"
     };
@@ -73,18 +66,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(memberAuthService, new AntPathMatcher(), jwtValidator, jwtParser,
-                                getWhitelistPaths()),
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
+                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class)
                 .build();
-    }
-
-    private String[] getWhitelistPaths() {
-        List<String> allWhitelist = new ArrayList<>();
-        allWhitelist.addAll(Arrays.asList(AUTH_WHITELIST));
-        allWhitelist.addAll(Arrays.asList(BUSINESS_WHITE_LIST));
-        return allWhitelist.toArray(new String[0]);
     }
 
     @Bean
