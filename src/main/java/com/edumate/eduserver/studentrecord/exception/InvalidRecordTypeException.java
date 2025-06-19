@@ -8,4 +8,8 @@ public class InvalidRecordTypeException extends BadRequestException {
     public InvalidRecordTypeException(final StudentRecordErrorCode errorCode, final String recordType) {
         super(errorCode, errorCode.formatMessage(recordType));
     }
+
+    public InvalidRecordTypeException(final StudentRecordErrorCode errorCode) {
+        super(errorCode);
+    }
 }

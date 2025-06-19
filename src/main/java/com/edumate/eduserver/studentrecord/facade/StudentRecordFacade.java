@@ -12,6 +12,7 @@ import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
+import com.edumate.eduserver.studentrecord.service.PromptService;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentRecordFacade {
 
     private final StudentRecordService studentRecordService;
+    private final PromptService promptService;
     private final MemberService memberService;
     private final ChatService chatService;
 
@@ -78,9 +80,11 @@ public class StudentRecordFacade {
         studentRecordService.deleteStudentRecord(memberId, recordId);
     }
 
-    public StudentRecordAICreateResponse aiGenerateStudentRecord(final long memberId, final long recordId, final String prompt) {
+    public StudentRecordAICreateResponse generateAIStudentRecord(final long memberId, final long recordId, final String inputPrompt) {
         Member member = memberService.getMemberById(memberId);
-        String description = chatService.getChatResponse(prompt);
-        return StudentRecordAICreateResponse.of(description);
+        StudentRecordDetail recordDetail = studentRecordService.getRecordDetail(member.getId(), recordId);
+        StudentRecordType recordType = recordDetail.getMemberStudentRecord().getStudentRecordType();
+        String prompt = promptService.createPrompt(member.getSubject().getName(), recordType, inputPrompt);
+        return chatService.getThreeChatResponses(prompt);
     }
 }
