@@ -8,6 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberStudentRecordRepository extends JpaRepository<MemberStudentRecord, Long> {
 
     Optional<MemberStudentRecord> findByMemberIdAndStudentRecordTypeAndSemester(long memberId, StudentRecordType studentRecordType, String semester);
-
-    Optional<MemberStudentRecord> findTopByMemberIdOrderByIdDesc(long memberId);
 }
