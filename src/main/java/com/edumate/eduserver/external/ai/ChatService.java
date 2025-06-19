@@ -35,16 +35,17 @@ public class ChatService {
         } catch (HttpStatusCodeException e) {
             HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
             String body = e.getResponseBodyAsString();
-            if (status == HttpStatus.TOO_MANY_REQUESTS && body.contains("rate_limit_exceeded")) {
-                log.error("OpenAI Rate Limit 초과: {}", e.getMessage());
-                throw new OpenAiRateLimitExceededException(OpenAiErrorCode.RATE_LIMIT_EXCEEDED);
-            } else if (status == HttpStatus.TOO_MANY_REQUESTS && body.contains("insufficient_quota")) {
-                log.error("OpenAI Credit 소진: {}", e.getMessage());
-                throw new OpenAiQuotaExceededException(OpenAiErrorCode.QUOTA_EXCEEDED);
-            } else {
-                log.error("OpenAI 알 수 없는 오류 발생: {}", e.getMessage());
-                throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
+            if (status == HttpStatus.TOO_MANY_REQUESTS) {
+                if (body.contains("rate_limit_exceeded")) {
+                    log.error("OpenAI Rate Limit 초과: {}", e.getMessage());
+                    throw new OpenAiRateLimitExceededException(OpenAiErrorCode.RATE_LIMIT_EXCEEDED);
+                } else if (body.contains("insufficient_quota")) {
+                    log.error("OpenAI Credit 소진: {}", e.getMessage());
+                    throw new OpenAiQuotaExceededException(OpenAiErrorCode.QUOTA_EXCEEDED);
+                }
             }
+            log.error("OpenAI 알 수 없는 오류 발생: {}", e.getMessage());
+            throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
         }
     }
 }
