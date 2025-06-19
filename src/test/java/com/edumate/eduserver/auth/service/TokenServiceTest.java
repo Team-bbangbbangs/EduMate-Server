@@ -71,7 +71,7 @@ class TokenServiceTest {
     @DisplayName("저장된 토큰과 요청 토큰이 불일치하면 예외가 발생한다.")
     void tokenEqualityMismatch() {
         // given
-        String requestRefreshToken = "Bearer refresh-token";
+        String requestRefreshToken = "refresh-token";
         String storedRefreshToken = "different-refresh-token";
         String resolvedToken = "refresh-token";
 
