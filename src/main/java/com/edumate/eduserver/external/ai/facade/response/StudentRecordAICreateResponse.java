@@ -1,4 +1,4 @@
-package com.edumate.eduserver.studentrecord.facade.response;
+package com.edumate.eduserver.external.ai.facade.response;
 
 public record StudentRecordAICreateResponse(
         String description1,

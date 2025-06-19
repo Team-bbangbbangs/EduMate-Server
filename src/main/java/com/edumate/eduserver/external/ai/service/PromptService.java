@@ -1,4 +1,4 @@
-package com.edumate.eduserver.studentrecord.service;
+package com.edumate.eduserver.external.ai.service;
 
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import org.springframework.stereotype.Service;

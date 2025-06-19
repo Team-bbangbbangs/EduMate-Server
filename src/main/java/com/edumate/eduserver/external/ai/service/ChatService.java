@@ -1,10 +1,10 @@
-package com.edumate.eduserver.external.ai;
+package com.edumate.eduserver.external.ai.service;
 
 import com.edumate.eduserver.external.ai.exception.OpenAiQuotaExceededException;
 import com.edumate.eduserver.external.ai.exception.OpenAiRateLimitExceededException;
 import com.edumate.eduserver.external.ai.exception.OpenAiUnknownException;
 import com.edumate.eduserver.external.ai.exception.code.OpenAiErrorCode;
-import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
+import com.edumate.eduserver.external.ai.facade.response.StudentRecordAICreateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;

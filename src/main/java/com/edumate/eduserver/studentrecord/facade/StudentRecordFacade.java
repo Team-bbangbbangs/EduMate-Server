@@ -1,6 +1,7 @@
 package com.edumate.eduserver.studentrecord.facade;
 
-import com.edumate.eduserver.external.ai.ChatService;
+import com.edumate.eduserver.external.ai.service.ChatService;
+import com.edumate.eduserver.external.ai.service.PromptService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
@@ -9,10 +10,9 @@ import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
-import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
-import com.edumate.eduserver.studentrecord.service.PromptService;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordPromptResponse;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -80,11 +80,10 @@ public class StudentRecordFacade {
         studentRecordService.deleteStudentRecord(memberId, recordId);
     }
 
-    public StudentRecordAICreateResponse generateAIStudentRecord(final long memberId, final long recordId, final String inputPrompt) {
+    public StudentRecordPromptResponse getUserPrompt(final long memberId, final long recordId, final String inputPrompt) {
         Member member = memberService.getMemberById(memberId);
         StudentRecordDetail recordDetail = studentRecordService.getRecordDetail(member.getId(), recordId);
         StudentRecordType recordType = recordDetail.getMemberStudentRecord().getStudentRecordType();
-        String prompt = promptService.createPrompt(member.getSubject().getName(), recordType, inputPrompt);
-        return chatService.getThreeChatResponses(prompt);
+        return StudentRecordPromptResponse.of(member, recordType, inputPrompt);
     }
 }

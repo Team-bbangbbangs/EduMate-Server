@@ -3,6 +3,8 @@ package com.edumate.eduserver.studentrecord.controller;
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
+import com.edumate.eduserver.external.ai.facade.ChatFacade;
+import com.edumate.eduserver.external.ai.facade.response.StudentRecordAICreateResponse;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordPromptRequest;
@@ -11,9 +13,9 @@ import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCrea
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
-import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordPromptResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StudentRecordController {
 
     private final StudentRecordFacade studentRecordFacade;
+    private final ChatFacade chatFacade;
 
     private static final String DEFAULT_SEMESTER = "2025-1";
 
@@ -104,7 +107,9 @@ public class StudentRecordController {
     public ApiResponse<StudentRecordAICreateResponse> aiGenerateStudentRecord(@MemberId final long memberId,
                                                                               @PathVariable final long recordId,
                                                                               @RequestBody @Valid final StudentRecordPromptRequest request) {
-        StudentRecordAICreateResponse response = studentRecordFacade.generateAIStudentRecord(memberId, recordId, request.prompt().strip());
+        String prompt = request.prompt().strip();
+        StudentRecordPromptResponse promptResponse = studentRecordFacade.getUserPrompt(memberId, recordId, prompt);
+        StudentRecordAICreateResponse response = chatFacade.generateAIStudentRecord(promptResponse.member(), promptResponse.recordType(), prompt);
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 }
