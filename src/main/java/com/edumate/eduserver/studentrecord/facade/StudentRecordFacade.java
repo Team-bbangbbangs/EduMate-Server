@@ -1,5 +1,6 @@
 package com.edumate.eduserver.studentrecord.facade;
 
+import com.edumate.eduserver.external.ai.ChatService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
@@ -8,6 +9,7 @@ import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import com.edumate.eduserver.studentrecord.service.StudentRecordService;
@@ -23,6 +25,7 @@ public class StudentRecordFacade {
 
     private final StudentRecordService studentRecordService;
     private final MemberService memberService;
+    private final ChatService chatService;
 
     @Transactional
     public void updateStudentRecord(final long memberId, final long recordId, final String description,
@@ -73,5 +76,11 @@ public class StudentRecordFacade {
     @Transactional
     public void deleteStudentRecord(final long memberId, final long recordId) {
         studentRecordService.deleteStudentRecord(memberId, recordId);
+    }
+
+    public StudentRecordAICreateResponse aiGenerateStudentRecord(final long memberId, final long recordId, final String prompt) {
+        Member member = memberService.getMemberById(memberId);
+        String description = chatService.getChatResponse(prompt);
+        return StudentRecordAICreateResponse.of(description);
     }
 }

@@ -47,6 +47,7 @@ dependencies {
 
     // Spring AI
     implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.0-M7'
+    implementation 'org.springframework.ai:spring-ai-openai'
 
     // Health Check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
