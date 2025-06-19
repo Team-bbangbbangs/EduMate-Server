@@ -46,11 +46,11 @@ class TokenServiceTest {
         when(jwtGenerator.generateToken("uuid-1234", TokenType.ACCESS)).thenReturn("access-token");
         when(jwtGenerator.generateToken("uuid-1234", TokenType.REFRESH)).thenReturn("refresh-token");
 
-        Token token = tokenService.generateTokens(member);
+        String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
+        String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
 
-        verify(member).updateRefreshToken("refresh-token");
-        assertThat(token.accessToken()).isEqualTo("access-token");
-        assertThat(token.refreshToken()).isEqualTo("refresh-token");
+        assertThat(accessToken).isEqualTo("access-token");
+        assertThat(refreshToken).isEqualTo("refresh-token");
     }
 
     @Test

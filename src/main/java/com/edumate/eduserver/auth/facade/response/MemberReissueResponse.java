@@ -1,10 +1,9 @@
 package com.edumate.eduserver.auth.facade.response;
 
 public record MemberReissueResponse(
-        String accessToken,
-        String refreshToken
+        String accessToken
 ) {
-    public static MemberReissueResponse of(final String accessToken, final String refreshToken) {
-        return new MemberReissueResponse(accessToken, refreshToken);
+    public static MemberReissueResponse of(final String accessToken) {
+        return new MemberReissueResponse(accessToken);
     }
 }

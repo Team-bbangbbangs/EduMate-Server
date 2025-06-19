@@ -60,6 +60,11 @@ public class MemberService {
         member.updatePassword(encodedPassword);
     }
 
+    @Transactional
+    public void updateRefreshToken(final Member member, final String refreshToken) {
+        member.updateRefreshToken(refreshToken);
+    }
+
     public Member getMemberById(final long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));

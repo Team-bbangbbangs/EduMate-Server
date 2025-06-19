@@ -10,14 +10,14 @@ import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthFacade authFacade;
+
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @PostMapping("/email/send-verification")
     public ApiResponse<Void> sendVerificationEmail(@MemberId final long memberId) {
@@ -43,16 +45,19 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ApiResponse<MemberSignUpResponse> signUp(@RequestBody @Valid final MemberSignUpRequest request) {
-        MemberSignUpResponse response = authFacade.signUp(request.email().strip(), request.password().strip(),
-                request.subject().strip(), request.school().strip());
-        return ApiResponse.success(CommonSuccessCode.OK, response);
+    public ApiResponse<MemberSignUpResponse> signUp(@RequestBody @Valid final MemberSignUpRequest request,
+                                                    final HttpServletResponse response) {
+        MemberSignUpResponse signUpResponse = authFacade.signUp(request.email().strip(), request.password().strip(),
+                request.subject().strip(), request.school().strip(), response);
+        return ApiResponse.success(CommonSuccessCode.OK, signUpResponse);
     }
 
     @PostMapping("/login")
-    public ApiResponse<MemberLoginResponse> login(@RequestBody @Valid final MemberLoginRequest request) {
-        MemberLoginResponse response = authFacade.login(request.email().strip(), request.password().strip());
-        return ApiResponse.success(CommonSuccessCode.OK, response);
+    public ApiResponse<MemberLoginResponse> login(@RequestBody @Valid final MemberLoginRequest request,
+                                                  final HttpServletResponse response) {
+        MemberLoginResponse loginResponse = authFacade.login(request.email().strip(), request.password().strip(),
+                response);
+        return ApiResponse.success(CommonSuccessCode.OK, loginResponse);
     }
 
     @PostMapping("/logout")
@@ -63,9 +68,10 @@ public class AuthController {
 
     @PatchMapping("/reissue")
     public ApiResponse<MemberReissueResponse> reissue(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) final String refreshToken) {
-        MemberReissueResponse response = authFacade.reissue(refreshToken.strip());
-        return ApiResponse.success(CommonSuccessCode.OK, response);
+            @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME) final String refreshToken,
+            final HttpServletResponse response) {
+        MemberReissueResponse reissueResponse = authFacade.reissue(refreshToken.strip(), response);
+        return ApiResponse.success(CommonSuccessCode.OK, reissueResponse);
     }
 
     @PatchMapping("/password")
