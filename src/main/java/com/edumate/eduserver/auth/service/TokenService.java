@@ -10,9 +10,11 @@ import com.edumate.eduserver.member.domain.Member;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -29,14 +31,12 @@ public class TokenService {
     }
 
     public String getMemberUuidFromToken(final String refreshToken) {
-        String prefixRemovedToken = jwtParser.resolveToken(refreshToken);
-        jwtValidator.validateToken(prefixRemovedToken, TokenType.REFRESH);
-        return jwtParser.getMemberUuidFromToken(prefixRemovedToken);
+        jwtValidator.validateToken(refreshToken, TokenType.REFRESH);
+        return jwtParser.getMemberUuidFromToken(refreshToken);
     }
 
     public void checkTokenEquality(final String requestRefreshToken, final String storedRefreshToken) {
-        String prefixRemovedToken = jwtParser.resolveToken(requestRefreshToken);
-        if (!isTokenMatched(prefixRemovedToken, storedRefreshToken)) {
+        if (!isTokenMatched(requestRefreshToken, storedRefreshToken)) {
             throw new MismatchedTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE);
         }
     }
