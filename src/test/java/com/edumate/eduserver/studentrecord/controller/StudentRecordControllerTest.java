@@ -36,9 +36,6 @@ import com.edumate.eduserver.external.ai.exception.OpenAiQuotaExceededException;
 import com.edumate.eduserver.external.ai.exception.OpenAiRateLimitExceededException;
 import com.edumate.eduserver.external.ai.facade.ChatFacade;
 import com.edumate.eduserver.external.ai.facade.response.StudentRecordAICreateResponse;
-import com.edumate.eduserver.member.domain.Member;
-import com.edumate.eduserver.member.domain.Role;
-import com.edumate.eduserver.member.domain.School;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordPromptRequest;
@@ -58,7 +55,6 @@ import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverview
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordPromptResponse;
 import com.edumate.eduserver.studentrecord.facade.response.vo.StudentDetail;
 import com.edumate.eduserver.studentrecord.facade.response.vo.StudentRecordOverview;
-import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.util.ControllerTest;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -687,16 +683,14 @@ class StudentRecordControllerTest extends ControllerTest {
                 "학급 내 활동에서 리더로서 조화롭게 구성원들을 이끌며 긍정적인 분위기를 만드는 역할을 합니다.",
                 "다양한 의견을 존중하고 통합하는 역량이 뛰어나며 모둠활동에서 특히 두각을 나타냅니다."
         );
-        Subject subject = Subject.create("국어");
-        Member mockedMember = Member.create(subject, "test@test.com", "testPassword", "테스트 유저", School.HIGH_SCHOOL, Role.TEACHER);
         StudentRecordType recordType = StudentRecordType.BEHAVIOR_OPINION;
         String prompt = "이 학생은 리더십이 좋고 협동심이 뛰어납니다.";
 
-        StudentRecordPromptResponse promptResponse = new StudentRecordPromptResponse(mockedMember, recordType, prompt);
+        StudentRecordPromptResponse promptResponse = new StudentRecordPromptResponse(recordType, prompt);
 
         when(studentRecordFacade.getUserPrompt(anyLong(), anyLong(), anyString()))
                 .thenReturn(promptResponse);
-        when(chatFacade.generateAIStudentRecord(any(Member.class), any(StudentRecordType.class), anyString()))
+        when(chatFacade.generateAIStudentRecord(any(StudentRecordType.class), anyString()))
                 .thenReturn(dummyResponse);
 
         // when & then
@@ -777,16 +771,14 @@ class StudentRecordControllerTest extends ControllerTest {
         // given
         long recordId = 1L;
         StudentRecordPromptRequest request = new StudentRecordPromptRequest("이 학생은 리더십이 좋고 협동심이 뛰어납니다.");
-        Subject subject = Subject.create("국어");
-        Member mockedMember = Member.create(subject, "test@test.com", "testPassword", "테스트 유저", School.HIGH_SCHOOL, Role.TEACHER);
         StudentRecordType recordType = StudentRecordType.BEHAVIOR_OPINION;
         String prompt = "이 학생은 리더십이 좋고 협동심이 뛰어납니다.";
 
-        StudentRecordPromptResponse promptResponse = new StudentRecordPromptResponse(mockedMember, recordType, prompt);
+        StudentRecordPromptResponse promptResponse = new StudentRecordPromptResponse(recordType, prompt);
 
         when(studentRecordFacade.getUserPrompt(anyLong(), anyLong(), anyString()))
                 .thenReturn(promptResponse);
-        when(chatFacade.generateAIStudentRecord(any(Member.class), any(StudentRecordType.class), anyString()))
+        when(chatFacade.generateAIStudentRecord(any(StudentRecordType.class), anyString()))
                 .thenThrow(new OpenAiRateLimitExceededException(RATE_LIMIT_EXCEEDED));
 
         // when & then
@@ -823,16 +815,14 @@ class StudentRecordControllerTest extends ControllerTest {
         // given
         long recordId = 1L;
         StudentRecordPromptRequest request = new StudentRecordPromptRequest("이 학생은 리더십이 좋고 협동심이 뛰어납니다.");
-        Subject subject = Subject.create("국어");
-        Member mockedMember = Member.create(subject, "test@test.com", "testPassword", "테스트 유저", School.HIGH_SCHOOL, Role.TEACHER);
         StudentRecordType recordType = StudentRecordType.BEHAVIOR_OPINION;
         String prompt = "이 학생은 리더십이 좋고 협동심이 뛰어납니다.";
 
-        StudentRecordPromptResponse promptResponse = new StudentRecordPromptResponse(mockedMember, recordType, prompt);
+        StudentRecordPromptResponse promptResponse = new StudentRecordPromptResponse(recordType, prompt);
 
         when(studentRecordFacade.getUserPrompt(anyLong(), anyLong(), anyString()))
                 .thenReturn(promptResponse);
-        when(chatFacade.generateAIStudentRecord(any(Member.class), any(StudentRecordType.class), anyString()))
+        when(chatFacade.generateAIStudentRecord(any(StudentRecordType.class), anyString()))
                 .thenThrow(new OpenAiQuotaExceededException(QUOTA_EXCEEDED));
 
         // when & then

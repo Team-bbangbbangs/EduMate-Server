@@ -1,7 +1,5 @@
 package com.edumate.eduserver.studentrecord.facade;
 
-import com.edumate.eduserver.external.ai.service.ChatService;
-import com.edumate.eduserver.external.ai.service.PromptService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
@@ -25,9 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentRecordFacade {
 
     private final StudentRecordService studentRecordService;
-    private final PromptService promptService;
     private final MemberService memberService;
-    private final ChatService chatService;
 
     @Transactional
     public void updateStudentRecord(final long memberId, final long recordId, final String description,
@@ -80,10 +76,11 @@ public class StudentRecordFacade {
         studentRecordService.deleteStudentRecord(memberId, recordId);
     }
 
-    public StudentRecordPromptResponse getUserPrompt(final long memberId, final long recordId, final String inputPrompt) {
+    public StudentRecordPromptResponse getUserPrompt(final long memberId, final long recordId,
+                                                     final String inputPrompt) {
         Member member = memberService.getMemberById(memberId);
         StudentRecordDetail recordDetail = studentRecordService.getRecordDetail(member.getId(), recordId);
         StudentRecordType recordType = recordDetail.getMemberStudentRecord().getStudentRecordType();
-        return StudentRecordPromptResponse.of(member, recordType, inputPrompt);
+        return StudentRecordPromptResponse.of(recordType, inputPrompt);
     }
 }

@@ -26,12 +26,16 @@ public class ChatService {
     private StudentRecordAICreateResponse getMultipleChatResponses(final String prompt) {
         try {
             return chatClient.prompt()
-                    .system("당신은 중고등학교 생활기록부 작성을 보조하는 AI 어시스턴트입니다. 학생의 정보를 바탕으로 생활기록부를 작성합니다.")
+                    .system("""
+                            당신은 중고등학교 생활기록부 작성을 보조하는 AI 어시스턴트입니다.
+                            학생의 정보를 바탕으로 생활기록부를 작성합니다.
+                            
+                            중요: 응답은 반드시 유효한 JSON 형식이어야 하며, 
+                            JSON 외의 다른 텍스트나 마크다운은 포함하지 마세요.
+                            """)
                     .user(prompt)
                     .call()
                     .entity(StudentRecordAICreateResponse.class);
-
-
         } catch (HttpStatusCodeException e) {
             HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
             String body = e.getResponseBodyAsString();
@@ -44,7 +48,10 @@ public class ChatService {
                     throw new OpenAiQuotaExceededException(OpenAiErrorCode.QUOTA_EXCEEDED);
                 }
             }
-            log.error("OpenAI 알 수 없는 오류 발생: {}", e.getMessage());
+            log.error("OpenAI API 응답 에러 처리되지 않음: {}", body);
+            throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
+        } catch (Exception e) {
+            log.error("OpenAI API 호출 중 오류 발생: {}", e.getMessage());
             throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
         }
     }
