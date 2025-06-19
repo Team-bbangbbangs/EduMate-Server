@@ -1,10 +1,16 @@
 package com.edumate.eduserver.external.ai;
 
+import com.edumate.eduserver.external.ai.exception.OpenAiQuotaExceededException;
+import com.edumate.eduserver.external.ai.exception.OpenAiRateLimitExceededException;
+import com.edumate.eduserver.external.ai.exception.OpenAiUnknownException;
+import com.edumate.eduserver.external.ai.exception.code.OpenAiErrorCode;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @Slf4j
 @Service
@@ -26,9 +32,19 @@ public class ChatService {
                     .entity(StudentRecordAICreateResponse.class);
 
 
-        } catch (Exception ex) {
-            log.error("OpenAI API 호출 중 오류 발생: {}", ex.getMessage(), ex);
-            throw new RuntimeException("OpenAI API 호출 중 오류가 발생했습니다: " + ex.getMessage());
+        } catch (HttpStatusCodeException e) {
+            HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
+            String body = e.getResponseBodyAsString();
+            if (status == HttpStatus.TOO_MANY_REQUESTS && body.contains("rate_limit_exceeded")) {
+                log.error("OpenAI Rate Limit 초과: {}", e.getMessage());
+                throw new OpenAiRateLimitExceededException(OpenAiErrorCode.RATE_LIMIT_EXCEEDED);
+            } else if (status == HttpStatus.TOO_MANY_REQUESTS && body.contains("insufficient_quota")) {
+                log.error("OpenAI Credit 소진: {}", e.getMessage());
+                throw new OpenAiQuotaExceededException(OpenAiErrorCode.QUOTA_EXCEEDED);
+            } else {
+                log.error("OpenAI 알 수 없는 오류 발생: {}", e.getMessage());
+                throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
+            }
         }
     }
 }
