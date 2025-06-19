@@ -1,5 +1,7 @@
 package com.edumate.eduserver.studentrecord.controller;
 
+import static com.edumate.eduserver.external.ai.exception.code.OpenAiErrorCode.QUOTA_EXCEEDED;
+import static com.edumate.eduserver.external.ai.exception.code.OpenAiErrorCode.RATE_LIMIT_EXCEEDED;
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.INVALID_SEMESTER_FORMAT;
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND;
 import static com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode.STUDENT_RECORD_DETAIL_NOT_FOUND;
@@ -30,8 +32,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
+import com.edumate.eduserver.external.ai.exception.OpenAiQuotaExceededException;
+import com.edumate.eduserver.external.ai.exception.OpenAiRateLimitExceededException;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordPromptRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
@@ -43,6 +48,7 @@ import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFound
 import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import com.edumate.eduserver.studentrecord.facade.response.vo.StudentDetail;
@@ -441,7 +447,7 @@ class StudentRecordControllerTest extends ControllerTest {
                         String.format("입력하신 %s는 유효하지 않은 학기 형식입니다. 올바른 형식은 'YYYY-1' 또는 'YYYY-2'입니다.", invalidSemester)))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-names-fail/invalid-semester-format",
                         requestHeaders(
-                                headerWithName("Authorization").description("액세�� 토큰")
+                                headerWithName("Authorization").description("액세스 토큰")
                         ),
                         pathParameters(
                                 parameterWithName("recordType").description("생활기록부 항목 타입")
@@ -657,6 +663,170 @@ class StudentRecordControllerTest extends ControllerTest {
                                 fieldWithPath("data.students[].description").description("생기부 내용")
                         )
 
+                ));
+    }
+
+    @Test
+    @DisplayName("AI로 생성된 학생 생활기록부 내용을 성공적으로 반환한다")
+    void aiGenerateStudentRecord() throws Exception {
+        // given
+        long recordId = 1L;
+        StudentRecordPromptRequest request = new StudentRecordPromptRequest("이 학생은 리더십이 좋고 협동심이 뛰어납니다.");
+
+        StudentRecordAICreateResponse dummyResponse = new StudentRecordAICreateResponse(
+                "이 학생은 리더십이 뛰어나고 협동적인 모습을 보입니다.",
+                "학급 내 활동에서 리더로서 조화롭게 구성원들을 이끌며 긍정적인 분위기를 만드는 역할을 합니다.",
+                "다양한 의견을 존중하고 통합하는 역량이 뛰어나며 모둠활동에서 특히 두각을 나타냅니다."
+        );
+
+        when(studentRecordFacade.generateAIStudentRecord(anyLong(), anyLong(), anyString()))
+                .thenReturn(dummyResponse);
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/ai-generate/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andExpect(jsonPath("$.data.description1").isString())
+                .andExpect(jsonPath("$.data.description2").isString())
+                .andExpect(jsonPath("$.data.description3").isString())
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "ai-generate-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("prompt").description("AI 생성에 사용할 프롬프트")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("data.description1").description("AI 생성된 첫 번째 생활기록부 내용"),
+                                fieldWithPath("data.description2").description("AI 생성된 두 번째 생활기록부 내용"),
+                                fieldWithPath("data.description3").description("AI 생성된 세 번째 생활기록부 내용")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("학생 레코드 ID가 존재하지 않으면 AI 생성에 실패한다")
+    void aiGenerateStudentRecordFailWhenRecordNotFound() throws Exception {
+        // given
+        long recordId = 9999L;
+        StudentRecordPromptRequest request = new StudentRecordPromptRequest("이 학생은 리더십이 좋고 협동심이 뛰어납니다.");
+
+        when(studentRecordFacade.generateAIStudentRecord(anyLong(), anyLong(), anyString()))
+                .thenThrow(new StudentRecordDetailNotFoundException(STUDENT_RECORD_DETAIL_NOT_FOUND));
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/ai-generate/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.code").value(STUDENT_RECORD_DETAIL_NOT_FOUND.getCode()))
+                .andExpect(jsonPath("$.message").value(STUDENT_RECORD_DETAIL_NOT_FOUND.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "ai-generate-fail/not-found",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordId").description("존재하지 않는 학생의 생기부 레코드 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("prompt").description("AI 생성에 사용할 프롬프트")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("OpenAI API Rate Limit 초과시 에러 응답을 반환한다")
+    void aiGenerateStudentRecordFailWithRateLimitExceeded() throws Exception {
+        // given
+        long recordId = 1L;
+        StudentRecordPromptRequest request = new StudentRecordPromptRequest("이 학생은 리더십이 좋고 협동심이 뛰어납니다.");
+
+        when(studentRecordFacade.generateAIStudentRecord(anyLong(), anyLong(), anyString()))
+                .thenThrow(new OpenAiRateLimitExceededException(RATE_LIMIT_EXCEEDED));
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/ai-generate/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.status").value(429))
+                .andExpect(jsonPath("$.code").value(RATE_LIMIT_EXCEEDED.getCode()))
+                .andExpect(jsonPath("$.message").value(RATE_LIMIT_EXCEEDED.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "ai-generate-fail/rate-limit",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("prompt").description("AI 생성에 사용할 프롬프트")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드 (429 Too Many Requests)"),
+                                fieldWithPath("code").description("응답 코드 (Rate Limit 초과)"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("OpenAI API 할당량 초과시 에러 응답을 반환한다")
+    void aiGenerateStudentRecordFailWithQuotaExceeded() throws Exception {
+        // given
+        long recordId = 1L;
+        StudentRecordPromptRequest request = new StudentRecordPromptRequest("이 학생은 리더십이 좋고 협동심이 뛰어납니다.");
+
+        when(studentRecordFacade.generateAIStudentRecord(anyLong(), anyLong(), anyString()))
+                .thenThrow(new OpenAiQuotaExceededException(QUOTA_EXCEEDED));
+
+        // when & then
+        mockMvc.perform(post(BASE_URL + "/ai-generate/{recordId}", recordId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.status").value(429))
+                .andExpect(jsonPath("$.code").value(QUOTA_EXCEEDED.getCode()))
+                .andExpect(jsonPath("$.message").value(QUOTA_EXCEEDED.getMessage()))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "ai-generate-fail/quota-exceeded",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        pathParameters(
+                                parameterWithName("recordId").description("학생의 생기부 레코드 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("prompt").description("AI 생성에 사용할 프롬프트")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드 (429 Too Many Requests)"),
+                                fieldWithPath("code").description("응답 코드 (할당량 초과)"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
                 ));
     }
 }

@@ -1,7 +1,6 @@
-package com.edumate.eduserver.auth.service;
+package com.edumate.eduserver.external.aws.ses;
 
 
-import com.edumate.eduserver.external.aws.ses.AwsSesEmailMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

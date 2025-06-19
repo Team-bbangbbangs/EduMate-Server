@@ -5,11 +5,13 @@ import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordCreateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordOverviewUpdateRequest;
+import com.edumate.eduserver.studentrecord.controller.request.StudentRecordPromptRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordUpdateRequest;
 import com.edumate.eduserver.studentrecord.controller.request.StudentRecordsCreateRequest;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.StudentRecordFacade;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
+import com.edumate.eduserver.studentrecord.facade.response.StudentRecordAICreateResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordDetailResponse;
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverviewsResponse;
 import jakarta.validation.Valid;
@@ -96,5 +98,13 @@ public class StudentRecordController {
                                                  @PathVariable final long recordId) {
         studentRecordFacade.deleteStudentRecord(memberId, recordId);
         return ApiResponse.success(CommonSuccessCode.OK);
+    }
+
+    @PostMapping("/ai-generate/{recordId}")
+    public ApiResponse<StudentRecordAICreateResponse> aiGenerateStudentRecord(@MemberId final long memberId,
+                                                                              @PathVariable final long recordId,
+                                                                              @RequestBody @Valid final StudentRecordPromptRequest request) {
+        StudentRecordAICreateResponse response = studentRecordFacade.generateAIStudentRecord(memberId, recordId, request.prompt().strip());
+        return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 }

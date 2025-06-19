@@ -24,6 +24,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 ext {
@@ -43,6 +44,9 @@ dependencies {
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // Spring AI
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.0-M7'
 
     // Health Check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -82,7 +86,7 @@ tasks.named('test') {
 tasks.named('asciidoctor') {
     configurations 'asciidoctorExt'
     baseDirFollowsSourceFile()
-	inputs.dir snippetsDir
+    inputs.dir snippetsDir
     dependsOn test
 
     sources {
@@ -97,7 +101,7 @@ tasks.register('copyDocument', Copy) {
 }
 
 build {
-	dependsOn copyDocument
+    dependsOn copyDocument
 }
 
 bootJar {
@@ -121,4 +125,3 @@ jacocoTestReport {
         csv.required.set(false)
     }
 }
-

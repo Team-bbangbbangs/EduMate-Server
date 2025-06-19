@@ -9,7 +9,7 @@ import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.auth.service.AuthService;
-import com.edumate.eduserver.auth.service.EmailService;
+import com.edumate.eduserver.external.aws.ses.EmailService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.auth.service.Token;
