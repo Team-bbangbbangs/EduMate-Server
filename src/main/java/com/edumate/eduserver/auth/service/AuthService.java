@@ -23,7 +23,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     private static final String EMPTY_REFRESH_TOKEN = null;
-    private static final boolean NOT_WITHDRAWN = false;
+    private static final boolean NOT_DELETED = false;
 
     @Transactional
     public void verifyEmailCode(final Member member, final String inputCode) {
@@ -44,7 +44,7 @@ public class AuthService {
     }
 
     public void checkAlreadyRegistered(final String email) {
-        if (memberRepository.existsByEmailAndIsDeleted(email, NOT_WITHDRAWN)) {
+        if (memberRepository.existsByEmailAndIsDeleted(email, NOT_DELETED)) {
             throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
         }
     }
