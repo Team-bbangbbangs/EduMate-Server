@@ -15,7 +15,7 @@ public class RefreshTokenCookieHandler {
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(14 * 24 * 60 * 60);
-        cookie.setAttribute("SameSite", "Lax");
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
@@ -25,7 +25,7 @@ public class RefreshTokenCookieHandler {
         cookie.setSecure(true);
         cookie.setMaxAge(0);
         cookie.setPath("/");
-        cookie.setAttribute("SameSite", "Lax");
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 }
