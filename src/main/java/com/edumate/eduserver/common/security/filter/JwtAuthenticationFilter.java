@@ -23,10 +23,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final MemberAuthenticationService memberAuthService;
-    private final AntPathMatcher pathMatcher;
     private final JwtValidator jwtValidator;
     private final JwtParser jwtParser;
-    private final String[] whitelistPaths;
+    private final String[] WHITELIST;
+    private final AntPathMatcher pathMatcher;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if ("OPTIONS".equals(method)) {
             return true;
         }
-        return Arrays.stream(whitelistPaths)
+        return Arrays.stream(WHITELIST)
                 .anyMatch(whitelist -> pathMatcher.match(whitelist, path));
     }
 

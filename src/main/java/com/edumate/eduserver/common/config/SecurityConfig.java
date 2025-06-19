@@ -35,9 +35,9 @@ public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final MemberAuthenticationService memberAuthService;
-    private final JwtValidator jwtValidator;
+    private final MemberAuthenticationService memberAuthenticationService;
     private final JwtParser jwtParser;
+    private final JwtValidator jwtValidator;
 
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/signup",
@@ -73,9 +73,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(memberAuthService, new AntPathMatcher(), jwtValidator, jwtParser,
-                                getWhitelistPaths()),
-                        UsernamePasswordAuthenticationFilter.class)
+                        new JwtAuthenticationFilter(memberAuthenticationService, jwtValidator, jwtParser,
+                                getWhitelistPaths(), new AntPathMatcher()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class)
                 .build();
     }

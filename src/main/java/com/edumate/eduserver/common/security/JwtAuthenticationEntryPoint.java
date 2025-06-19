@@ -25,14 +25,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     }
 
     private void handleException(final HttpServletResponse response) throws IOException {
-        setResponse(response, AuthErrorCode.UNAUTHORIZED);
+        setResponse(response);
     }
 
-    private void setResponse(final HttpServletResponse response, final AuthErrorCode errorCode) throws IOException {
+    private void setResponse(final HttpServletResponse response) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(objectMapper.writeValueAsString(
-                ApiResponse.fail(HttpStatus.UNAUTHORIZED.value(), errorCode.getCode(), errorCode.getMessage())));
+                ApiResponse.fail(HttpStatus.UNAUTHORIZED.value(), AuthErrorCode.UNAUTHORIZED.getCode(),
+                        AuthErrorCode.UNAUTHORIZED.getMessage())));
     }
 }
