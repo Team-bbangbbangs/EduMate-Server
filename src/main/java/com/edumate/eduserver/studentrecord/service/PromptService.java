@@ -1,8 +1,6 @@
 package com.edumate.eduserver.studentrecord.service;
 
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
-import com.edumate.eduserver.studentrecord.exception.InvalidRecordTypeException;
-import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,23 +22,8 @@ public class PromptService {
             """;
 
     public String createPrompt(final String subject, final StudentRecordType recordType, final String inputPrompt) {
-        int byteCount = getByteCount(recordType);
+        int byteCount = recordType.getByteCount();
         return String.format(PROMPT_TEMPLATE, recordType.name(), byteCount, byteCount, byteCount - 20, byteCount,
                 byteCount, inputPrompt);
-    }
-
-    private int getByteCount(final StudentRecordType recordType) {
-        if (recordType == StudentRecordType.ABILITY_DETAIL) { // 세부능력 특기사항
-            return 1500;
-        } else if (recordType == StudentRecordType.BEHAVIOR_OPINION) { // 행동특성 및 종합의견
-            return 1500;
-        } else if (recordType == StudentRecordType.CREATIVE_ACTIVITY_CAREER) { // 창의적 체험활동 - 진로활동
-            return 2100;
-        } else if (recordType == StudentRecordType.CREATIVE_ACTIVITY_AUTONOMY) { // 창의적 체험활동 - 자율활동
-            return 1500;
-        } else if (recordType == StudentRecordType.CREATIVE_ACTIVITY_CLUB) { // 창의적 체험활동 - 동아리활동
-            return 1500;
-        }
-        throw new InvalidRecordTypeException(StudentRecordErrorCode.RECORD_TYPE_NOT_FOUND);
     }
 }
