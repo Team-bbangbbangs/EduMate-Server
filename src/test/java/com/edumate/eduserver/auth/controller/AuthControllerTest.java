@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -488,7 +489,7 @@ class AuthControllerTest extends ControllerTest {
         }).when(authFacade).reissue(anyString(), any(HttpServletResponse.class));
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
-                        .header("Authorization", "Bearer refresh-token"))
+                .cookie(new Cookie("refreshToken", "refresh-token")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
@@ -498,8 +499,8 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(cookie().exists("refreshToken"))
                 .andExpect(cookie().value("refreshToken", "new-refresh-token"))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-success",
-                        requestHeaders(
-                                headerWithName("Authorization").description("리프레시 토큰")
+                        requestCookies(
+                                cookieWithName("refreshToken").description("리프레시 토큰 (HttpOnly Cookie)")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
@@ -521,15 +522,15 @@ class AuthControllerTest extends ControllerTest {
                 new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN));
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
-                        .header("Authorization", "Bearer expired-refresh-token"))
+                .cookie(new Cookie("refreshToken", "refresh-token")))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))
                 .andExpect(jsonPath("$.code").value(AuthErrorCode.EXPIRED_TOKEN.getCode()))
                 .andExpect(jsonPath("$.message").value(AuthErrorCode.EXPIRED_TOKEN.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-fail/expired-token",
-                        requestHeaders(
-                                headerWithName("Authorization").description("만료된 리프레시 토큰")
+                        requestCookies(
+                                cookieWithName("refreshToken").description("리프레시 토큰 (HttpOnly Cookie)")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
@@ -546,15 +547,15 @@ class AuthControllerTest extends ControllerTest {
                 new MismatchedTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE));
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
-                        .header("Authorization", "Bearer invalid-refresh-token"))
+                .cookie(new Cookie("refreshToken", "refresh-token")))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))
                 .andExpect(jsonPath("$.code").value(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE.getCode()))
                 .andExpect(jsonPath("$.message").value(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE.getMessage()))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "reissue-fail/invalid-token",
-                        requestHeaders(
-                                headerWithName("Authorization").description("데이터베이스에 저장된 토큰과 일치하지 않는 리프레시 토큰")
+                        requestCookies(
+                                cookieWithName("refreshToken").description("리프레시 토큰 (HttpOnly Cookie)")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),

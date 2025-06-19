@@ -24,7 +24,7 @@ public class TokenService {
     private final JwtParser jwtParser;
     private final JwtValidator jwtValidator;
 
-    private static final String REFRESH_TOKEN_PREFIX = "refreshToken";
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Transactional
     public String generateTokens(final Member member, final TokenType tokenType) {
@@ -53,7 +53,7 @@ public class TokenService {
     }
 
     public void setRefreshTokenCookie(final HttpServletResponse response, final String refreshToken) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN_PREFIX, refreshToken);
+        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setPath("/");
