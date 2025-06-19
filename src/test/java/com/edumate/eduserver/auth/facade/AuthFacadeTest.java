@@ -18,6 +18,7 @@ import com.edumate.eduserver.auth.service.TokenService;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ class AuthFacadeTest {
         String subjectName = "수학";
         String school = "테스트고";
         given(subjectService.getSubjectByName(subjectName)).willReturn(mock(Subject.class));
-        assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school))
+        assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school, any(HttpServletResponse.class)))
                 .isInstanceOf(InvalidPasswordLengthException.class);
 
         verify(passwordEncoder, never()).encode(any());
@@ -74,7 +75,7 @@ class AuthFacadeTest {
         given(subjectService.getSubjectByName(subjectName)).willReturn(mock(Subject.class));
         doThrow(new InvalidPasswordFormatException(AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(passwordEncoder).encode(password);
-        assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school))
+        assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school, any(HttpServletResponse.class)))
                 .isInstanceOf(InvalidPasswordFormatException.class);
     }
 
@@ -88,7 +89,7 @@ class AuthFacadeTest {
         given(subjectService.getSubjectByName(subjectName)).willReturn(mock(Subject.class));
         doThrow(new InvalidPasswordFormatException(AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(passwordEncoder).encode(password);
-        assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school))
+        assertThatThrownBy(() -> authFacade.signUp(email, password, subjectName, school, any(HttpServletResponse.class)))
                 .isInstanceOf(InvalidPasswordFormatException.class);
     }
 }

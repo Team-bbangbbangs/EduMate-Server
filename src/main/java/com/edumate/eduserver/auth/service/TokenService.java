@@ -24,7 +24,7 @@ public class TokenService {
     private final JwtParser jwtParser;
     private final JwtValidator jwtValidator;
 
-    private static final String REFRESH_TOKEN_PREFIX = "refresh_token";
+    private static final String REFRESH_TOKEN_PREFIX = "refreshToken";
 
     @Transactional
     public String generateTokens(final Member member, final TokenType tokenType) {
