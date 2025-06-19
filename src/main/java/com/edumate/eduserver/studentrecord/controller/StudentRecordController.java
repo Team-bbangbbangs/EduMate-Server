@@ -100,7 +100,7 @@ public class StudentRecordController {
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
-    @PostMapping("ai-generate/{recordId}")
+    @PostMapping("/ai-generate/{recordId}")
     public ApiResponse<StudentRecordAICreateResponse> aiGenerateStudentRecord(@MemberId final long memberId,
                                                                               @PathVariable final long recordId,
                                                                               @RequestBody @Valid final StudentRecordPromptRequest request) {
