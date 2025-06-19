@@ -21,8 +21,11 @@ public class RefreshTokenCookieHandler {
 
     public void clearRefreshTokenCookie(final HttpServletResponse response) {
         Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         cookie.setMaxAge(0);
         cookie.setPath("/");
+        cookie.setAttribute("SameSite", "Strict");
         response.addCookie(cookie);
     }
 }
