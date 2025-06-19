@@ -79,11 +79,11 @@ public class AuthFacade {
         Member member = memberService.getMemberByUuid(memberUuid);
         try {
             tokenService.checkTokenEquality(refreshToken, member.getRefreshToken());
-            String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
-            String refreshedToken = tokenService.generateTokens(member, TokenType.REFRESH);
-            memberService.updateRefreshToken(member, refreshedToken);
-            tokenService.setRefreshTokenCookie(response, refreshedToken);
-            return MemberReissueResponse.of(accessToken);
+            String newAccessToken = tokenService.generateTokens(member, TokenType.ACCESS);
+            String newRefreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
+            memberService.updateRefreshToken(member, newRefreshToken);
+            tokenService.setRefreshTokenCookie(response, newRefreshToken);
+            return MemberReissueResponse.of(newAccessToken);
         } catch (Exception e) {
             logout(member.getId());
             throw e;
