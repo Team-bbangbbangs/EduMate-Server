@@ -14,6 +14,7 @@ public enum AuthErrorCode implements ErrorCode {
     INVALID_PASSWORD_LENGTH("EDMT-4000104", "비밀번호는 8자 이상 16자 이하로 입력해주세요."),
     INVALID_PASSWORD_FORMAT("EDMT-4000105", "영문, 숫자, 특수문자 중 2종류 이상을 포함해야하며 같은 문자를 3번 이상 연속해서 사용할 수 없습니다."),
     SAME_PASSWORD("EDMT-4000106", "새로운 비밀번호는 기존 비밀번호와 같을 수 없습니다."),
+    INVALID_EMAIL("EDMT-4001007", "유효하지 않은 이메일입니다. 교육청 이메일 도메인만 허용됩니다."),
 
     // 401 Unauthorized,
     INVALID_ACCESS_TOKEN_VALUE("EDMT-4010101", "유효하지 않은 엑세스 토큰입니다."),

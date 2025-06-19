@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,6 +43,7 @@ import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
+import com.edumate.eduserver.common.RefreshTokenCookieHandler;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
@@ -61,6 +63,8 @@ class AuthControllerTest extends ControllerTest {
 
     @MockitoBean
     private AuthFacade authFacade;
+    @MockitoBean
+    private RefreshTokenCookieHandler refreshTokenCookieHandler;
 
     private static final String BASE_URL = "/api/v1/auth";
     private final String BASE_DOMAIN_PACKAGE = "auth/";
@@ -177,22 +181,25 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("회원가입에 성공한다.")
     void signUpSuccess() throws Exception {
+        // given
         MemberSignUpRequest request = new MemberSignUpRequest(
                 "test@email.com", "password123", "수학", "middle");
-        MemberSignUpResponse response = new MemberSignUpResponse("access-token");
+        MemberSignUpResponse response = new MemberSignUpResponse("access-token", "refresh-token");
 
-        doAnswer(invocation -> {
-            HttpServletResponse resp = invocation.getArgument(4);
-            resp.addCookie(new Cookie("refreshToken", "mock-refresh-token"));
-            return response;
-        }).when(authFacade).signUp(
+        when(authFacade.signUp(
                 eq(request.email().trim()),
                 eq(request.password().trim()),
                 eq(request.subject().trim()),
-                eq(request.school().trim()),
-                any(HttpServletResponse.class)
-        );
+                eq(request.school().trim())
+        )).thenReturn(response);
 
+        doAnswer(invocation -> {
+            HttpServletResponse resp = invocation.getArgument(0);
+            resp.addCookie(new Cookie("refreshToken", "mock-refresh-token"));
+            return null;
+        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
+
+        // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
@@ -231,11 +238,10 @@ class AuthControllerTest extends ControllerTest {
                 "duplicate@email.com", "password123", "수학", "middle");
         doThrow(new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED))
                 .when(authFacade).signUp(
-                        eq(request.email().trim()),
-                        eq(request.password().trim()),
-                        eq(request.subject().trim()),
-                        eq(request.school().trim()),
-                        any(HttpServletResponse.class)
+                        request.email().trim(),
+                        request.password().trim(),
+                        request.subject().trim(),
+                        request.school().trim()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -262,11 +268,10 @@ class AuthControllerTest extends ControllerTest {
         doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordLengthException(
                 AuthErrorCode.INVALID_PASSWORD_LENGTH))
                 .when(authFacade).signUp(
-                        eq(request.email().trim()),
-                        eq(request.password().trim()),
-                        eq(request.subject().trim()),
-                        eq(request.school().trim()),
-                        any(HttpServletResponse.class)
+                        request.email().trim(),
+                        request.password().trim(),
+                        request.subject().trim(),
+                        request.school().trim()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -293,11 +298,10 @@ class AuthControllerTest extends ControllerTest {
         doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordFormatException(
                 AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(authFacade).signUp(
-                        eq(request.email().trim()),
-                        eq(request.password().trim()),
-                        eq(request.subject().trim()),
-                        eq(request.school().trim()),
-                        any(HttpServletResponse.class)
+                        request.email().trim(),
+                        request.password().trim(),
+                        request.subject().trim(),
+                        request.school().trim()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -324,11 +328,10 @@ class AuthControllerTest extends ControllerTest {
         doThrow(new com.edumate.eduserver.auth.exception.InvalidPasswordFormatException(
                 AuthErrorCode.INVALID_PASSWORD_FORMAT))
                 .when(authFacade).signUp(
-                        eq(request.email().trim()),
-                        eq(request.password().trim()),
-                        eq(request.subject().trim()),
-                        eq(request.school().trim()),
-                        any(HttpServletResponse.class)
+                        request.email().trim(),
+                        request.password().trim(),
+                        request.subject().trim(),
+                        request.school().trim()
                 );
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -352,17 +355,18 @@ class AuthControllerTest extends ControllerTest {
     @DisplayName("로그인에 성공한다.")
     void loginSuccess() throws Exception {
         MemberLoginRequest request = new MemberLoginRequest("test@email.com", "password123");
-        MemberLoginResponse response = new MemberLoginResponse("access-token", false);
+        MemberLoginResponse response = new MemberLoginResponse("access-token", "refresh-token", false);
+
+        when(authFacade.login(
+                eq(request.email().trim()),
+                eq(request.password().trim())
+        )).thenReturn(response);
 
         doAnswer(invocation -> {
-            HttpServletResponse resp = invocation.getArgument(2);
+            HttpServletResponse resp = invocation.getArgument(0);
             resp.addCookie(new Cookie("refreshToken", "mock-refresh-token"));
-            return response;
-        }).when(authFacade).login(
-                eq(request.email().strip()),
-                eq(request.password().strip()),
-                any(HttpServletResponse.class)
-        );
+            return null;
+        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -397,9 +401,10 @@ class AuthControllerTest extends ControllerTest {
     @DisplayName("로그인에 실패한다 - 잘못된 비밀번호")
     void loginFailWrongPassword() throws Exception {
         MemberLoginRequest request = new MemberLoginRequest("test@email.com", "wrongpassword");
-        when(authFacade.login(eq(request.email().strip()),
-                eq(request.password().strip()),
-                any(HttpServletResponse.class)))
+        when(authFacade.login(
+                request.email().strip(),
+                request.password().strip()
+        ))
                 .thenThrow(new MismatchedPasswordException(AuthErrorCode.INVALID_PASSWORD));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
@@ -427,9 +432,7 @@ class AuthControllerTest extends ControllerTest {
     @DisplayName("로그인에 실패한다 - 존재하지 않는 이메일")
     void loginFailNotFoundEmail() throws Exception {
         MemberLoginRequest request = new MemberLoginRequest("notfound@email.com", "password123");
-        when(authFacade.login(eq(request.email().strip()),
-                eq(request.password().strip()),
-                any(HttpServletResponse.class)))
+        when(authFacade.login(request.email().strip(), request.password().strip()))
                 .thenThrow(new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
@@ -480,16 +483,19 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("토큰 재발급에 성공한다.")
     void reissueSuccess() throws Exception {
-        MemberReissueResponse response = new MemberReissueResponse("new-access-token");
+        MemberReissueResponse response = new MemberReissueResponse("new-access-token", "new-refresh-token");
 
         doAnswer(invocation -> {
-            HttpServletResponse resp = invocation.getArgument(1);
-            resp.addCookie(new Cookie("refreshToken", "new-refresh-token"));
-            return response;
-        }).when(authFacade).reissue(anyString(), any(HttpServletResponse.class));
+            HttpServletResponse resp = invocation.getArgument(0);
+            Cookie cookie = new Cookie("refreshToken", "new-refresh-token");
+            resp.addCookie(cookie);
+            return null;
+        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), eq("new-refresh-token"));
+
+        doReturn(response).when(authFacade).reissue(anyString());
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
-                .cookie(new Cookie("refreshToken", "refresh-token")))
+                        .cookie(new Cookie("refreshToken", "refresh-token")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
@@ -514,15 +520,14 @@ class AuthControllerTest extends ControllerTest {
                 ));
     }
 
-
     @Test
     @DisplayName("토큰 재발급 실패 - 만료된 리프레시 토큰")
     void reissueFailWithExpiredToken() throws Exception {
-        when(authFacade.reissue(anyString(), any(HttpServletResponse.class))).thenThrow(
+        when(authFacade.reissue(anyString())).thenThrow(
                 new ExpiredTokenException(AuthErrorCode.EXPIRED_TOKEN));
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
-                .cookie(new Cookie("refreshToken", "refresh-token")))
+                        .cookie(new Cookie("refreshToken", "refresh-token")))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))
@@ -543,11 +548,11 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("토큰 재발급 실패 - 유효하지 않은 리프레시 토큰")
     void reissueFailWithInvalidToken() throws Exception {
-        when(authFacade.reissue(anyString(), any(HttpServletResponse.class))).thenThrow(
+        when(authFacade.reissue(anyString())).thenThrow(
                 new MismatchedTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN_VALUE));
 
         mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/reissue")
-                .cookie(new Cookie("refreshToken", "refresh-token")))
+                        .cookie(new Cookie("refreshToken", "refresh-token")))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))

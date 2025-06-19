@@ -13,12 +13,11 @@ import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.auth.service.TokenService;
-import com.edumate.eduserver.external.aws.ses.EmailService;
+import com.edumate.eduserver.external.aws.mail.EmailService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -54,7 +53,7 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberLoginResponse login(final String email, final String password, final HttpServletResponse response) {
+    public MemberLoginResponse login(final String email, final String password) {
         Member member = memberService.getMemberByEmail(email);
         if (!isPasswordMatched(password, member.getPassword())) {
             throw new MismatchedPasswordException(AuthErrorCode.INVALID_PASSWORD);
@@ -63,8 +62,7 @@ public class AuthFacade {
         String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
         String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
         memberService.updateRefreshToken(member, refreshToken);
-        tokenService.setRefreshTokenCookie(response, refreshToken);
-        return MemberLoginResponse.of(accessToken, isAdmin);
+        return MemberLoginResponse.of(accessToken, refreshToken, isAdmin);
     }
 
     @Transactional
@@ -74,7 +72,7 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberReissueResponse reissue(final String refreshToken, final HttpServletResponse response) {
+    public MemberReissueResponse reissue(final String refreshToken) {
         String memberUuid = tokenService.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
         try {
@@ -82,8 +80,7 @@ public class AuthFacade {
             String newAccessToken = tokenService.generateTokens(member, TokenType.ACCESS);
             String newRefreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
             memberService.updateRefreshToken(member, newRefreshToken);
-            tokenService.setRefreshTokenCookie(response, newRefreshToken);
-            return MemberReissueResponse.of(newAccessToken);
+            return MemberReissueResponse.of(newAccessToken, newRefreshToken);
         } catch (Exception e) {
             logout(member.getId());
             throw e;
@@ -91,22 +88,21 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName,
-                                       final String school, final HttpServletResponse response) {
+    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName, final String school) {
         checkPreconditions(email, password);
         Subject subject = subjectService.getSubjectByName(subjectName);
         Member member = createMember(email, password, subject, school);
         String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
         String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
         memberService.updateRefreshToken(member, refreshToken);
-        tokenService.setRefreshTokenCookie(response, refreshToken);
         issueVerificationCode(member);
-        return MemberSignUpResponse.of(accessToken);
+        return MemberSignUpResponse.of(accessToken, refreshToken);
     }
 
     private void checkPreconditions(final String email, final String password) {
         authService.checkAlreadyRegistered(email);
         PasswordValidator.validatePasswordFormat(password);
+        authService.validateEmail(email);
     }
 
     private Member createMember(final String email, final String password, final Subject subject, final String school) {

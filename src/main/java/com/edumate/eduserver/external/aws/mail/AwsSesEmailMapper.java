@@ -1,4 +1,4 @@
-package com.edumate.eduserver.external.aws.ses;
+package com.edumate.eduserver.external.aws.mail;
 
 import com.edumate.eduserver.auth.exception.IllegalUrlArgumentException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;

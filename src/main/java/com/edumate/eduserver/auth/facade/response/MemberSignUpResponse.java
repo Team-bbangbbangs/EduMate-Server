@@ -1,9 +1,13 @@
 package com.edumate.eduserver.auth.facade.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public record MemberSignUpResponse(
-        String accessToken
+        String accessToken,
+        @JsonIgnore
+        String refreshToken
 ) {
-    public static MemberSignUpResponse of(final String accessToken) {
-        return new MemberSignUpResponse(accessToken);
+    public static MemberSignUpResponse of(final String accessToken, final String refreshToken) {
+        return new MemberSignUpResponse(accessToken, refreshToken);
     }
 }

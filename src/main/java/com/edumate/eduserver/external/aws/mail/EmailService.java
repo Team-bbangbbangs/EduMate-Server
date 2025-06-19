@@ -1,4 +1,4 @@
-package com.edumate.eduserver.external.aws.ses;
+package com.edumate.eduserver.external.aws.mail;
 
 
 import lombok.RequiredArgsConstructor;

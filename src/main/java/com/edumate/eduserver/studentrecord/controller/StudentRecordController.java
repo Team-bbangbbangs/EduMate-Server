@@ -109,7 +109,7 @@ public class StudentRecordController {
                                                                               @RequestBody @Valid final StudentRecordPromptRequest request) {
         String prompt = request.prompt().strip();
         StudentRecordPromptResponse promptResponse = studentRecordFacade.getUserPrompt(memberId, recordId, prompt);
-        StudentRecordAICreateResponse response = chatFacade.generateAIStudentRecord(promptResponse.member(), promptResponse.recordType(), prompt);
+        StudentRecordAICreateResponse response = chatFacade.generateAIStudentRecord(promptResponse.recordType(), prompt);
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
 }
