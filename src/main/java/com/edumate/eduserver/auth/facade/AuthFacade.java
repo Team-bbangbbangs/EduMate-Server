@@ -8,16 +8,17 @@ import com.edumate.eduserver.auth.facade.dto.MemberSignedUpEvent;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
+import com.edumate.eduserver.auth.jwt.TokenType;
 import com.edumate.eduserver.auth.service.AuthService;
-import com.edumate.eduserver.external.aws.ses.EmailService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
 import com.edumate.eduserver.auth.service.RandomCodeGenerator;
-import com.edumate.eduserver.auth.service.Token;
 import com.edumate.eduserver.auth.service.TokenService;
+import com.edumate.eduserver.external.aws.ses.EmailService;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
 import com.edumate.eduserver.subject.service.SubjectService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -53,14 +54,17 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberLoginResponse login(final String email, final String password) {
+    public MemberLoginResponse login(final String email, final String password, final HttpServletResponse response) {
         Member member = memberService.getMemberByEmail(email);
         if (!isPasswordMatched(password, member.getPassword())) {
             throw new MismatchedPasswordException(AuthErrorCode.INVALID_PASSWORD);
         }
         boolean isAdmin = memberService.isAdmin(member);
-        Token token = tokenService.generateTokens(member);
-        return MemberLoginResponse.of(token.accessToken(), token.refreshToken(), isAdmin);
+        String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
+        String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
+        memberService.updateRefreshToken(member, refreshToken);
+        tokenService.setRefreshTokenCookie(response, refreshToken);
+        return MemberLoginResponse.of(accessToken, isAdmin);
     }
 
     @Transactional
@@ -70,13 +74,16 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberReissueResponse reissue(final String refreshToken) {
+    public MemberReissueResponse reissue(final String refreshToken, final HttpServletResponse response) {
         String memberUuid = tokenService.getMemberUuidFromToken(refreshToken);
         Member member = memberService.getMemberByUuid(memberUuid);
         try {
             tokenService.checkTokenEquality(refreshToken, member.getRefreshToken());
-            Token token = tokenService.generateTokens(member);
-            return MemberReissueResponse.of(token.accessToken(), token.refreshToken());
+            String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
+            String refreshedToken = tokenService.generateTokens(member, TokenType.REFRESH);
+            memberService.updateRefreshToken(member, refreshedToken);
+            tokenService.setRefreshTokenCookie(response, refreshedToken);
+            return MemberReissueResponse.of(accessToken);
         } catch (Exception e) {
             logout(member.getId());
             throw e;
@@ -85,13 +92,16 @@ public class AuthFacade {
 
     @Transactional
     public MemberSignUpResponse signUp(final String email, final String password, final String subjectName,
-                                       final String school) {
+                                       final String school, final HttpServletResponse response) {
         checkPreconditions(email, password);
         Subject subject = subjectService.getSubjectByName(subjectName);
         Member member = createMember(email, password, subject, school);
-        Token token = tokenService.generateTokens(member);
+        String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
+        String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
+        memberService.updateRefreshToken(member, refreshToken);
+        tokenService.setRefreshTokenCookie(response, refreshToken);
         issueVerificationCode(member);
-        return MemberSignUpResponse.of(token.accessToken(), token.refreshToken());
+        return MemberSignUpResponse.of(accessToken);
     }
 
     private void checkPreconditions(final String email, final String password) {

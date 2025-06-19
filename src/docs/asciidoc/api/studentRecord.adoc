@@ -55,7 +55,7 @@ operation::student-record/fail/member-record-not-found[snippets=http-response]
 
 operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
 
-=== 생활기록부(학생) 어려명 추가
+=== 생활기록부(학생) 여려명 추가
 
 ==== 성공
 
