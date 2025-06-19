@@ -30,6 +30,7 @@ class AdminNoticeControllerTest extends ControllerTest {
 
     private final String BASE_URL = "/api/v1/admin/notices";
     private final String BASE_DOMAIN_PACKAGE = "notice/";
+    private static final String ACCESS_TOKEN = "access-token";
 
     @Test
     @DisplayName("공지사항을 성공적으로 작성한다.")
@@ -45,6 +46,7 @@ class AdminNoticeControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType("application/json")
                         .content(toJson(request)))
                 .andExpect(status().isOk())
@@ -78,6 +80,7 @@ class AdminNoticeControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType("application/json")
                         .content(toJson(request)))
                 .andExpect(status().isBadRequest())
@@ -100,6 +103,7 @@ class AdminNoticeControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(post(BASE_URL)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
                         .contentType("application/json")
                         .content(toJson(request)))
                 .andExpect(status().isBadRequest())
