@@ -1,6 +1,7 @@
 package com.edumate.eduserver.auth.service;
 
 import com.edumate.eduserver.auth.facade.dto.MemberSignedUpEvent;
+import com.edumate.eduserver.external.aws.ses.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +18,7 @@ public class EmailEventListener {
 
     @Async("emailTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleEmailEvent(MemberSignedUpEvent event) {
+    public void handleEmailEvent(final MemberSignedUpEvent event) {
         try {
             emailService.sendEmail(event.email(), event.memberUuid(), event.verificationCode());
         } catch (Exception e) {
