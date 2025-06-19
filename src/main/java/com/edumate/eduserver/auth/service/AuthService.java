@@ -2,14 +2,18 @@ package com.edumate.eduserver.auth.service;
 
 import com.edumate.eduserver.auth.domain.AuthorizationCode;
 import com.edumate.eduserver.auth.domain.AuthorizeStatus;
+import com.edumate.eduserver.auth.domain.ValidEmail;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
+import com.edumate.eduserver.auth.exception.InvalidEmailDomainException;
 import com.edumate.eduserver.auth.exception.MemberAlreadyRegisteredException;
 import com.edumate.eduserver.auth.exception.MisMatchedCodeException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.auth.repository.AuthorizationCodeRepository;
+import com.edumate.eduserver.auth.repository.ValidEmailRepository;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.repository.MemberRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,7 @@ public class AuthService {
 
     private final AuthorizationCodeRepository authorizationCodeRepository;
     private final MemberRepository memberRepository;
+    private final ValidEmailRepository validEmailRepository;
 
     private static final String EMPTY_REFRESH_TOKEN = null;
     private static final boolean NOT_DELETED = false;
@@ -41,6 +46,20 @@ public class AuthService {
     @Transactional
     public void logout(final Member member) {
         member.updateRefreshToken(EMPTY_REFRESH_TOKEN);
+    }
+
+    public void validateEmail(final String email) {
+        List<String> validEmailList = getValidEmails();
+        if (!validEmailList.contains(email)) {
+            throw new InvalidEmailDomainException(AuthErrorCode.INVALID_EMAIL);
+        }
+    }
+
+    private List<String> getValidEmails() {
+        return validEmailRepository.findAll()
+                .stream()
+                .map(ValidEmail::getValidEmail)
+                .toList();
     }
 
     public void checkAlreadyRegistered(final String email) {

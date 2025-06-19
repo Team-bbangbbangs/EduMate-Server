@@ -102,6 +102,8 @@ public class AuthFacade {
     private void checkPreconditions(final String email, final String password) {
         authService.checkAlreadyRegistered(email);
         PasswordValidator.validatePasswordFormat(password);
+        String domain = email.substring(email.indexOf("@") + 1);
+        // authService.validateEmail(domain);
     }
 
     private Member createMember(final String email, final String password, final Subject subject, final String school) {
