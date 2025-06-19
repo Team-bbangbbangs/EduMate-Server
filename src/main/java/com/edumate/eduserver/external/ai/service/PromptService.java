@@ -35,7 +35,7 @@ public class PromptService {
            ## 중요: 응답 형식
            반드시 정확한 JSON 형식으로만 응답하세요. 추가 텍스트나 설명은 포함하지 마세요:
            주의: JSON 형식을 정확히 지켜주세요. description1, description2, description3을 키로 사용합니다. 큰따옴표와 중괄호를 정확히 사용하세요.
-            """;
+           """;
 
     public String createPrompt(final StudentRecordType recordType, final String inputPrompt) {
         int byteCount = recordType.getByteCount();

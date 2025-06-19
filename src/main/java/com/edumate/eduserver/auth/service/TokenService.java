@@ -7,8 +7,6 @@ import com.edumate.eduserver.auth.jwt.JwtParser;
 import com.edumate.eduserver.auth.jwt.JwtValidator;
 import com.edumate.eduserver.auth.jwt.TokenType;
 import com.edumate.eduserver.member.domain.Member;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +21,6 @@ public class TokenService {
     private final JwtGenerator jwtGenerator;
     private final JwtParser jwtParser;
     private final JwtValidator jwtValidator;
-
-    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Transactional
     public String generateTokens(final Member member, final TokenType tokenType) {
@@ -50,15 +46,5 @@ public class TokenService {
                 storedRefreshToken.getBytes(StandardCharsets.UTF_8),
                 requestRefreshToken.getBytes(StandardCharsets.UTF_8)
         );
-    }
-
-    public void setRefreshTokenCookie(final HttpServletResponse response, final String refreshToken) {
-        Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(14 * 24 * 60 * 60);
-
-        response.addCookie(cookie);
     }
 }

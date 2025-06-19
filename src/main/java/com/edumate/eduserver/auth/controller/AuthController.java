@@ -8,6 +8,7 @@ import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.common.ApiResponse;
+import com.edumate.eduserver.common.RefreshTokenCookieHandler;
 import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthFacade authFacade;
+    private final RefreshTokenCookieHandler refreshTokenCookieHandler;
 
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
@@ -48,21 +50,23 @@ public class AuthController {
     public ApiResponse<MemberSignUpResponse> signUp(@RequestBody @Valid final MemberSignUpRequest request,
                                                     final HttpServletResponse response) {
         MemberSignUpResponse signUpResponse = authFacade.signUp(request.email().strip(), request.password().strip(),
-                request.subject().strip(), request.school().strip(), response);
+                request.subject().strip(), request.school().strip());
+        refreshTokenCookieHandler.setRefreshTokenCookie(response, signUpResponse.refreshToken());
         return ApiResponse.success(CommonSuccessCode.OK, signUpResponse);
     }
 
     @PostMapping("/login")
     public ApiResponse<MemberLoginResponse> login(@RequestBody @Valid final MemberLoginRequest request,
                                                   final HttpServletResponse response) {
-        MemberLoginResponse loginResponse = authFacade.login(request.email().strip(), request.password().strip(),
-                response);
+        MemberLoginResponse loginResponse = authFacade.login(request.email().strip(), request.password().strip());
+        refreshTokenCookieHandler.setRefreshTokenCookie(response, loginResponse.refreshToken());
         return ApiResponse.success(CommonSuccessCode.OK, loginResponse);
     }
 
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@MemberId final long memberId) {
+    public ApiResponse<Void> logout(@MemberId final long memberId, final HttpServletResponse response) {
         authFacade.logout(memberId);
+        refreshTokenCookieHandler.clearRefreshTokenCookie(response);
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
@@ -70,7 +74,8 @@ public class AuthController {
     public ApiResponse<MemberReissueResponse> reissue(
             @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME) final String refreshToken,
             final HttpServletResponse response) {
-        MemberReissueResponse reissueResponse = authFacade.reissue(refreshToken.strip(), response);
+        MemberReissueResponse reissueResponse = authFacade.reissue(refreshToken.strip());
+        refreshTokenCookieHandler.setRefreshTokenCookie(response, reissueResponse.refreshToken());
         return ApiResponse.success(CommonSuccessCode.OK, reissueResponse);
     }
 
