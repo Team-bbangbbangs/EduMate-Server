@@ -41,6 +41,7 @@ class NoticeControllerTest extends ControllerTest {
 
     private final String BASE_URL = "/api/v1/notices";
     private final String BASE_DOMAIN_PACKAGE = "notice/";
+    private static final String ACCESS_TOKEN = "access-token";
 
     @ParameterizedTest(name = "[{index}] categoryId={0}, page={1}")
     @CsvSource({
@@ -81,7 +82,8 @@ class NoticeControllerTest extends ControllerTest {
                 .thenReturn(noticesResponse);
 
         //when & then
-        MockHttpServletRequestBuilder req = get(BASE_URL);
+        MockHttpServletRequestBuilder req = get(BASE_URL)
+                .header("Authorization", "Bearer " + ACCESS_TOKEN);
         if (categoryId != null) {
             req.param("categoryId", String.valueOf(categoryId));
         }
@@ -134,7 +136,8 @@ class NoticeControllerTest extends ControllerTest {
                 .thenReturn(noticeGetResponse);
 
         // when & then
-        mockMvc.perform(get(BASE_URL + "/{noticeId}", noticeId))
+        mockMvc.perform(get(BASE_URL + "/{noticeId}", noticeId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
@@ -172,7 +175,8 @@ class NoticeControllerTest extends ControllerTest {
                 .when(noticeFacade).getNotice(noticeId);
 
         // when & then
-        mockMvc.perform(get(BASE_URL + "/{noticeId}", noticeId))
+        mockMvc.perform(get(BASE_URL + "/{noticeId}", noticeId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
