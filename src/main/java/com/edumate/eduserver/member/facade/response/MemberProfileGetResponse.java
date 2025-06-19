@@ -5,15 +5,13 @@ public record MemberProfileGetResponse(
         String subject,
         boolean isTeacherVerified,
         String school,
-        String nickname,
-        String semester
+        String nickname
 ) {
     public static MemberProfileGetResponse of(final String email,
                                               final String subject,
                                               final boolean isTeacherVerified,
                                               final String school,
-                                              final String nickname,
-                                              final String semester) {
-        return new MemberProfileGetResponse(email, subject, isTeacherVerified, school, nickname, semester);
+                                              final String nickname) {
+        return new MemberProfileGetResponse(email, subject, isTeacherVerified, school, nickname);
     }
 }

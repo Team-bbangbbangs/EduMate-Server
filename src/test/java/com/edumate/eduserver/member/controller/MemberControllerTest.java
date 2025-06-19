@@ -39,9 +39,8 @@ class MemberControllerTest extends ControllerTest {
         boolean isTeacherVerified = true;
         String school = School.HIGH_SCHOOL.getName();
         String nickname = "선생님";
-        String semester = "2025-1";
         MemberProfileGetResponse response = new MemberProfileGetResponse(
-                email, subject, isTeacherVerified, school, nickname, semester
+                email, subject, isTeacherVerified, school, nickname
         );
 
         when(memberFacade.getMemberProfile(anyLong()))
@@ -60,7 +59,6 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.data.isTeacherVerified").value(isTeacherVerified))
                 .andExpect(jsonPath("$.data.school").value(school))
                 .andExpect(jsonPath("$.data.nickname").value(nickname))
-                .andExpect(jsonPath("$.data.semester").value(semester))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "get-profile-success",
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
@@ -70,8 +68,7 @@ class MemberControllerTest extends ControllerTest {
                                 fieldWithPath("data.email").description("이메일"),
                                 fieldWithPath("data.isTeacherVerified").description("교사 인증 여부"),
                                 fieldWithPath("data.school").description("학교"),
-                                fieldWithPath("data.nickname").description("닉네임"),
-                                fieldWithPath("data.semester").description("학기")
+                                fieldWithPath("data.nickname").description("닉네임")
                         )
                 ));
     }

@@ -111,12 +111,6 @@ public class StudentRecordService {
         studentRecordDetailRepository.deleteById(recordId);
     }
 
-    public MemberStudentRecord getLatestMemberStudentRecord(final long memberId) {
-        return memberStudentRecordRepository.findTopByMemberIdOrderByIdDesc(memberId)
-                .orElseThrow(() -> new MemberStudentRecordNotFoundException(
-                        StudentRecordErrorCode.MEMBER_STUDENT_RECORD_NOT_FOUND));
-    }
-
     private void validateExistingRecord(final long memberId, final StudentRecordType recordType, final String semester) {
         memberStudentRecordRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
                 .ifPresent(record -> {
