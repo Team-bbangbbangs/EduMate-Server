@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import com.edumate.eduserver.auth.exception.MismatchedTokenException;
 import com.edumate.eduserver.auth.jwt.JwtGenerator;
-import com.edumate.eduserver.auth.jwt.JwtParser;
 import com.edumate.eduserver.auth.jwt.JwtValidator;
 import com.edumate.eduserver.auth.jwt.TokenType;
 import com.edumate.eduserver.member.domain.Member;
@@ -24,8 +23,7 @@ class TokenServiceTest {
 
     @Mock
     private JwtGenerator jwtGenerator;
-    @Mock
-    private JwtParser jwtParser;
+
     @Mock
     private JwtValidator jwtValidator;
 
@@ -60,7 +58,6 @@ class TokenServiceTest {
         String storedRefreshToken = "refresh-token";
         String resolvedToken = "refresh-token";
 
-        when(jwtParser.resolveToken(requestRefreshToken)).thenReturn(resolvedToken);
         doNothing().when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
 
         // when & then
@@ -75,7 +72,6 @@ class TokenServiceTest {
         String storedRefreshToken = "different-refresh-token";
         String resolvedToken = "refresh-token";
 
-        when(jwtParser.resolveToken(requestRefreshToken)).thenReturn(resolvedToken);
         doNothing().when(jwtValidator).validateToken(resolvedToken, TokenType.REFRESH);
 
         // when & then

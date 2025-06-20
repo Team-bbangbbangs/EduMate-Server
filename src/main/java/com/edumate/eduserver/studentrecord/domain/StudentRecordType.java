@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum StudentRecordType {
 
-    ABILITY_DETAIL("ABILITY", 1500),
-    BEHAVIOR_OPINION("BEHAVIOR", 1500),
-    CREATIVE_ACTIVITY_CAREER("CREATIVE-CAREER", 1500),
-    CREATIVE_ACTIVITY_AUTONOMY("CREATIVE-AUTONOMY", 1500),
-    CREATIVE_ACTIVITY_CLUB("CREATIVE-CLUB", 1500);
+    ABILITY_DETAIL("SUBJECT", 1500), // 과세특
+    BEHAVIOR_OPINION("BEHAVIOR", 1500), // 행발
+    CREATIVE_ACTIVITY_CAREER("CAREER", 1500), // 진로
+    CREATIVE_ACTIVITY_AUTONOMY("FREE", 1500), // 자율
+    CREATIVE_ACTIVITY_CLUB("CLUB", 1500); // 동아리
 
     private final String value;
     private final int byteCount;
