@@ -95,7 +95,8 @@ public class AuthFacade {
         String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
         String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
         memberService.updateRefreshToken(member, refreshToken);
-        issueVerificationCode(member);
+        String authCode = issueVerificationCode(member);
+        eventPublisher.publishEvent(MemberSignedUpEvent.of(member.getEmail(), member.getMemberUuid(), authCode));
         return MemberSignUpResponse.of(accessToken, refreshToken);
     }
 
@@ -114,10 +115,10 @@ public class AuthFacade {
         }
     }
 
-    private void issueVerificationCode(final Member member) {
+    private String issueVerificationCode(final Member member) {
         String code = randomCodeGenerator.generate();
         authService.saveCode(member, code);
-        eventPublisher.publishEvent(MemberSignedUpEvent.of(member.getEmail(), member.getMemberUuid(), code));
+        return code;
     }
 
     @Transactional
