@@ -16,7 +16,7 @@ class StudentRecordTypeConverterTest {
     @Test
     @DisplayName("정상적인 값은 StudentRecordType으로 변환된다")
     void convert_validValue() {
-        assertThat(converter.convert("ability")).isEqualTo(StudentRecordType.ABILITY_DETAIL);
+        assertThat(converter.convert("subject")).isEqualTo(StudentRecordType.ABILITY_DETAIL);
         assertThat(converter.convert("behavior")).isEqualTo(StudentRecordType.BEHAVIOR_OPINION);
     }
 
