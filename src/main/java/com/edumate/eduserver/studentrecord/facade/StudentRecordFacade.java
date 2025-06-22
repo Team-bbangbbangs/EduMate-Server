@@ -4,7 +4,7 @@ import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
-import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
+import com.edumate.eduserver.studentrecord.domain.RecordMetadata;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
@@ -54,7 +54,7 @@ public class StudentRecordFacade {
     public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
                                      final List<StudentRecordInfo> studentRecordInfos) {
         Member member = memberService.getMemberById(memberId);
-        MemberStudentRecord studentRecord = studentRecordService.createSemesterRecord(member, recordType, semester);
+        RecordMetadata studentRecord = studentRecordService.createSemesterRecord(member, recordType, semester);
         studentRecordService.createStudentRecords(studentRecord, studentRecordInfos);
     }
 
@@ -80,7 +80,7 @@ public class StudentRecordFacade {
                                                      final String inputPrompt) {
         Member member = memberService.getMemberById(memberId);
         StudentRecordDetail recordDetail = studentRecordService.getRecordDetail(member.getId(), recordId);
-        StudentRecordType recordType = recordDetail.getMemberStudentRecord().getStudentRecordType();
+        StudentRecordType recordType = recordDetail.getRecordMetadata().getStudentRecordType();
         return StudentRecordPromptResponse.of(recordType, inputPrompt);
     }
 }

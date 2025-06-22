@@ -10,7 +10,7 @@ import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
-import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
+import com.edumate.eduserver.studentrecord.domain.RecordMetadata;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.facade.response.StudentNamesResponse;
@@ -108,7 +108,7 @@ class StudentRecordFacadeTest {
         );
 
         Member mockMember = mock(Member.class);
-        MemberStudentRecord mockRecord = mock(MemberStudentRecord.class);
+        RecordMetadata mockRecord = mock(RecordMetadata.class);
 
         given(memberService.getMemberById(memberId)).willReturn(mockMember);
         given(studentRecordService.createSemesterRecord(mockMember, type, semester)).willReturn(mockRecord);

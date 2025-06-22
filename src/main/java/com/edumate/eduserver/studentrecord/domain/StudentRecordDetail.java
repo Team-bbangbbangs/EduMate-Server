@@ -26,7 +26,7 @@ public class StudentRecordDetail extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_student_record_id", nullable = false)
-    private MemberStudentRecord memberStudentRecord;
+    private RecordMetadata recordMetadata;
 
     @Column(nullable = false)
     private String studentNumber;
@@ -54,19 +54,19 @@ public class StudentRecordDetail extends BaseEntity {
     }
 
     @Builder
-    private StudentRecordDetail(final MemberStudentRecord memberStudentRecord, final String studentNumber,
+    private StudentRecordDetail(final RecordMetadata recordMetadata, final String studentNumber,
                                 final String studentName, final String description, final int byteCount) {
-        this.memberStudentRecord = memberStudentRecord;
+        this.recordMetadata = recordMetadata;
         this.studentNumber = studentNumber;
         this.studentName = studentName;
         this.description = description;
         this.byteCount = byteCount;
     }
 
-    public static StudentRecordDetail create(final MemberStudentRecord memberStudentRecord, final String studentNumber,
+    public static StudentRecordDetail create(final RecordMetadata recordMetadata, final String studentNumber,
                                              final String studentName, final String description, final int byteCount) {
         return StudentRecordDetail.builder()
-                .memberStudentRecord(memberStudentRecord)
+                .recordMetadata(recordMetadata)
                 .studentNumber(studentNumber)
                 .studentName(studentName)
                 .description(description)
