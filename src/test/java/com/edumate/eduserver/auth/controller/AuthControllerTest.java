@@ -491,7 +491,8 @@ class AuthControllerTest extends ControllerTest {
             Cookie cookie = new Cookie("refreshToken", "new-refresh-token");
             resp.addCookie(cookie);
             return null;
-        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), eq("new-refresh-token"));
+        }).when(refreshTokenCookieHandler)
+                .setRefreshTokenCookie(any(HttpServletResponse.class), eq("new-refresh-token"));
 
         doReturn(response).when(authFacade).reissue(anyString());
 
@@ -626,9 +627,9 @@ class AuthControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("")
+    @DisplayName("비밀번호 변경을 위한 이메일로 비밀번호 찾기를 성공한다.")
     void findPasswordByEmail() throws Exception {
-        PasswordFindRequest request = new PasswordFindRequest("notfound@email.com");
+        PasswordFindRequest request = new PasswordFindRequest("valid@email.com");
         doNothing().when(authFacade).findPassword(request.email().strip());
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/find-password")
@@ -649,7 +650,8 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("message").description("응답 메시지")
                         )
                 ));
-     }
+    }
+
 
     @Test
     @DisplayName("존재하지 않는 회원으로 비밀번호 변경을 시도할 시 예외가 발생한다.")
@@ -755,6 +757,31 @@ class AuthControllerTest extends ControllerTest {
                         requestFields(
                                 fieldWithPath("email").description("회원 이메일"),
                                 fieldWithPath("password").description("새 비밀번호")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("에러 코드"),
+                                fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 이메일 형식으로 비밀번호 찾기 요청 시 400 예외가 발생한다.")
+    void findPasswordWithInvalidEmailFormat() throws Exception {
+        PasswordFindRequest request = new PasswordFindRequest("invalid-email-format");
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/find-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.code").exists())
+                .andExpect(jsonPath("$.message").exists())
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "find-password-fail/invalid-email-format",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일 (유효하지 않은 형식)")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
