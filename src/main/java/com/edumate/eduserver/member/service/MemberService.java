@@ -80,6 +80,12 @@ public class MemberService {
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 
+    public void checkExistedEmail(final String email) {
+        if (memberRepository.existsByEmailAndIsDeleted(email, NOT_DELETED)) {
+            throw new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
     public boolean isAdmin(final Member member) {
         return member.getRole() == Role.ADMIN;
     }

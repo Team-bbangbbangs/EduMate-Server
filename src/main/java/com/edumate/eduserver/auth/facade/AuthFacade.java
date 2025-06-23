@@ -134,4 +134,8 @@ public class AuthFacade {
     private boolean isPasswordMatched(final String rawPassword, final String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
+
+    public void findPassword(final String email) {
+        memberService.checkExistedEmail(email);
+    }
 }

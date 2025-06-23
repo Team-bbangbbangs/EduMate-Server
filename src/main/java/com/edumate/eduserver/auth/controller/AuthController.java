@@ -2,6 +2,7 @@ package com.edumate.eduserver.auth.controller;
 
 import com.edumate.eduserver.auth.controller.request.MemberLoginRequest;
 import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
+import com.edumate.eduserver.auth.controller.request.PasswordFindRequest;
 import com.edumate.eduserver.auth.controller.request.UpdatePasswordRequest;
 import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
@@ -82,6 +83,12 @@ public class AuthController {
     @PatchMapping("/password")
     public ApiResponse<Void> updatePassword(@RequestBody @Valid final UpdatePasswordRequest request) {
         authFacade.updatePassword(request.email().strip(), request.password().strip());
+        return ApiResponse.success(CommonSuccessCode.OK);
+    }
+
+    @PostMapping("/find-password")
+    public ApiResponse<Void> findPassword(@RequestBody @Valid final PasswordFindRequest request) {
+        authFacade.findPassword(request.email().strip());
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 }
