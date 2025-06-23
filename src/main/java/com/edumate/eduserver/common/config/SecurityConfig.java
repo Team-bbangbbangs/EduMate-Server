@@ -45,6 +45,7 @@ public class SecurityConfig {
             "/api/v1/auth/reissue",
             "/api/v1/auth/password",
             "/api/v1/auth/verify-email",
+            "/api/v1/auth/find-password",
             "/actuator/health"
     };
     private static final String[] BUSINESS_WHITE_LIST = {

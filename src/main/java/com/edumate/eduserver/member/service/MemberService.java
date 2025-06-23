@@ -81,7 +81,7 @@ public class MemberService {
     }
 
     public void checkExistedEmail(final String email) {
-        if (memberRepository.existsByEmailAndIsDeleted(email, NOT_DELETED)) {
+        if (!memberRepository.existsByEmailAndIsDeleted(email, NOT_DELETED)) {
             throw new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND);
         }
     }
