@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.edumate.eduserver.auth.controller.request.MemberLoginRequest;
 import com.edumate.eduserver.auth.controller.request.MemberSignUpRequest;
+import com.edumate.eduserver.auth.controller.request.PasswordFindRequest;
 import com.edumate.eduserver.auth.controller.request.UpdatePasswordRequest;
 import com.edumate.eduserver.auth.exception.AuthCodeNotFoundException;
 import com.edumate.eduserver.auth.exception.ExpiredCodeException;
@@ -625,13 +626,39 @@ class AuthControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 회원으로 비밀번호 변경 시 예외가 발생한다.")
-    void updatePasswordMemberNotFound() throws Exception {
-        UpdatePasswordRequest request = new UpdatePasswordRequest("notfound@email.com", "newPassword123!");
-        doThrow(new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND))
-                .when(authFacade).updatePassword(anyString(), anyString());
+    @DisplayName("")
+    void findPasswordByEmail() throws Exception {
+        PasswordFindRequest request = new PasswordFindRequest("notfound@email.com");
+        doNothing().when(authFacade).findPassword(request.email().strip());
 
-        mockMvc.perform(RestDocumentationRequestBuilders.patch(BASE_URL + "/password")
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/find-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "find-password-success",
+                        requestFields(
+                                fieldWithPath("email").description("회원 이메일")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+     }
+
+    @Test
+    @DisplayName("존재하지 않는 회원으로 비밀번호 변경을 시도할 시 예외가 발생한다.")
+    void updatePasswordMemberNotFound() throws Exception {
+        PasswordFindRequest request = new PasswordFindRequest("notfound@email.com");
+        doThrow(new MemberNotFoundException(MemberErrorCode.MEMBER_NOT_FOUND))
+                .when(authFacade).findPassword(anyString());
+
+        mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/find-password")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(toJson(request)))
                 .andDo(print())
@@ -639,10 +666,9 @@ class AuthControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value(MemberErrorCode.MEMBER_NOT_FOUND.getCode()))
                 .andExpect(jsonPath("$.message").value(MemberErrorCode.MEMBER_NOT_FOUND.getMessage()))
-                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-password-fail/member-not-found",
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "find-password-fail/member-not-found",
                         requestFields(
-                                fieldWithPath("email").description("회원 이메일"),
-                                fieldWithPath("password").description("새 비밀번호")
+                                fieldWithPath("email").description("회원 이메일")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("HTTP 상태 코드"),
