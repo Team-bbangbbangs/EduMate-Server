@@ -53,7 +53,7 @@ public class StudentRecordDetail extends BaseEntity {
         this.byteCount = byteCount;
     }
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private StudentRecordDetail(final RecordMetadata recordMetadata, final String studentNumber,
                                 final String studentName, final String description, final int byteCount) {
         this.recordMetadata = recordMetadata;

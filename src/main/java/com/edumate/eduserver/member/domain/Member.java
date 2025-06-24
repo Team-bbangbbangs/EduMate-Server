@@ -69,7 +69,7 @@ public class Member extends BaseEntity {
 
     private LocalDateTime deletedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Member(final Subject subject, final String email, final String password, final String nickname,
                    final School school, final Role role, final LocalDateTime verifiedAt, final boolean isDeleted,
                    final LocalDateTime deletedAt, final String memberUuid) {

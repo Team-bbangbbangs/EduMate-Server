@@ -37,7 +37,7 @@ public class RecordMetadata {
     @Column(nullable = false)
     private String semester;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private RecordMetadata(final Member member, final StudentRecordType studentRecordType, final String semester) {
         this.member = member;
         this.studentRecordType = studentRecordType;
