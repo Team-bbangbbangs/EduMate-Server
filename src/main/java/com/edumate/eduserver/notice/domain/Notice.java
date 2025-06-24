@@ -52,4 +52,10 @@ public class Notice extends BaseEntity {
                 .content(content)
                 .build();
     }
+
+    public void update(NoticeCategory category, String title, String content) {
+        this.category = category;
+        this.title = title;
+        this.content = content;
+    }
 }

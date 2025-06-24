@@ -42,6 +42,13 @@ public class NoticeService {
         noticeRepository.save(notice);
     }
 
+    @Transactional
+    public void updateNotice(final long noticeId, final NoticeCategory category, final String title, final String content) {
+        validateCategory(category);
+        Notice notice = getNotice(noticeId);
+        notice.update(category, title, content);
+    }
+
     private void validateCategory(final NoticeCategory category) {
         if (category == null || !category.isCreatable()) {
             throw new InvalidNoticeCategoryException(NoticeErrorCode.UNWRITABLE_NOTICE_CATEGORY);
