@@ -80,7 +80,8 @@ operation::auth/reissue-fail/invalid-token[snippets="http-request,http-response"
 
 operation::auth/find-password-success[snippets="http-request,request-fields,http-response,response-fields"]
 
-=== 실패: 유효하지 않은 이메일 형식
+==== 실패: 유효하지 않은 이메일 형식
+
 operation::auth/find-password-fail/invalid-email-format[snippets="http-request,http-response"]
 
 ==== 실패: 가입되지 않은 이메일
