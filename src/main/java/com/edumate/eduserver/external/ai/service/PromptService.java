@@ -45,8 +45,9 @@ public class PromptService {
            - 영어 사용은 가급적 지양합니다.
            
            ## 중요: 응답 형식
-           반드시 정확한 JSON 형식으로만 응답하세요. 추가 텍스트나 설명은 포함하지 마세요:
-           주의: JSON 형식을 정확히 지켜주세요. description1, description2, description3을 키로 사용합니다. 큰따옴표와 중괄호를 정확히 사용하세요. 각각의 항목은 반드시 바이트 수가 %d를 넘어야 합니다. 해당 바이트 수보다 작다면 재작성해주세요.
+           반드시 정확한 JSON 형식으로만 응답하세요. JSON 외의 다른 텍스트나 마크다운은 포함하지 마세요.
+           주의: JSON 형식을 정확히 지켜주세요. description1, description2, description3을 키로 사용합니다. 큰따옴표와 중괄호를 정확히 사용하세요. 각각의 항목은 최소 %d를 넘기도록 작성해주세요. 해당 바이트 수 기준을 모두 만족하지 못한다면 재작성해주세요.
+           중학교, 고등학교 생활기록부 글처럼 작성해주세요.
            """;
 
     public String createPrompt(final StudentRecordType recordType, final String inputPrompt) {
@@ -56,7 +57,7 @@ public class PromptService {
                 byteCount,
                 byteCount - 10,
                 inputPrompt,
-                byteCount - 10
+                byteCount - 100
         );
     }
 }
