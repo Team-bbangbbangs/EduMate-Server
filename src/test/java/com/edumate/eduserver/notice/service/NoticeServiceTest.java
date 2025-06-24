@@ -11,6 +11,7 @@ import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
 import com.edumate.eduserver.notice.repository.NoticeRepository;
 import com.edumate.eduserver.util.ServiceTest;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -128,5 +129,39 @@ class NoticeServiceTest extends ServiceTest {
         assertThatThrownBy(() -> noticeService.createNotice(invalidCategory, title, content))
                 .isInstanceOf(InvalidNoticeCategoryException.class)
                 .hasMessage(NoticeErrorCode.UNWRITABLE_NOTICE_CATEGORY.getMessage());
+    }
+
+    @Test
+    @DisplayName("공지사항 수정을 정상적으로 수행한다.")
+    void updateNotice_Success() {
+        // given
+        Notice notice = noticeRepository.save(Notice.create(NoticeCategory.NOTICE, "기존 제목", "기존 내용"));
+        String updatedTitle = "수정된 제목";
+        String updatedContent = "수정된 내용";
+        NoticeCategory updatedCategory = NoticeCategory.EVENT;
+
+        // when
+        noticeService.updateNotice(notice.getId(), updatedCategory, updatedTitle, updatedContent);
+
+        // then
+        Notice updated = noticeRepository.findById(notice.getId()).orElseThrow();
+        assertThat(updated.getTitle()).isEqualTo(updatedTitle);
+        assertThat(updated.getContent()).isEqualTo(updatedContent);
+        assertThat(updated.getCategory()).isEqualTo(updatedCategory);
+    }
+
+    @Test
+    @DisplayName("공지사항 삭제를 정상적으로 수행한다.")
+    void deleteNotice_Success() {
+        // given
+        Notice notice = noticeRepository.save(Notice.create(NoticeCategory.NOTICE, "삭제할 공지", "내용"));
+        long id = notice.getId();
+
+        // when
+        noticeService.deleteNotice(id);
+
+        // then
+        Optional<Notice> deleteNotice = noticeRepository.findById(id);
+        assertThat(deleteNotice).isEmpty();
     }
 }

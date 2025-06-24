@@ -117,4 +117,37 @@ class NoticeFacadeTest {
         // then
         verify(noticeService).createNotice(category, title, content);
     }
+
+    @Test
+    @DisplayName("공지사항 수정이 정상 동작한다.")
+    void updateNotice_Success() {
+        // given
+        long noticeId = 1L;
+        NoticeCategory category = NoticeCategory.NOTICE;
+        String title = "수정된 제목";
+        String content = "수정된 내용";
+
+        willDoNothing().given(noticeService).updateNotice(noticeId, category, title, content);
+
+        // when
+        noticeFacade.updateNotice(noticeId, category, title, content);
+
+        // then
+        verify(noticeService).updateNotice(noticeId, category, title, content);
+    }
+
+    @Test
+    @DisplayName("공지사항 삭제가 정상 동작한다.")
+    void deleteNotice_Success() {
+        // given
+        long noticeId = 1L;
+        willDoNothing().given(noticeService).deleteNotice(noticeId);
+
+        // when
+        noticeFacade.deleteNotice(noticeId);
+
+        // then
+        verify(noticeService).deleteNotice(noticeId);
+    }
+
 }
