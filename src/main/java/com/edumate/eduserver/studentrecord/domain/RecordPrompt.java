@@ -27,7 +27,7 @@ public class RecordPrompt {
     @JoinColumn(name = "student_record_detail_id", nullable = false)
     private StudentRecordDetail studentRecordDetail;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     private String prompt;
 
     @Builder(access = AccessLevel.PRIVATE)
