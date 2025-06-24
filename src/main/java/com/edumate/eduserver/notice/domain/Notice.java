@@ -13,10 +13,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("is_deleted = false")
 public class Notice extends BaseEntity {
     @Id
     @Column(name = "notice_id")
@@ -57,5 +59,10 @@ public class Notice extends BaseEntity {
         this.category = category;
         this.title = title;
         this.content = content;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 }

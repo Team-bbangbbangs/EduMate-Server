@@ -51,4 +51,9 @@ public class NoticeFacade {
     public void updateNotice(final long noticeId, final NoticeCategory category, final String title, final String content) {
         noticeService.updateNotice(noticeId, category, title, content);
     }
+
+    @Transactional
+    public void deleteNotice(long noticeId) {
+        noticeService.deleteNotice(noticeId);
+    }
 }

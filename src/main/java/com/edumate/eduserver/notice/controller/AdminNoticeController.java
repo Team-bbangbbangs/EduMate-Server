@@ -8,6 +8,7 @@ import com.edumate.eduserver.notice.domain.NoticeCategory;
 import com.edumate.eduserver.notice.facade.NoticeFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,14 @@ public class AdminNoticeController {
     ) {
         NoticeCategory category = NoticeCategory.fromId(request.categoryId());
         noticeFacade.updateNotice(noticeId, category, request.title(), request.content());
+        return ApiResponse.success(CommonSuccessCode.OK);
+    }
+
+    @DeleteMapping("/{noticeId}")
+    public ApiResponse<Void> deleteNotice(
+            @PathVariable final long noticeId
+    ) {
+        noticeFacade.deleteNotice(noticeId);
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 }

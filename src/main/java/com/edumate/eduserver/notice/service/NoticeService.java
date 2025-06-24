@@ -49,6 +49,12 @@ public class NoticeService {
         notice.update(category, title, content);
     }
 
+    @Transactional
+    public void deleteNotice(final long noticeId) {
+        Notice notice = getNotice(noticeId);
+        notice.delete();
+    }
+
     private void validateCategory(final NoticeCategory category) {
         if (category == null || !category.isCreatable()) {
             throw new InvalidNoticeCategoryException(NoticeErrorCode.UNWRITABLE_NOTICE_CATEGORY);
