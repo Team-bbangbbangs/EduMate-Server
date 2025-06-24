@@ -102,7 +102,7 @@ public class AuthFacade {
 
     private void checkPreconditions(final String email, final String password) {
         authService.checkAlreadyRegistered(email);
-        // authService.validateEmail(email);
+        authService.validateEmail(email);
         PasswordValidator.validatePasswordFormat(password);
     }
 
