@@ -36,3 +36,6 @@ aws:
     sender-email: test@test
     region: ap-northeast-2
     email-verify-url: https://example.com/verify?memberId=%s&token=%s
+
+cors:
+  allowed-origin: http://localhost:3000
