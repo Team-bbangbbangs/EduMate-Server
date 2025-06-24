@@ -46,4 +46,14 @@ public class NoticeFacade {
     public void createNotice(final NoticeCategory category, final String title, final String content) {
         noticeService.createNotice(category, title, content);
     }
+
+    @Transactional
+    public void updateNotice(final long noticeId, final NoticeCategory category, final String title, final String content) {
+        noticeService.updateNotice(noticeId, category, title, content);
+    }
+
+    @Transactional
+    public void deleteNotice(long noticeId) {
+        noticeService.deleteNotice(noticeId);
+    }
 }

@@ -30,7 +30,7 @@ public class RecordPrompt {
     @Column(nullable = false)
     private String prompt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private RecordPrompt(final StudentRecordDetail studentRecordDetail, final String prompt) {
         this.studentRecordDetail = studentRecordDetail;
         this.prompt = prompt;

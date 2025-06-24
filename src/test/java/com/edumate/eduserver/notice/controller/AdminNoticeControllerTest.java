@@ -3,15 +3,20 @@ package com.edumate.eduserver.notice.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.notice.controller.request.NoticeCreateRequest;
+import com.edumate.eduserver.notice.controller.request.NoticeUpdateRequest;
 import com.edumate.eduserver.notice.domain.NoticeCategory;
 import com.edumate.eduserver.notice.exception.InvalidNoticeCategoryException;
 import com.edumate.eduserver.notice.exception.code.NoticeErrorCode;
@@ -121,6 +126,74 @@ class AdminNoticeControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("에러 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공지사항을 성공적으로 수정한다.")
+    void updateNotice_Success() throws Exception {
+        // given
+        long noticeId = 1L;
+        NoticeUpdateRequest request = new NoticeUpdateRequest(
+                NoticeCategory.NOTICE.getId(),
+                "수정된 제목",
+                "수정된 내용"
+        );
+
+        doNothing().when(noticeFacade).updateNotice(any(Long.class), any(), any(), any());
+
+        // when & then
+        mockMvc.perform(patch(BASE_URL + "/{noticeId}", noticeId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType("application/json")
+                        .content(toJson(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(
+                        BASE_DOMAIN_PACKAGE + "update-success",
+                        pathParameters(
+                                parameterWithName("noticeId").description("공지사항 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("categoryId").description("공지사항 카테고리 ID"),
+                                fieldWithPath("title").description("공지사항 제목"),
+                                fieldWithPath("content").description("공지사항 내용")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공지사항을 성공적으로 삭제한다.")
+    void deleteNotice_Success() throws Exception {
+        // given
+        long noticeId = 1L;
+
+        doNothing().when(noticeFacade).deleteNotice(noticeId);
+
+        // when & then
+        mockMvc.perform(delete(BASE_URL + "/{noticeId}", noticeId)
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(
+                        BASE_DOMAIN_PACKAGE + "delete-success",
+                        pathParameters(
+                                parameterWithName("noticeId").description("공지사항 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
                         )
                 ));
     }

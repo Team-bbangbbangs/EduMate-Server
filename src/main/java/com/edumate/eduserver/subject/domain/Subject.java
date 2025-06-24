@@ -23,7 +23,7 @@ public class Subject {
     @Column(nullable = false)
     private String name;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Subject(final String name) {
         this.name = name;
     }

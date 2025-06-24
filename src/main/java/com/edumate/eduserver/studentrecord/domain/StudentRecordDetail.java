@@ -1,6 +1,6 @@
 package com.edumate.eduserver.studentrecord.domain;
 
-import com.edumate.eduserver.BaseEntity;
+import com.edumate.eduserver.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,7 +53,7 @@ public class StudentRecordDetail extends BaseEntity {
         this.byteCount = byteCount;
     }
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private StudentRecordDetail(final RecordMetadata recordMetadata, final String studentNumber,
                                 final String studentName, final String description, final int byteCount) {
         this.recordMetadata = recordMetadata;

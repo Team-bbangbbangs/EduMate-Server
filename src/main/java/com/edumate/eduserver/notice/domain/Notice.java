@@ -1,6 +1,6 @@
 package com.edumate.eduserver.notice.domain;
 
-import com.edumate.eduserver.BaseEntity;
+import com.edumate.eduserver.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,10 +13,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("is_deleted = false")
 public class Notice extends BaseEntity {
     @Id
     @Column(name = "notice_id")
@@ -51,5 +53,16 @@ public class Notice extends BaseEntity {
                 .title(title)
                 .content(content)
                 .build();
+    }
+
+    public void update(NoticeCategory category, String title, String content) {
+        this.category = category;
+        this.title = title;
+        this.content = content;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 }

@@ -47,7 +47,7 @@ public class AuthorizationCode {
 
     private static final int MINUTES_TO_EXPIRE = 10;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private AuthorizationCode(final Member member, final String authorizationCode, final LocalDateTime createdAt,
                               final LocalDateTime expiredAt, final AuthorizeStatus status) {
         this.member = member;

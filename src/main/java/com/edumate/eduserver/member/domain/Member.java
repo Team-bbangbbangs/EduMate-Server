@@ -1,6 +1,6 @@
 package com.edumate.eduserver.member.domain;
 
-import com.edumate.eduserver.BaseEntity;
+import com.edumate.eduserver.common.entity.BaseEntity;
 import com.edumate.eduserver.subject.domain.Subject;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,7 +69,7 @@ public class Member extends BaseEntity {
 
     private LocalDateTime deletedAt;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     private Member(final Subject subject, final String email, final String password, final String nickname,
                    final School school, final Role role, final LocalDateTime verifiedAt, final boolean isDeleted,
                    final LocalDateTime deletedAt, final String memberUuid) {
