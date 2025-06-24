@@ -19,10 +19,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberStudentRecord {
+public class RecordMetadata {
 
     @Id
-    @Column(name = "member_student_record_id")
+    @Column(name = "record_metadata_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -38,14 +38,14 @@ public class MemberStudentRecord {
     private String semester;
 
     @Builder
-    private MemberStudentRecord(final Member member, final StudentRecordType studentRecordType, final String semester) {
+    private RecordMetadata(final Member member, final StudentRecordType studentRecordType, final String semester) {
         this.member = member;
         this.studentRecordType = studentRecordType;
         this.semester = semester;
     }
 
-    public static MemberStudentRecord create(final Member member, final StudentRecordType studentRecordType, final String semester) {
-        return MemberStudentRecord.builder()
+    public static RecordMetadata create(final Member member, final StudentRecordType studentRecordType, final String semester) {
+        return RecordMetadata.builder()
                 .member(member)
                 .studentRecordType(studentRecordType)
                 .semester(semester)

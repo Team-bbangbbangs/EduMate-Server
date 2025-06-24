@@ -7,13 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
-import com.edumate.eduserver.studentrecord.domain.MemberStudentRecord;
+import com.edumate.eduserver.studentrecord.domain.RecordMetadata;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.UpdatePermissionDeniedException;
-import com.edumate.eduserver.studentrecord.repository.MemberStudentRecordRepository;
+import com.edumate.eduserver.studentrecord.repository.RecordMetadataRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import com.edumate.eduserver.util.ServiceTest;
 import java.util.List;
@@ -31,7 +31,7 @@ class StudentRecordServiceTest extends ServiceTest {
     private StudentRecordDetailRepository studentRecordDetailRepository;
 
     @Autowired
-    private MemberStudentRecordRepository memberStudentRecordRepository;
+    private RecordMetadataRepository recordMetadataRepository;
 
     @Test
     @DisplayName("특정 학생의 특정 생기부 항목에 대한 내용을 업데이트 한다.")
@@ -146,12 +146,12 @@ class StudentRecordServiceTest extends ServiceTest {
                 studentRecordCreateInfo);
 
         // then
-        MemberStudentRecord memberStudentRecord = memberStudentRecordRepository
+        RecordMetadata recordMetadata = recordMetadataRepository
                 .findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
                 .orElseThrow();
 
         assertAll(
-                () -> assertThat(memberStudentRecord.getSemester()).isEqualTo(semester),
+                () -> assertThat(recordMetadata.getSemester()).isEqualTo(semester),
                 () -> assertThat(studentRecord.getStudentNumber()).isEqualTo(studentNumber),
                 () -> assertThat(studentRecord.getStudentName()).isEqualTo(studentName),
                 () -> assertThat(studentRecord.getDescription()).isEqualTo(description),
@@ -205,7 +205,7 @@ class StudentRecordServiceTest extends ServiceTest {
         StudentRecordType recordType = StudentRecordType.BEHAVIOR_OPINION;
         String semester = "2025-2";
 
-        MemberStudentRecord memberStudentRecord = studentRecordService.createSemesterRecord(
+        RecordMetadata recordMetadata = studentRecordService.createSemesterRecord(
                 defaultTeacher, recordType, semester);
 
         List<StudentRecordInfo> studentRecordInfos = List.of(
@@ -215,11 +215,11 @@ class StudentRecordServiceTest extends ServiceTest {
         );
 
         // when
-        studentRecordService.createStudentRecords(memberStudentRecord, studentRecordInfos);
+        studentRecordService.createStudentRecords(recordMetadata, studentRecordInfos);
 
         // then
         List<StudentRecordDetail> savedRecords = studentRecordDetailRepository
-                .findAllByMemberStudentRecordOrderByCreatedAtAsc(memberStudentRecord);
+                .findAllByRecordMetadataOrderByCreatedAtAsc(recordMetadata);
 
         assertAll(
                 () -> assertThat(savedRecords).hasSize(3),
