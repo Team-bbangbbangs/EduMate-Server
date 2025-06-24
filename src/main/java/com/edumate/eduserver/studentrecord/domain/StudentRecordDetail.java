@@ -1,6 +1,6 @@
 package com.edumate.eduserver.studentrecord.domain;
 
-import com.edumate.eduserver.BaseEntity;
+import com.edumate.eduserver.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

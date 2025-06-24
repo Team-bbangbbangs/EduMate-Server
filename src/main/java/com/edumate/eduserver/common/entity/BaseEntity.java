@@ -1,4 +1,4 @@
-package com.edumate.eduserver;
+package com.edumate.eduserver.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
