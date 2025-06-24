@@ -8,9 +8,10 @@ public class PromptService {
 
     private static final String PROMPT_TEMPLATE = """
            다음 지침에 따라 '%s' 항목의 생활기록부를 작성해주세요.
+           학생생활기록부 종합지원포털의 학생부 기재요령을 참고하여 기준에 맞게 작성해주세요.
            
            ## 작성 기준
-           - 목표 분량: %d바이트 (최소 %d바이트 이상)
+           - 목표 분량: %d바이트 (최소 %d바이트 이상은 반드시 작성)
              - 분량이 부족할 경우 구체적인 예시와 상세한 설명을 추가하여 목표 분량에 맞춰 작성해주세요.
            - 문체: 현재형 음슴체 ('~임', '~함' 형태)
            - 구두점: 쉼표 사용 최소화
@@ -35,9 +36,17 @@ public class PromptService {
            - 다른 강조점과 표현 방식 사용
            - 각 버전은 전체 내용을 포함하되 구성과 초점을 달리함
            
+           ## 중요: 작성금지단어
+           - 공익어학 시험 자격증명은 작성 불가능
+             - 영어(TOEIC, TOEFL, TEPS), 중국어(HSK), 일본어(JPT, JLPT), 프랑스어(DELF, DALF),  독일어(ZD,  TESTDAF,  DSH,  DSD),  러시아어(TORFL),  스페인어(DELE),  상공회의소한자시험,  한자능력검정,  실용한자,  한자급수자격검정,  YBM  상무한검,  한자급수인증시험,  한자자격검정 등
+           - 교외 및 교내 대회 수상 경력은 기재할 수 없음
+           - 구체적인 특정 대학명, 기관명은 입력할 수 없음 단, 교육관련기관(교육부 및 소속기관(대한민국학술원, 국사편찬위원회, 국립국제교육원, 국립특수교육원, 교원소청심사위원회, 중앙교육연수원), 시도교육청 및 직속기관, 교육지원청 및 소속기관에 한함)의 경우 기관명을 입력할 수 있음.
+           - 네이버, 구글 등 직접적인 회사 명 입력 불가능 - 회사명이 드러나지 않도록 단어를 대체해주세요.
+           - 영어 사용은 가급적 지양합니다.
+           
            ## 중요: 응답 형식
            반드시 정확한 JSON 형식으로만 응답하세요. 추가 텍스트나 설명은 포함하지 마세요:
-           주의: JSON 형식을 정확히 지켜주세요. description1, description2, description3을 키로 사용합니다. 큰따옴표와 중괄호를 정확히 사용하세요.        
+           주의: JSON 형식을 정확히 지켜주세요. description1, description2, description3을 키로 사용합니다. 큰따옴표와 중괄호를 정확히 사용하세요. 각각의 항목은 반드시 바이트 수가 %d를 넘어야 합니다. 해당 바이트 수보다 작다면 재작성해주세요.
            """;
 
     public String createPrompt(final StudentRecordType recordType, final String inputPrompt) {
@@ -45,8 +54,9 @@ public class PromptService {
         return String.format(PROMPT_TEMPLATE,
                 recordType.name(),
                 byteCount,
-                byteCount - 20,
-                inputPrompt
+                byteCount - 10,
+                inputPrompt,
+                byteCount - 10
         );
     }
 }
