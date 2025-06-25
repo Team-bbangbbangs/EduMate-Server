@@ -51,7 +51,7 @@ public class AuthService {
     public void validateEmail(final String email) {
         List<String> validEmails = getValidEmails();
         String domain = extractEmailDomain(email);
-        if (!validEmails.contains(email)) {
+        if (!validEmails.contains(domain)) {
             throw new InvalidEmailDomainException(AuthErrorCode.INVALID_EMAIL);
         }
     }
