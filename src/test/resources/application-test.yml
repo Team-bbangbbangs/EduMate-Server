@@ -38,4 +38,4 @@ aws:
     email-verify-url: https://example.com/verify?memberId=%s&token=%s
 
 cors:
-  allowed-origin: http://localhost:3000
+  allowed-origins: http://localhost:3000
