@@ -80,7 +80,8 @@ public class AuthFacade {
             String newAccessToken = tokenService.generateTokens(member, TokenType.ACCESS);
             String newRefreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
             memberService.updateRefreshToken(member, newRefreshToken);
-            return MemberReissueResponse.of(newAccessToken, newRefreshToken);
+            boolean isAdmin = memberService.isAdmin(member);
+            return MemberReissueResponse.of(newAccessToken, newRefreshToken, isAdmin);
         } catch (Exception e) {
             logout(member.getId());
             throw e;
@@ -88,7 +89,8 @@ public class AuthFacade {
     }
 
     @Transactional
-    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName, final String school) {
+    public MemberSignUpResponse signUp(final String email, final String password, final String subjectName,
+                                       final String school) {
         checkPreconditions(email, password);
         Subject subject = subjectService.getSubjectByName(subjectName);
         Member member = createMember(email, password, subject, school);
