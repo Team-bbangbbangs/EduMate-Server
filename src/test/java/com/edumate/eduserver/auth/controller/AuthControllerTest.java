@@ -44,7 +44,7 @@ import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
-import com.edumate.eduserver.common.RefreshTokenCookieHandler;
+import com.edumate.eduserver.common.CookieHandler;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
@@ -65,7 +65,7 @@ class AuthControllerTest extends ControllerTest {
     @MockitoBean
     private AuthFacade authFacade;
     @MockitoBean
-    private RefreshTokenCookieHandler refreshTokenCookieHandler;
+    private CookieHandler cookieHandler;
 
     private static final String BASE_URL = "/api/v1/auth";
     private final String BASE_DOMAIN_PACKAGE = "auth/";
@@ -185,7 +185,7 @@ class AuthControllerTest extends ControllerTest {
         // given
         MemberSignUpRequest request = new MemberSignUpRequest(
                 "test@email.com", "password123", "수학", "middle");
-        MemberSignUpResponse response = new MemberSignUpResponse("access-token", "refresh-token");
+        MemberSignUpResponse response = new MemberSignUpResponse("access-token", "refresh-token", false);
 
         when(authFacade.signUp(
                 eq(request.email().trim()),
@@ -198,7 +198,7 @@ class AuthControllerTest extends ControllerTest {
             HttpServletResponse resp = invocation.getArgument(0);
             resp.addCookie(new Cookie("refreshToken", "mock-refresh-token"));
             return null;
-        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
+        }).when(cookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -223,7 +223,8 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.accessToken").description("액세스 토큰")
+                                fieldWithPath("data.accessToken").description("액세스 토큰"),
+                                fieldWithPath("data.isAdmin").description("관리자 여부")
                         ),
                         responseCookies(
                                 cookieWithName("refreshToken").description("리프레시 토큰")
@@ -367,7 +368,7 @@ class AuthControllerTest extends ControllerTest {
             HttpServletResponse resp = invocation.getArgument(0);
             resp.addCookie(new Cookie("refreshToken", "mock-refresh-token"));
             return null;
-        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
+        }).when(cookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -484,14 +485,14 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("토큰 재발급에 성공한다.")
     void reissueSuccess() throws Exception {
-        MemberReissueResponse response = new MemberReissueResponse("new-access-token", "new-refresh-token");
+        MemberReissueResponse response = new MemberReissueResponse("new-access-token", "new-refresh-token", false);
 
         doAnswer(invocation -> {
             HttpServletResponse resp = invocation.getArgument(0);
             Cookie cookie = new Cookie("refreshToken", "new-refresh-token");
             resp.addCookie(cookie);
             return null;
-        }).when(refreshTokenCookieHandler)
+        }).when(cookieHandler)
                 .setRefreshTokenCookie(any(HttpServletResponse.class), eq("new-refresh-token"));
 
         doReturn(response).when(authFacade).reissue(anyString());
@@ -514,7 +515,8 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.accessToken").description("새로운 액세스 토큰")
+                                fieldWithPath("data.accessToken").description("새로운 액세스 토큰"),
+                                fieldWithPath("data.isAdmin").description("관리자 여부")
                         ),
                         responseCookies(
                                 cookieWithName("refreshToken").description("새로운 리프레시 토큰")

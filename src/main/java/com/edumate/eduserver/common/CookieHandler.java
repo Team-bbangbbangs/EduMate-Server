@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RefreshTokenCookieHandler {
+public class CookieHandler {
 
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
