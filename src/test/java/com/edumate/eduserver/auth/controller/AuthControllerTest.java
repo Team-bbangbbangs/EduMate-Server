@@ -185,7 +185,7 @@ class AuthControllerTest extends ControllerTest {
         // given
         MemberSignUpRequest request = new MemberSignUpRequest(
                 "test@email.com", "password123", "수학", "middle");
-        MemberSignUpResponse response = new MemberSignUpResponse("access-token", "refresh-token");
+        MemberSignUpResponse response = new MemberSignUpResponse("access-token", "refresh-token", false);
 
         when(authFacade.signUp(
                 eq(request.email().trim()),
@@ -223,7 +223,8 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.accessToken").description("액세스 토큰")
+                                fieldWithPath("data.accessToken").description("액세스 토큰"),
+                                fieldWithPath("data.isAdmin").description("관리자 여부")
                         ),
                         responseCookies(
                                 cookieWithName("refreshToken").description("리프레시 토큰")
@@ -484,7 +485,7 @@ class AuthControllerTest extends ControllerTest {
     @Test
     @DisplayName("토큰 재발급에 성공한다.")
     void reissueSuccess() throws Exception {
-        MemberReissueResponse response = new MemberReissueResponse("new-access-token", "new-refresh-token");
+        MemberReissueResponse response = new MemberReissueResponse("new-access-token", "new-refresh-token", false);
 
         doAnswer(invocation -> {
             HttpServletResponse resp = invocation.getArgument(0);
@@ -514,7 +515,8 @@ class AuthControllerTest extends ControllerTest {
                                 fieldWithPath("status").description("HTTP 상태 코드"),
                                 fieldWithPath("code").description("응답 코드"),
                                 fieldWithPath("message").description("응답 메시지"),
-                                fieldWithPath("data.accessToken").description("새로운 액세스 토큰")
+                                fieldWithPath("data.accessToken").description("새로운 액세스 토큰"),
+                                fieldWithPath("data.isAdmin").description("관리자 여부")
                         ),
                         responseCookies(
                                 cookieWithName("refreshToken").description("새로운 리프레시 토큰")
