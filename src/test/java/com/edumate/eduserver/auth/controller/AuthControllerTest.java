@@ -44,7 +44,7 @@ import com.edumate.eduserver.auth.facade.AuthFacade;
 import com.edumate.eduserver.auth.facade.response.MemberLoginResponse;
 import com.edumate.eduserver.auth.facade.response.MemberReissueResponse;
 import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
-import com.edumate.eduserver.common.RefreshTokenCookieHandler;
+import com.edumate.eduserver.common.CookieHandler;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
 import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
@@ -65,7 +65,7 @@ class AuthControllerTest extends ControllerTest {
     @MockitoBean
     private AuthFacade authFacade;
     @MockitoBean
-    private RefreshTokenCookieHandler refreshTokenCookieHandler;
+    private CookieHandler cookieHandler;
 
     private static final String BASE_URL = "/api/v1/auth";
     private final String BASE_DOMAIN_PACKAGE = "auth/";
@@ -198,7 +198,7 @@ class AuthControllerTest extends ControllerTest {
             HttpServletResponse resp = invocation.getArgument(0);
             resp.addCookie(new Cookie("refreshToken", "mock-refresh-token"));
             return null;
-        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
+        }).when(cookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/signup")
@@ -368,7 +368,7 @@ class AuthControllerTest extends ControllerTest {
             HttpServletResponse resp = invocation.getArgument(0);
             resp.addCookie(new Cookie("refreshToken", "mock-refresh-token"));
             return null;
-        }).when(refreshTokenCookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
+        }).when(cookieHandler).setRefreshTokenCookie(any(HttpServletResponse.class), anyString());
 
         mockMvc.perform(RestDocumentationRequestBuilders.post(BASE_URL + "/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -492,7 +492,7 @@ class AuthControllerTest extends ControllerTest {
             Cookie cookie = new Cookie("refreshToken", "new-refresh-token");
             resp.addCookie(cookie);
             return null;
-        }).when(refreshTokenCookieHandler)
+        }).when(cookieHandler)
                 .setRefreshTokenCookie(any(HttpServletResponse.class), eq("new-refresh-token"));
 
         doReturn(response).when(authFacade).reissue(anyString());
