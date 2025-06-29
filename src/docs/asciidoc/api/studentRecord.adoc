@@ -1,0 +1,140 @@
+== 생활기록부
+
+=== 생활기록부 종합 글 저장
+
+==== 성공
+
+operation::student-record/update-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
+operation::student-record/fail/member-record-not-found[snippets="http-request,http-response"]
+
+==== 실패: 특정 학생의 생기부가 존재하지 않음
+
+operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
+
+==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
+operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
+
+==== 실패: 유효하지 않은 요청 값
+
+include::{snippets}/student-record/update-fail/missing-description/http-response.adoc[]
+include::{snippets}/student-record/update-fail/negative-byte-count/http-response.adoc[]
+
+=== 생활기록부 종합 글 불러오기
+
+==== 성공
+
+operation::student-record/get-success[snippets="request-headers,path-parameters,http-request,http-response"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
+operation::student-record/fail/member-record-not-found[snippets="http-response"]
+
+==== 실패: 특정 학생의 생기부가 존재하지 않음
+
+operation::student-record/fail/record-not-found[snippets="http-response"]
+
+==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
+operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
+
+=== 학생 이름 불러오기
+
+==== 성공
+
+operation::student-record/get-names-success[snippets="request-headers,path-parameters,query-parameters,http-request,http-response"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
+operation::student-record/fail/member-record-not-found[snippets=http-response]
+
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
+=== 생활기록부(학생) 여려명 추가
+
+==== 성공
+
+operation::student-record/create-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
+operation::student-record/fail/member-record-not-found[snippets="http-response"]
+
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
+=== 생활기록부 목록 조회
+
+==== 성공
+
+operation::student-record/get-overviews-success[snippets="http-request,request-headers,path-parameters,query-parameters,http-response,response-fields"]
+
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
+=== 생활기록부 한 명 추가
+
+==== 성공
+
+operation::student-record/create-one-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 유효하지 않은 학기 형식
+
+operation::student-record/get-names-fail/invalid-semester-format[snippets=http-response]
+
+=== 생활기록부 한 명 수정
+
+==== 성공
+
+operation::student-record/update-overview-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 특정 학생의 생기부가 존재하지 않음
+
+operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
+
+==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
+operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
+
+=== 생활기록부 한 명 삭제
+
+==== 성공
+
+operation::student-record/delete-success[snippets="request-headers,path-parameters,http-request,http-response,response-fields"]
+
+==== 실패: 특정 학생의 생기부가 존재하지 않음
+
+operation::student-record/fail/record-not-found[snippets="http-request,http-response"]
+
+==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
+operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
+
+=== 생활기록부 AI 생성
+
+==== 성공
+
+operation::student-record/ai-generate-success[snippets="request-headers,path-parameters,http-request,request-fields,http-response,response-fields"]
+
+==== 실패: 해당 학기에 해당 유저의 존재하지 않는 생기부
+
+operation::student-record/ai-generate-fail/not-found[snippets="http-response"]
+
+==== 실패: 권한이 없음 (해당 생기부의 주인이 아님)
+
+operation::student-record/update-fail/permission-denied[snippets="http-request,http-response"]
+
+==== 실패: 요청량 초과
+
+operation::student-record/ai-generate-fail/rate-limit[snippets="http-response"]
+
+==== 실패: 크레딧 부족
+
+operation::student-record/ai-generate-fail/quota-exceeded[snippets="http-response"]

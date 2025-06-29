@@ -1,0 +1,26 @@
+package com.edumate.eduserver.member.controller;
+
+import com.edumate.eduserver.common.ApiResponse;
+import com.edumate.eduserver.common.annotation.MemberId;
+import com.edumate.eduserver.common.code.CommonSuccessCode;
+import com.edumate.eduserver.member.facade.MemberFacade;
+import com.edumate.eduserver.member.facade.response.MemberProfileGetResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
+public class MemberController {
+
+    private final MemberFacade memberFacade;
+
+    @GetMapping("/profile")
+    public ApiResponse<MemberProfileGetResponse> getMemberProfile(
+            @MemberId final long memberId
+    ) {
+        return ApiResponse.success(CommonSuccessCode.OK, memberFacade.getMemberProfile(memberId));
+    }
+}

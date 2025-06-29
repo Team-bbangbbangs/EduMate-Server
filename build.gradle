@@ -1,0 +1,130 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.asciidoctor.jvm.convert' version '4.0.4'
+    id 'jacoco'
+}
+
+group = 'com.edumate'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    asciidoctorExt
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+dependencies {
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // Spring AI
+    implementation 'org.springframework.ai:spring-ai-starter-model-openai:1.0.0-M7'
+
+    // Health Check
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // Database
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.h2database:h2'
+
+    // AWS - SES
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'software.amazon.awssdk:ses:2.25.10'
+
+    // thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // RestDocs
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc:3.0.0'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor:3.0.0'
+}
+
+tasks.named('test') {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+tasks.named('asciidoctor') {
+    configurations 'asciidoctorExt'
+    baseDirFollowsSourceFile()
+    inputs.dir snippetsDir
+    dependsOn test
+
+    sources {
+        include("**/index.adoc")
+    }
+}
+
+tasks.register('copyDocument', Copy) {
+    dependsOn asciidoctor
+    from file("${asciidoctor.outputDir}")
+    into file("src/main/resources/static/docs")
+}
+
+build {
+    dependsOn copyDocument
+}
+
+bootJar {
+    archiveFileName = 'app.jar'
+
+    dependsOn copyDocument
+    from("${asciidoctor.outputDir}") {
+        into 'static/docs'
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    dependsOn asciidoctor
+    mustRunAfter copyDocument
+    executionData(fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec"))
+
+    reports {
+        html.required.set(false)
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+}

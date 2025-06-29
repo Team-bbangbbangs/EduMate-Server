@@ -1,0 +1,41 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:edumate;MODE=MySQL;
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: false
+
+  ai:
+    openai:
+      api-key: testApiKeyForOpenAI
+
+security:
+  jwt:
+    token:
+      secret-key: dGVzdGtleWZvcmp3dHNlY3JldGtleWZvcmp3dHNlY3JldA==
+      access-token-expiration: 5000  # 5초
+      refresh-token-expiration: 1209600000 # 2주
+
+aws:
+  ses:
+    access-key: testAccessKey
+    secret-key: testSecretKey
+    sender-email: test@test
+    region: ap-northeast-2
+    email-verify-url: https://example.com/verify?memberId=%s&token=%s
+
+cors:
+  allowed-origins: http://localhost:3000

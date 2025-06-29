@@ -1,0 +1,7 @@
+== 유저
+
+=== 프로필 조회
+
+==== 성공
+
+operation::member/get-profile-success[snippets="http-request,http-response,response-fields"]

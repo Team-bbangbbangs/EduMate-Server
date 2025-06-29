@@ -1,0 +1,12 @@
+= EduMate REST API 문서
+:doctype: book
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:toc-title: API 목록
+:sectnums:
+
+include::api/auth.adoc[]
+include::api/studentRecord.adoc[]
+include::api/notice.adoc[]
+include::api/member.adoc[]
