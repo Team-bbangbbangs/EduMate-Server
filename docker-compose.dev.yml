@@ -10,3 +10,9 @@ services:
     env_file:
       - .env
     restart: always
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
