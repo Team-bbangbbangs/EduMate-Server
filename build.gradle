@@ -51,6 +51,9 @@ dependencies {
     // Health Check
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    // Prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
     // Database
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.mysql:mysql-connector-j'
