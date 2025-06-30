@@ -37,7 +37,7 @@ public class JwtValidator {
         } catch (SignatureException e) {
             throw new InvalidSignatureTokenException(AuthErrorCode.INVALID_SIGNATURE_TOKEN);
         } catch (IllegalTokenException | IllegalTokenTypeException e) {
-            throw e;
+            throw new IllegalTokenException(AuthErrorCode.INVALID_ACCESS_TOKEN_VALUE);
         } catch (Exception e) {
             log.error("Token validation failed: {}", e.getMessage());
             throw e;
