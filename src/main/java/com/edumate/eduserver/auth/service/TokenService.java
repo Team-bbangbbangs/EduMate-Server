@@ -12,11 +12,9 @@ import java.security.MessageDigest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TokenService {
 
@@ -24,7 +22,6 @@ public class TokenService {
     private final JwtParser jwtParser;
     private final JwtValidator jwtValidator;
 
-    @Transactional
     public String generateTokens(final Member member, final TokenType tokenType) {
         String memberUuid = member.getMemberUuid();
         return jwtGenerator.generateToken(memberUuid, tokenType);
