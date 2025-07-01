@@ -39,6 +39,10 @@ public class TokenService {
     }
 
     private boolean isTokenMatched(final String requestRefreshToken, final String storedRefreshToken) {
+        if (requestRefreshToken == null || storedRefreshToken == null) {
+            return false;
+        }
+
         return MessageDigest.isEqual(
                 storedRefreshToken.getBytes(StandardCharsets.UTF_8),
                 requestRefreshToken.getBytes(StandardCharsets.UTF_8)
