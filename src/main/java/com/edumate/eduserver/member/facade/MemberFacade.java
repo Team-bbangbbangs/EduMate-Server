@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberFacade {
 
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     public MemberProfileGetResponse getMemberProfile(final long memberId) {
         Member member = memberService.getMemberById(memberId);
         return MemberProfileGetResponse.of(
@@ -28,6 +28,7 @@ public class MemberFacade {
         );
     }
 
+    @Transactional
     public void updatePassword(final long memberId, final String currentPassword, final String newPassword) {
         Member member = memberService.getMemberById(memberId);
         PasswordValidator.validatePasswordFormat(newPassword);
