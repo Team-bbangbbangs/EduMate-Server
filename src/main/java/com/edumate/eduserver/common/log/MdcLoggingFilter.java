@@ -1,4 +1,4 @@
-package com.edumate.eduserver.common.security.filter;
+package com.edumate.eduserver.common.log;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletRequest;
@@ -23,7 +23,7 @@ public class MdcLoggingFilter implements Filter {
     private static final Logger log = LoggerFactory.getLogger(MdcLoggingFilter.class);
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
         long startTime = System.currentTimeMillis();
         String requestId = UUID.randomUUID().toString();
