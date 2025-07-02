@@ -23,7 +23,6 @@ import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.facade.MemberFacade;
 import com.edumate.eduserver.member.facade.response.MemberProfileGetResponse;
 import com.edumate.eduserver.util.ControllerTest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,8 +35,6 @@ class MemberControllerTest extends ControllerTest {
 
     @MockitoBean
     private MemberFacade memberFacade;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String BASE_URL = "/api/v1/users";
     private static final String BASE_DOMAIN_PACKAGE = "member/";
