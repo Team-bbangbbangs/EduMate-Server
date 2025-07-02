@@ -6,6 +6,7 @@ import com.edumate.eduserver.member.exception.InvalidPasswordException;
 import com.edumate.eduserver.member.exception.PasswordSameAsOldException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.domain.School;
+import com.edumate.eduserver.member.facade.response.MemberNicknameValidationResponse;
 import com.edumate.eduserver.member.facade.response.MemberProfileGetResponse;
 import com.edumate.eduserver.member.service.MemberService;
 import com.edumate.eduserver.subject.domain.Subject;
@@ -57,5 +58,12 @@ public class MemberFacade {
     public void updateMemberProfile(final long memberId, final String subjectName, final School school, final String nickname) {
         Subject subject = subjectService.getSubjectByName(subjectName);
         memberService.updateMemberProfile(memberId, subject, school, nickname);
+    }
+
+    public MemberNicknameValidationResponse validateNickname(final long memberId, final String nickname) {
+        return MemberNicknameValidationResponse.of(
+                memberService.isNicknameInvalid(nickname),
+                memberService.isNicknameDuplicated(memberId, nickname)
+        );
     }
 }

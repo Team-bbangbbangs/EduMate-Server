@@ -3,9 +3,12 @@ package com.edumate.eduserver.member.service;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.domain.Role;
 import com.edumate.eduserver.member.domain.School;
+import com.edumate.eduserver.member.exception.MemberNicknameDuplicateException;
+import com.edumate.eduserver.member.exception.MemberNicknameInvalidException;
 import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.repository.MemberRepository;
+import com.edumate.eduserver.member.repository.NicknameBannedWordRepository;
 import com.edumate.eduserver.subject.domain.Subject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final NicknameBannedWordRepository nicknameBannedWordRepository;
 
     private static final Role INITIAL_ROLE = Role.PENDING_TEACHER;
     private static final String DEFAULT_NICKNAME = "선생님";
@@ -93,6 +97,24 @@ public class MemberService {
     @Transactional
     public void updateMemberProfile(final long memberId, final Subject subject, final School school, final String nickname) {
         Member member = getMemberById(memberId);
+        validateNickname(memberId, nickname);
         member.updateProfile(subject, school, nickname);
+    }
+
+    private void validateNickname(final long memberId, final String nickname) {
+        if (isNicknameInvalid(nickname)) {
+            throw new MemberNicknameDuplicateException(MemberErrorCode.INVALID_NICKNAME, nickname);
+        }
+        if (isNicknameDuplicated(memberId, nickname)) {
+            throw new MemberNicknameInvalidException(MemberErrorCode.DUPLICATED_NICKNAME, nickname);
+        }
+    }
+
+    public boolean isNicknameInvalid(final String nickname) {
+        return nickname.isBlank() || nicknameBannedWordRepository.existsBannedWordIn(nickname);
+    }
+
+    public boolean isNicknameDuplicated(final long memberId, final String nickname) {
+        return memberRepository.existsByIdNotAndNicknameAndIsDeleted(memberId, nickname, NOT_DELETED);
     }
 }
