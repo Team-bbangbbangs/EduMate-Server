@@ -12,12 +12,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,15 +44,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
-        String requestedToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token = jwtParser.resolveToken(requestedToken);
-        jwtValidator.validateToken(token, TokenType.ACCESS);
-        String memberUuid = jwtParser.parseClaims(token).getSubject();
-        UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
-        long memberId = Long.parseLong(userDetails.getUsername());
-        MemberAuthentication authentication = MemberAuthentication.create(memberId, userDetails.getAuthorities());
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        filterChain.doFilter(request, response);
+        try {
+            String requestedToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = jwtParser.resolveToken(requestedToken);
+            jwtValidator.validateToken(token, TokenType.ACCESS);
+            String memberUuid = jwtParser.parseClaims(token).getSubject();
+            UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
+            long memberId = Long.parseLong(userDetails.getUsername());
+            MemberAuthentication authentication = MemberAuthentication.create(memberId, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            MDC.put("userId", String.valueOf(memberId));
+
+            filterChain.doFilter(request, response);
+        } finally {
+            MDC.remove("userId");
+        }
     }
 }
