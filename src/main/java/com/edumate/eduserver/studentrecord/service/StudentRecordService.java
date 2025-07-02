@@ -6,7 +6,6 @@ import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordIn
 import com.edumate.eduserver.studentrecord.domain.RecordMetadata;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordDetail;
 import com.edumate.eduserver.studentrecord.domain.StudentRecordType;
-import com.edumate.eduserver.studentrecord.exception.AlreadyExistingRecordException;
 import com.edumate.eduserver.studentrecord.exception.InvalidSemesterFormatException;
 import com.edumate.eduserver.studentrecord.exception.MemberStudentRecordNotFoundException;
 import com.edumate.eduserver.studentrecord.exception.StudentRecordDetailNotFoundException;
@@ -15,6 +14,7 @@ import com.edumate.eduserver.studentrecord.exception.code.StudentRecordErrorCode
 import com.edumate.eduserver.studentrecord.repository.RecordMetadataRepository;
 import com.edumate.eduserver.studentrecord.repository.StudentRecordDetailRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -66,7 +66,8 @@ public class StudentRecordService {
     }
 
     @Transactional
-    public void createStudentRecords(final RecordMetadata recordMetadata, final List<StudentRecordInfo> studentRecordInfos) {
+    public void createStudentRecords(final RecordMetadata recordMetadata,
+                                     final List<StudentRecordInfo> studentRecordInfos) {
         List<StudentRecordDetail> details = studentRecordInfos.stream()
                 .map(studentRecord -> StudentRecordDetail.create(recordMetadata, studentRecord.studentNumber(),
                         studentRecord.studentName(),
@@ -76,12 +77,14 @@ public class StudentRecordService {
     }
 
     @Transactional
-    public RecordMetadata createSemesterRecord(final Member member, final StudentRecordType recordType, final String semester) {
+    public RecordMetadata createOrGetSemesterRecord(final Member member, final StudentRecordType recordType,
+                                                    final String semester) {
         validateSemesterPattern(semester);
-        validateExistingRecord(member.getId(), recordType, semester);
-        RecordMetadata studentRecord = RecordMetadata.create(member, recordType, semester);
-        recordMetadataRepository.save(studentRecord);
-        return studentRecord;
+        return findRecordMetaData(member.getId(), recordType, semester)
+                .orElseGet(() -> {
+                    RecordMetadata newRecord = RecordMetadata.create(member, recordType, semester);
+                    return recordMetadataRepository.save(newRecord);
+                });
     }
 
     @Transactional
@@ -111,11 +114,9 @@ public class StudentRecordService {
         studentRecordDetailRepository.deleteById(recordId);
     }
 
-    private void validateExistingRecord(final long memberId, final StudentRecordType recordType, final String semester) {
-        recordMetadataRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester)
-                .ifPresent(record -> {
-                    throw new AlreadyExistingRecordException(StudentRecordErrorCode.RECORD_ALREADY_EXISTS);
-                });
+    private Optional<RecordMetadata> findRecordMetaData(final long memberId, final StudentRecordType recordType,
+                                                        final String semester) {
+        return recordMetadataRepository.findByMemberIdAndStudentRecordTypeAndSemester(memberId, recordType, semester);
     }
 
     private void validatePermission(final RecordMetadata memberRecord, final long memberId) {

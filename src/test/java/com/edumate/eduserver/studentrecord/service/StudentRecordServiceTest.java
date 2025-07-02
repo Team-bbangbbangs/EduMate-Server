@@ -205,7 +205,7 @@ class StudentRecordServiceTest extends ServiceTest {
         StudentRecordType recordType = StudentRecordType.BEHAVIOR_OPINION;
         String semester = "2025-2";
 
-        RecordMetadata recordMetadata = studentRecordService.createSemesterRecord(
+        RecordMetadata recordMetadata = studentRecordService.createOrGetSemesterRecord(
                 defaultTeacher, recordType, semester);
 
         List<StudentRecordInfo> studentRecordInfos = List.of(

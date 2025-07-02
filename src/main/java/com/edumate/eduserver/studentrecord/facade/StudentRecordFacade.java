@@ -58,7 +58,7 @@ public class StudentRecordFacade {
     public void createStudentRecords(final long memberId, final StudentRecordType recordType, final String semester,
                                      final List<StudentRecordInfo> studentRecordInfos) {
         Member member = memberService.getMemberById(memberId);
-        RecordMetadata studentRecord = studentRecordService.createSemesterRecord(member, recordType, semester);
+        RecordMetadata studentRecord = studentRecordService.createOrGetSemesterRecord(member, recordType, semester);
         studentRecordService.createStudentRecords(studentRecord, studentRecordInfos);
     }
 
