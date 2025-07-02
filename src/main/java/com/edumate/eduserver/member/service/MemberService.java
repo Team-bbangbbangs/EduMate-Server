@@ -11,6 +11,7 @@ import com.edumate.eduserver.member.repository.MemberRepository;
 import com.edumate.eduserver.member.repository.NicknameBannedWordRepository;
 import com.edumate.eduserver.subject.domain.Subject;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class MemberService {
     private static final String DEFAULT_NICKNAME = "선생님";
     private static final boolean NOT_DELETED = false;
     private static final boolean DELETED = true;
+    private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[가-힣a-zA-Z0-9]{2,16}$");
 
     @Transactional
     public void updateEmailVerified(final Member member) {
@@ -111,7 +113,9 @@ public class MemberService {
     }
 
     public boolean isNicknameInvalid(final String nickname) {
-        return nickname.isBlank() || nicknameBannedWordRepository.existsBannedWordIn(nickname);
+        return nickname.isBlank()
+                || !NICKNAME_PATTERN.matcher(nickname).matches()
+                || nicknameBannedWordRepository.existsBannedWordIn(nickname);
     }
 
     public boolean isNicknameDuplicated(final long memberId, final String nickname) {
