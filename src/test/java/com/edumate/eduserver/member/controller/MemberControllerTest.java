@@ -242,7 +242,7 @@ class MemberControllerTest extends ControllerTest {
                         .content(toJson(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("EDMT-4000402"))
+                .andExpect(jsonPath("$.code").value("EDMT-4000404"))
                 .andExpect(jsonPath("$.message").value("입력하신 관리자은(는) 유효하지 않은 닉네임입니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-profile-fail/invalid-nickname",
                         requestHeaders(
@@ -280,7 +280,7 @@ class MemberControllerTest extends ControllerTest {
                         .content(toJson(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("EDMT-4000403"))
+                .andExpect(jsonPath("$.code").value("EDMT-4000405"))
                 .andExpect(jsonPath("$.message").value("입력하신 중복닉네임은(는) 중복된 닉네임입니다."))
                 .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-profile-fail/duplicated-nickname",
                         requestHeaders(
