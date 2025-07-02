@@ -5,8 +5,11 @@ import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.exception.InvalidPasswordException;
 import com.edumate.eduserver.member.exception.PasswordSameAsOldException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
+import com.edumate.eduserver.member.domain.School;
 import com.edumate.eduserver.member.facade.response.MemberProfileGetResponse;
 import com.edumate.eduserver.member.service.MemberService;
+import com.edumate.eduserver.subject.domain.Subject;
+import com.edumate.eduserver.subject.service.SubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ public class MemberFacade {
 
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
+    private final SubjectService subjectService;
 
     @Transactional(readOnly = true)
     public MemberProfileGetResponse getMemberProfile(final long memberId) {
@@ -48,5 +52,10 @@ public class MemberFacade {
 
     private boolean isPasswordMatched(final String inputPassword, final String savedPassword) {
         return passwordEncoder.matches(inputPassword, savedPassword);
+    }
+
+    public void updateMemberProfile(final long memberId, final String subjectName, final School school, final String nickname) {
+        Subject subject = subjectService.getSubjectByName(subjectName);
+        memberService.updateMemberProfile(memberId, subject, school, nickname);
     }
 }

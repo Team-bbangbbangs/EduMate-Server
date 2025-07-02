@@ -89,4 +89,10 @@ public class MemberService {
     public boolean isAdmin(final Member member) {
         return member.getRole() == Role.ADMIN;
     }
+
+    @Transactional
+    public void updateMemberProfile(final long memberId, final Subject subject, final School school, final String nickname) {
+        Member member = getMemberById(memberId);
+        member.updateProfile(subject, school, nickname);
+    }
 }
