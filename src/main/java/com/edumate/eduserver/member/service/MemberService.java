@@ -103,10 +103,10 @@ public class MemberService {
 
     private void validateNickname(final long memberId, final String nickname) {
         if (isNicknameInvalid(nickname)) {
-            throw new MemberNicknameDuplicateException(MemberErrorCode.INVALID_NICKNAME, nickname);
+            throw new MemberNicknameInvalidException(MemberErrorCode.INVALID_NICKNAME, nickname);
         }
         if (isNicknameDuplicated(memberId, nickname)) {
-            throw new MemberNicknameInvalidException(MemberErrorCode.DUPLICATED_NICKNAME, nickname);
+            throw new MemberNicknameDuplicateException(MemberErrorCode.DUPLICATED_NICKNAME, nickname);
         }
     }
 
