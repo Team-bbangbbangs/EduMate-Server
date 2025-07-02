@@ -111,7 +111,7 @@ class StudentRecordFacadeTest {
         RecordMetadata mockRecord = mock(RecordMetadata.class);
 
         given(memberService.getMemberById(memberId)).willReturn(mockMember);
-        given(studentRecordService.createSemesterRecord(mockMember, type, semester)).willReturn(mockRecord);
+        given(studentRecordService.createOrGetSemesterRecord(mockMember, type, semester)).willReturn(mockRecord);
         willDoNothing().given(studentRecordService).createStudentRecords(mockRecord, studentRecordInfos);
 
         // when
@@ -119,7 +119,7 @@ class StudentRecordFacadeTest {
 
         // then
         verify(memberService).getMemberById(memberId);
-        verify(studentRecordService).createSemesterRecord(mockMember, type, semester);
+        verify(studentRecordService).createOrGetSemesterRecord(mockMember, type, semester);
         verify(studentRecordService).createStudentRecords(mockRecord, studentRecordInfos);
     }
 
