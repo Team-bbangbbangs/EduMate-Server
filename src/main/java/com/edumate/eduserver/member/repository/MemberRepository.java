@@ -14,5 +14,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByMemberUuidAndIsDeleted(String memberUuid, boolean isDeleted);
 
-    boolean existsByIdNotAndNicknameAndIsDeleted(long id, String nickname , boolean isDeleted);
+    boolean existsByIdNotAndNicknameIgnoreCaseAndIsDeleted(long id, String nickname, boolean isDeleted);
 }

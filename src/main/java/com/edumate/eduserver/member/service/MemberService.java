@@ -119,6 +119,6 @@ public class MemberService {
     }
 
     public boolean isNicknameDuplicated(final long memberId, final String nickname) {
-        return memberRepository.existsByIdNotAndNicknameAndIsDeleted(memberId, nickname, NOT_DELETED);
+        return memberRepository.existsByIdNotAndNicknameIgnoreCaseAndIsDeleted(memberId, nickname, NOT_DELETED);
     }
 }
