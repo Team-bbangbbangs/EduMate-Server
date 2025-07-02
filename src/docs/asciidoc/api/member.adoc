@@ -5,3 +5,17 @@
 ==== 성공
 
 operation::member/get-profile-success[snippets="http-request,http-response,response-fields"]
+
+=== 비밀번호 변경
+
+==== 성공
+
+operation::member/update-password-success[snippets="http-request,request-fields,http-response"]
+
+==== 실패: 현재 비밀번호가 일치하지 않음
+
+operation::member/update-password-fail/unmatched-current-password[snippets="http-request,http-response"]
+
+==== 실패: 새 비밀번호가 기존 비밀번호와 일치함
+
+operation::member/update-password-fail/same-password[snippets="http-request,http-response"]
