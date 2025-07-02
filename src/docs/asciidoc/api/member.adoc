@@ -19,3 +19,23 @@ operation::member/update-password-fail/unmatched-current-password[snippets="http
 ==== 실패: 새 비밀번호가 기존 비밀번호와 일치함
 
 operation::member/update-password-fail/same-password[snippets="http-request,http-response"]
+
+=== 프로필 수정
+
+==== 성공
+
+operation::member/update-profile-success[snippets="request-headers,request-fields,http-response"]
+
+==== 실패: 유효하지 않은 닉네임
+
+operation::member/update-profile-fail/invalid-nickname[snippets="http-response"]
+
+==== 실패: 중복된 닉네임
+
+operation::member/update-profile-fail/duplicated-nickname[snippets="http-response"]
+
+=== 닉네임 유효성 검사
+
+==== 성공
+
+operation::member/validate-nickname[snippets="request-headers,query-parameters,http-response,response-fields"]

@@ -132,4 +132,10 @@ public class Member extends BaseEntity {
         this.school = school;
         this.role = Role.PENDING_TEACHER;
     }
+
+    public void updateProfile(final Subject subject, final School school, final String nickname) {
+        this.subject = subject;
+        this.school = school;
+        this.nickname = nickname;
+    }
 }
