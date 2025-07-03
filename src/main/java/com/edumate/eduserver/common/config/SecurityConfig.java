@@ -50,7 +50,8 @@ public class SecurityConfig {
             "/api/v1/auth/verify-email",
             "/api/v1/auth/find-password",
             "/actuator/health",
-            "/actuator/prometheus"
+            "/actuator/prometheus",
+            "/actuator/info"
     };
     private static final String[] BUSINESS_WHITE_LIST = {
             "/api/v1/notices",
