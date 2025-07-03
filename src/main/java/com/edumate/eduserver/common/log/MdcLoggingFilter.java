@@ -29,19 +29,21 @@ public class MdcLoggingFilter implements Filter {
         String requestId = UUID.randomUUID().toString();
         MDC.put("requestId", requestId);
         try {
+            MDC.put("logType", "REQUEST");
             chain.doFilter(request, response);
-        } finally {
             long duration = System.currentTimeMillis() - startTime;
             MDC.put("responseTimeMs", String.valueOf(duration));
-            if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
-                HttpServletRequest req = (HttpServletRequest) request;
-                HttpServletResponse res = (HttpServletResponse) response;
+            MDC.put("logType", "RESPONSE");
+            if (request instanceof HttpServletRequest req && response instanceof HttpServletResponse res) {
                 log.info("[API] {} {} | status={} | responseTimeMs={}", req.getMethod(), req.getRequestURI(), res.getStatus(), duration);
             } else {
                 log.info("[API] Non-HTTP request | responseTimeMs={}", duration);
             }
+        } finally {
             MDC.remove("requestId");
             MDC.remove("responseTimeMs");
+            MDC.remove("logType");
+            MDC.remove("userId");
         }
     }
 } 

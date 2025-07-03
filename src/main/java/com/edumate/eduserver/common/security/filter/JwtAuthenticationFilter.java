@@ -13,13 +13,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtParser jwtParser;
     private final String[] WHITELIST;
     private final AntPathMatcher pathMatcher;
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected boolean shouldNotFilter(final HttpServletRequest request) throws ServletException {
@@ -44,22 +46,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     final FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String requestedToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-            String token = jwtParser.resolveToken(requestedToken);
-            jwtValidator.validateToken(token, TokenType.ACCESS);
-            String memberUuid = jwtParser.parseClaims(token).getSubject();
-            UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
-            long memberId = Long.parseLong(userDetails.getUsername());
-            MemberAuthentication authentication = MemberAuthentication.create(memberId, userDetails.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        String requestedToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = jwtParser.resolveToken(requestedToken);
+        jwtValidator.validateToken(token, TokenType.ACCESS);
+        String memberUuid = jwtParser.parseClaims(token).getSubject();
+        UserDetails userDetails = memberAuthService.loadUserByUsername(memberUuid);
+        long memberId = Long.parseLong(userDetails.getUsername());
+        MemberAuthentication authentication = MemberAuthentication.create(memberId, userDetails.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            MDC.put("userId", String.valueOf(memberId));
-
-            filterChain.doFilter(request, response);
-        } finally {
-            MDC.remove("userId");
-        }
+        MDC.put("userId", String.valueOf(memberId));
+        log.info("[API] {} {} 요청 시작", request.getMethod(), request.getRequestURI());
+        filterChain.doFilter(request, response);
     }
 }
