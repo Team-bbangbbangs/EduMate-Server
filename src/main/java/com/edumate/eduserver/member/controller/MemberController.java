@@ -59,7 +59,7 @@ public class MemberController {
     @PatchMapping("/email")
     public ApiResponse<Void> updateEmail(
             @MemberId final long memberId,
-            @RequestBody final MemberEmailUpdateRequest request
+            @RequestBody @Valid final MemberEmailUpdateRequest request
     ) {
         memberFacade.updateEmail(memberId, request.email());
         return ApiResponse.success(CommonSuccessCode.OK);
