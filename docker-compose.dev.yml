@@ -12,19 +12,14 @@ services:
     restart: always
 
   promtail:
-    environment:
-      TZ: Asia/Seoul
-      MONITORING_INSTANCE_ADDR_LOKI_PORT: ${MONITORING_INSTANCE_ADDR_LOKI_PORT}
-      ENVIRONMENT: dev
     container_name: promtail
     image: grafana/promtail:latest
+    environment:
+      TZ: Asia/Seoul
+      MONITORING_INSTANCE_ADDR_LOKI_PORT: ${MONITORING_INSTANCE_LOKI}
+      ENVIRONMENT: dev
     volumes:
       - ./promtail-config.yml:/etc/promtail/config.yml
       - ./log:/log
     command: -config.expand-env=true -config.file=/etc/promtail/config.yml
-    networks:
-      - edukit_network
-
-networks:
-  edukit_network:
-    driver: bridge
+    restart: always
