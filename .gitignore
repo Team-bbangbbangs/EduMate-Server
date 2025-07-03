@@ -159,3 +159,6 @@ application-*.yml
 
 ### index.html ###
 /src/main/resources/static/
+
+### log file ###
+*.log

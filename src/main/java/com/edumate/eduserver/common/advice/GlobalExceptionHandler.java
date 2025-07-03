@@ -18,6 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EduMateCustomException.class)
     public ApiResponse<Void> handleCustomException(final EduMateCustomException e) {
+        log.info("EduMateCustomException: {}", e.getMessage());
         String message = e.getCustomMessage() != null ? e.getCustomMessage() : e.getErrorCode().getMessage();
         return ApiResponse.fail(e, e.getErrorCode().getCode(), message);
     }
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler {
         if (cause instanceof EduMateCustomException) {
             return handleCustomException((EduMateCustomException) cause);
         }
-        log.warn("MethodArgumentTypeMismatchException: {}", e.getMessage());
+        log.info("MethodArgumentTypeMismatchException: {}", e.getMessage());
         return ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), "EDMT-4001", e.getMessage());
     }
 
@@ -36,6 +37,7 @@ public class GlobalExceptionHandler {
     public ApiResponse<Void> handleValidationException(final MethodArgumentNotValidException e) {
         FieldError fieldError = e.getFieldError();
         String message = (fieldError != null) ? fieldError.getDefaultMessage() : e.getMessage();
+        log.info("Validation Error: {}", message);
         return ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), "EDMT-4002", message);
     }
 

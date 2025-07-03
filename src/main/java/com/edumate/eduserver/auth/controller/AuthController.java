@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -31,8 +33,8 @@ public class AuthController {
 
     private final AuthFacade authFacade;
     private final CookieHandler cookieHandler;
-
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/email/send-verification")
     public ApiResponse<Void> sendVerificationEmail(@MemberId final long memberId) {
@@ -53,6 +55,7 @@ public class AuthController {
         MemberSignUpResponse signUpResponse = authFacade.signUp(request.email().strip(), request.password().strip(),
                 request.subject().strip(), request.school().strip());
         cookieHandler.setRefreshTokenCookie(response, signUpResponse.refreshToken());
+        log.info("회원가입 성공: email={}", request.email().strip());
         return ApiResponse.success(CommonSuccessCode.OK, signUpResponse);
     }
 
@@ -61,6 +64,7 @@ public class AuthController {
                                                   final HttpServletResponse response) {
         MemberLoginResponse loginResponse = authFacade.login(request.email().strip(), request.password().strip());
         cookieHandler.setRefreshTokenCookie(response, loginResponse.refreshToken());
+        log.info("로그인 성공: email={}", request.email().strip());
         return ApiResponse.success(CommonSuccessCode.OK, loginResponse);
     }
 
@@ -77,6 +81,7 @@ public class AuthController {
             final HttpServletResponse response) {
         MemberReissueResponse reissueResponse = authFacade.reissue(refreshToken.strip());
         cookieHandler.setRefreshTokenCookie(response, reissueResponse.refreshToken());
+        log.info("토큰 재발급 성공: refreshToken(앞 8자리)={}", refreshToken != null && refreshToken.length() > 8 ? refreshToken.substring(0, 8) : refreshToken);
         return ApiResponse.success(CommonSuccessCode.OK, reissueResponse);
     }
 

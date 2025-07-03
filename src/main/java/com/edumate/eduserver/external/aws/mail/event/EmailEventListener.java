@@ -22,7 +22,7 @@ public class EmailEventListener {
         try {
             emailService.sendEmail(event.email(), event.memberUuid(), event.verificationCode());
         } catch (Exception e) {
-            log.error("비동기 이메일 발송 실패. event={}", event, e);
+            log.error("이메일 발송 실패. event={} message={}", event, e.getMessage());
         }
     }
 }
