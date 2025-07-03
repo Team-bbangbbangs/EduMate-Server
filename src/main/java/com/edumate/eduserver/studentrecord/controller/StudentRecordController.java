@@ -18,6 +18,7 @@ import com.edumate.eduserver.studentrecord.facade.response.StudentRecordOverview
 import com.edumate.eduserver.studentrecord.facade.response.StudentRecordPromptResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/student-records")
 @RequiredArgsConstructor
@@ -109,6 +111,7 @@ public class StudentRecordController {
                                                                               @RequestBody @Valid final StudentRecordPromptRequest request) {
         String prompt = request.prompt().strip();
         StudentRecordPromptResponse promptResponse = studentRecordFacade.getUserPrompt(memberId, recordId, prompt);
+        log.info("[OpenAI] 프롬프트 요청: Member ID: {}, Record ID: {}, Prompt: {}", memberId, recordId, prompt);
         StudentRecordAICreateResponse response = chatFacade.generateAIStudentRecord(promptResponse.recordType(), prompt);
         return ApiResponse.success(CommonSuccessCode.OK, response);
     }
