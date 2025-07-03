@@ -37,9 +37,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    // AOP
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
-
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -59,7 +56,6 @@ dependencies {
 
     // Database
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'p6spy:p6spy:3.9.1'
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'
 
