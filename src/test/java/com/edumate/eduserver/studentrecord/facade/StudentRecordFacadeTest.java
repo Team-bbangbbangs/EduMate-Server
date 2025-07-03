@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
@@ -130,10 +131,13 @@ class StudentRecordFacadeTest {
         StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
         String semester = "2024-2";
         StudentRecordCreateInfo info = mock(StudentRecordCreateInfo.class);
+        Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
+        given(memberService.getMemberById(memberId)).willReturn(member);
 
         studentRecordFacade.createStudentRecord(memberId, type, semester, info);
 
-        verify(studentRecordService).createStudentRecord(memberId, type, semester, info);
+        verify(studentRecordService).createStudentRecord(member, type, semester, info);
     }
 
     @Test

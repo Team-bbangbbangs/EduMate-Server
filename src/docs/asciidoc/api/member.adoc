@@ -39,3 +39,13 @@ operation::member/update-profile-fail/duplicated-nickname[snippets="http-respons
 ==== 성공
 
 operation::member/validate-nickname[snippets="request-headers,query-parameters,http-response,response-fields"]
+
+=== 이메일 수정
+
+==== 성공
+
+operation::member/update-email-success[snippets="request-headers,request-fields,http-response"]
+
+==== 실패: 유효하지 않은 이메일 형식
+
+operation::auth/find-password-fail/invalid-email-format[snippets="http-response"]

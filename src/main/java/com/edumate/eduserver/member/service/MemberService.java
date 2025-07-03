@@ -97,17 +97,16 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMemberProfile(final long memberId, final Subject subject, final School school, final String nickname) {
-        Member member = getMemberById(memberId);
-        validateNickname(memberId, nickname);
+    public void updateMemberProfile(final Member member, final Subject subject, final School school, final String nickname) {
+        validateNickname(member, nickname);
         member.updateProfile(subject, school, nickname);
     }
 
-    private void validateNickname(final long memberId, final String nickname) {
+    private void validateNickname(final Member member, final String nickname) {
         if (isNicknameInvalid(nickname)) {
             throw new MemberNicknameInvalidException(MemberErrorCode.INVALID_NICKNAME, nickname);
         }
-        if (isNicknameDuplicated(memberId, nickname)) {
+        if (isNicknameDuplicated(member, nickname)) {
             throw new MemberNicknameDuplicateException(MemberErrorCode.DUPLICATED_NICKNAME, nickname);
         }
     }
@@ -118,7 +117,17 @@ public class MemberService {
                 || nicknameBannedWordRepository.existsBannedWordIn(nickname);
     }
 
-    public boolean isNicknameDuplicated(final long memberId, final String nickname) {
-        return memberRepository.existsByIdNotAndNicknameIgnoreCaseAndIsDeleted(memberId, nickname, NOT_DELETED);
+    public boolean isNicknameDuplicated(final Member member, final String nickname) {
+        return memberRepository.existsByIdNotAndNicknameIgnoreCaseAndIsDeleted(member.getId(), nickname, NOT_DELETED);
+    }
+
+    @Transactional
+    public void updateEmail(final Member member, String email) {
+        member.updateEmail(email);
+    }
+
+    @Transactional
+    public void setRolePendingTeacher(final Member member) {
+        member.updateRole(Role.PENDING_TEACHER);
     }
 }

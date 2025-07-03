@@ -25,14 +25,27 @@ public class AwsSesEmailMapper {
 
     private static final String DEFAULT_CHARSET = StandardCharsets.UTF_8.name();
     private static final String EMAIL_SUBJECT = "EduMate 회원가입을 환영합니다.";
+    private static final String EMAIL_SUBJECT_EMAIL_UPDATE_VERIFICATION = "EduMate 새로운 이메일을 인증해 주세요.";
 
-    public String buildEmailBody(final String memberUuid, final String verificationCode) {
-        return buildVerificationEmail(memberUuid, verificationCode);
+    public SendEmailRequest buildEmailRequest(final String emailReceiver, final String memberUuid, final String verificationCode) {
+        String htmlBody = buildVerificationEmail(memberUuid, verificationCode, "email-verification");
+        return buildSendEmailRequest(emailReceiver, EMAIL_SUBJECT, htmlBody);
     }
 
-    public SendEmailRequest buildSendEmailRequest(final String emailReceiver, final String htmlBody) {
+    public SendEmailRequest buildEmailRequestForEmailUpdate(final String emailReceiver, final String memberUuid, final String verificationCode) {
+        String htmlBody = buildVerificationEmail(memberUuid, verificationCode, "update-email-verification");
+        return buildSendEmailRequest(emailReceiver, EMAIL_SUBJECT_EMAIL_UPDATE_VERIFICATION, htmlBody);
+    }
+
+    private String buildVerificationEmail(final String memberUuid, final String verificationCode, String templateName) {
+        Context context = new Context();
+        context.setVariable("verificationLink", buildVerificationUrl(memberUuid, verificationCode));
+        return templateEngine.process(templateName, context);
+    }
+
+    public SendEmailRequest buildSendEmailRequest(final String emailReceiver, final String subject, final String htmlBody) {
         Destination destination = createDestination(emailReceiver);
-        Content subjectContent = createSubjectContent();
+        Content subjectContent = createSubjectContent(subject);
         Content htmlBodyContent = createHtmlBodyContent(htmlBody);
         Body body = createBody(htmlBodyContent);
         Message message = createMessage(subjectContent, body);
@@ -42,12 +55,6 @@ public class AwsSesEmailMapper {
                 .destination(destination)
                 .message(message)
                 .build();
-    }
-
-    private String buildVerificationEmail(final String memberUuid, final String verificationCode) {
-        Context context = new Context();
-        context.setVariable("verificationLink", buildVerificationUrl(memberUuid, verificationCode));
-        return templateEngine.process("email-verification", context);
     }
 
     private String buildVerificationUrl(final String memberUuid, final String verificationCode) {
@@ -65,9 +72,9 @@ public class AwsSesEmailMapper {
                 .build();
     }
 
-    private Content createSubjectContent() {
+    private Content createSubjectContent(final String subject) {
         return Content.builder()
-                .data(EMAIL_SUBJECT)
+                .data(subject)
                 .charset(DEFAULT_CHARSET)
                 .build();
     }

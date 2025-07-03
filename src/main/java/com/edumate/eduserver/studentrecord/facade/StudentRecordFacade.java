@@ -65,7 +65,8 @@ public class StudentRecordFacade {
     @Transactional
     public void createStudentRecord(final long memberId, final StudentRecordType recordType, final String semester,
                                     final StudentRecordCreateInfo studentRecordCreateInfo) {
-        studentRecordService.createStudentRecord(memberId, recordType, semester, studentRecordCreateInfo);
+        Member member = memberService.getMemberById(memberId);
+        studentRecordService.createStudentRecord(member, recordType, semester, studentRecordCreateInfo);
     }
 
     @Transactional

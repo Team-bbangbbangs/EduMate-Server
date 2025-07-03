@@ -88,11 +88,15 @@ public class StudentRecordService {
     }
 
     @Transactional
-    public StudentRecordDetail createStudentRecord(final long memberId, final StudentRecordType recordType,
+    public StudentRecordDetail createStudentRecord(final Member member, final StudentRecordType recordType,
                                                    final String semester,
                                                    final StudentRecordCreateInfo studentRecordCreateInfo) {
         validateSemesterPattern(semester);
-        RecordMetadata recordMetadata = getMemberStudentRecord(memberId, recordType, semester);
+        RecordMetadata recordMetadata = findRecordMetaData(member.getId(), recordType, semester)
+                .orElseGet(() -> {
+                    RecordMetadata newRecord = RecordMetadata.create(member, recordType, semester);
+                    return recordMetadataRepository.save(newRecord);
+                });
         StudentRecordDetail studentRecordDetail = StudentRecordDetail.create(recordMetadata,
                 studentRecordCreateInfo.studentNumber(), studentRecordCreateInfo.studentName(),
                 studentRecordCreateInfo.description(), studentRecordCreateInfo.byteCount());

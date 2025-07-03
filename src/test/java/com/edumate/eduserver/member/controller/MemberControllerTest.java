@@ -22,13 +22,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.edumate.eduserver.auth.exception.InvalidPasswordLengthException;
 import com.edumate.eduserver.auth.exception.code.AuthErrorCode;
 import com.edumate.eduserver.docs.CustomRestDocsUtils;
+import com.edumate.eduserver.member.controller.request.MemberEmailUpdateRequest;
+import com.edumate.eduserver.member.controller.request.MemberProfileUpdateRequest;
 import com.edumate.eduserver.member.controller.request.PasswordChangeRequest;
 import com.edumate.eduserver.member.domain.School;
 import com.edumate.eduserver.member.exception.InvalidPasswordException;
-import com.edumate.eduserver.member.exception.PasswordSameAsOldException;
-import com.edumate.eduserver.member.controller.request.MemberProfileUpdateRequest;
 import com.edumate.eduserver.member.exception.MemberNicknameDuplicateException;
 import com.edumate.eduserver.member.exception.MemberNicknameInvalidException;
+import com.edumate.eduserver.member.exception.PasswordSameAsOldException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.facade.MemberFacade;
 import com.edumate.eduserver.member.facade.response.MemberNicknameValidationResponse;
@@ -330,6 +331,37 @@ class MemberControllerTest extends ControllerTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("data.isInvalid").description("유효하지 않은 닉네임 여부"),
                                 fieldWithPath("data.isDuplicated").description("중복된 닉네임 여부")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("이메일을 성공적으로 수정한다.")
+    void updateEmailSuccess() throws Exception {
+        // given
+        MemberEmailUpdateRequest request = new MemberEmailUpdateRequest("newemail@test.com");
+        doNothing().when(memberFacade).updateEmail(anyLong(), anyString());
+
+        // when & then
+        mockMvc.perform(patch(BASE_URL + "/email")
+                        .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(200))
+                .andExpect(jsonPath("$.code").value("EDMT-200"))
+                .andExpect(jsonPath("$.message").value("요청이 성공했습니다."))
+                .andDo(CustomRestDocsUtils.documents(BASE_DOMAIN_PACKAGE + "update-email-success",
+                        requestHeaders(
+                                headerWithName("Authorization").description("액세스 토큰")
+                        ),
+                        requestFields(
+                                fieldWithPath("email").description("새 이메일 주소")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("HTTP 상태 코드"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지")
                         )
                 ));
     }

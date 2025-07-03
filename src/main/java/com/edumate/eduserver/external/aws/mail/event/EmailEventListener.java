@@ -2,6 +2,7 @@ package com.edumate.eduserver.external.aws.mail.event;
 
 import com.edumate.eduserver.auth.facade.dto.MemberSignedUpEvent;
 import com.edumate.eduserver.external.aws.mail.EmailService;
+import com.edumate.eduserver.member.facade.dto.MemberEmailUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -23,6 +24,16 @@ public class EmailEventListener {
             emailService.sendEmail(event.email(), event.memberUuid(), event.verificationCode());
         } catch (Exception e) {
             log.error("이메일 발송 실패. event={} message={}", event, e.getMessage());
+        }
+    }
+
+    @Async("emailTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleEmailUpdatedEvent(final MemberEmailUpdatedEvent event) {
+        try {
+            emailService.sendEmailForEmailUpdate(event.email(), event.memberUuid(), event.verificationCode());
+        } catch (Exception e) {
+            log.error("이메일 변경 후 메일 발송 실패. event={} message={}", event, e.getMessage());
         }
     }
 }
