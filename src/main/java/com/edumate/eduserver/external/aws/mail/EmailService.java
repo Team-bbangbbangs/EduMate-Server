@@ -20,8 +20,16 @@ public class EmailService {
     private final AwsSesEmailMapper awsSesEmailMapper;
 
     public void sendEmail(final String emailReceiver, final String memberUuid, final String verificationCode) {
-        String htmlBody = awsSesEmailMapper.buildEmailBody(memberUuid, verificationCode);
-        SendEmailRequest request = awsSesEmailMapper.buildSendEmailRequest(emailReceiver, htmlBody);
+        SendEmailRequest request = awsSesEmailMapper.buildEmailRequest(emailReceiver, memberUuid, verificationCode);
+        send(request, emailReceiver, memberUuid);
+    }
+
+    public void sendEmailForEmailUpdate(final String emailReceiver, final String memberUuid, final String verificationCode) {
+        SendEmailRequest request = awsSesEmailMapper.buildEmailRequestForEmailUpdate(emailReceiver, memberUuid, verificationCode);
+        send(request, emailReceiver, memberUuid);
+    }
+
+    private void send(final SendEmailRequest request, final String emailReceiver, final String memberUuid) {
         log.info("[SES] 이메일 발송 요청: to={}, memberUuid={}", emailReceiver, memberUuid);
         SendEmailResponse result = sesClient.sendEmail(request);
         log.info("[SES] 이메일 발송 응답: to={}, messageId={}, status={} ", emailReceiver, result.messageId(), result.sdkHttpResponse().statusCode());

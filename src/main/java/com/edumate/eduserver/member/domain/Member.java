@@ -138,4 +138,12 @@ public class Member extends BaseEntity {
         this.school = school;
         this.nickname = nickname;
     }
+
+    public void updateEmail(final String email) {
+        this.email = email;
+    }
+
+    public void updateRole(final Role role) {
+        this.role = role;
+    }
 }

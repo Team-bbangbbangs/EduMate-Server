@@ -3,8 +3,9 @@ package com.edumate.eduserver.member.controller;
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.annotation.MemberId;
 import com.edumate.eduserver.common.code.CommonSuccessCode;
-import com.edumate.eduserver.member.controller.request.PasswordChangeRequest;
+import com.edumate.eduserver.member.controller.request.MemberEmailUpdateRequest;
 import com.edumate.eduserver.member.controller.request.MemberProfileUpdateRequest;
+import com.edumate.eduserver.member.controller.request.PasswordChangeRequest;
 import com.edumate.eduserver.member.domain.School;
 import com.edumate.eduserver.member.facade.MemberFacade;
 import com.edumate.eduserver.member.facade.response.MemberNicknameValidationResponse;
@@ -44,7 +45,6 @@ public class MemberController {
     ) {
         School school = School.fromName(request.school());
         memberFacade.updateMemberProfile(memberId, request.subject(), school, request.nickname());
-
         return ApiResponse.success(CommonSuccessCode.OK);
     }
 
@@ -54,5 +54,14 @@ public class MemberController {
             @RequestParam final String nickname
     ) {
         return ApiResponse.success(CommonSuccessCode.OK, memberFacade.validateNickname(memberId, nickname));
+    }
+
+    @PatchMapping("/email")
+    public ApiResponse<Void> updateEmail(
+            @MemberId final long memberId,
+            @RequestBody final MemberEmailUpdateRequest request
+    ) {
+        memberFacade.updateEmail(memberId, request.email());
+        return ApiResponse.success(CommonSuccessCode.OK);
     }
 }

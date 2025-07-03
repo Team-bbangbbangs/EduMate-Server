@@ -26,6 +26,7 @@ public class AuthService {
     private final AuthorizationCodeRepository authorizationCodeRepository;
     private final MemberRepository memberRepository;
     private final ValidEmailRepository validEmailRepository;
+    private final RandomCodeGenerator randomCodeGenerator;
 
     private static final String EMPTY_REFRESH_TOKEN = null;
     private static final boolean NOT_DELETED = false;
@@ -54,6 +55,13 @@ public class AuthService {
         if (!validEmails.contains(domain)) {
             throw new InvalidEmailDomainException(AuthErrorCode.INVALID_EMAIL);
         }
+    }
+
+    @Transactional
+    public String issueVerificationCode(final Member member) {
+        String code = randomCodeGenerator.generate();
+        saveCode(member, code);
+        return code;
     }
 
     private String extractEmailDomain(final String email) {
