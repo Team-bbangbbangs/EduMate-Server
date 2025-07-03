@@ -27,7 +27,7 @@ public class AwsSesEmailMapper {
     private static final String EMAIL_SUBJECT = "EduMate 회원가입을 환영합니다.";
     private static final String EMAIL_SUBJECT_EMAIL_UPDATE_VERIFICATION = "EduMate 새로운 이메일을 인증해 주세요.";
 
-    public SendEmailRequest buildEmailRequest(final String emailReceiver, final String memberUuid, final String verificationCode) {
+    public SendEmailRequest buildEmailRequestForSignUp(final String emailReceiver, final String memberUuid, final String verificationCode) {
         String htmlBody = buildVerificationEmail(memberUuid, verificationCode, "email-verification");
         return buildSendEmailRequest(emailReceiver, EMAIL_SUBJECT, htmlBody);
     }
@@ -37,7 +37,7 @@ public class AwsSesEmailMapper {
         return buildSendEmailRequest(emailReceiver, EMAIL_SUBJECT_EMAIL_UPDATE_VERIFICATION, htmlBody);
     }
 
-    private String buildVerificationEmail(final String memberUuid, final String verificationCode, String templateName) {
+    private String buildVerificationEmail(final String memberUuid, final String verificationCode, final String templateName) {
         Context context = new Context();
         context.setVariable("verificationLink", buildVerificationUrl(memberUuid, verificationCode));
         return templateEngine.process(templateName, context);
