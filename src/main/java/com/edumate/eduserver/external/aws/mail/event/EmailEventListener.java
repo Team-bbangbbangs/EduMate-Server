@@ -33,7 +33,7 @@ public class EmailEventListener {
         try {
             emailService.sendEmailForEmailUpdate(event.email(), event.memberUuid(), event.verificationCode());
         } catch (Exception e) {
-            log.error("이메일 변경 후 메일 발송 실패. event={} message={}", event, e.getMessage());
+            log.error("메일 발송 실패. event={} message={}", event, e.getMessage());
         }
     }
 }

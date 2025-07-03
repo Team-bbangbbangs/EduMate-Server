@@ -20,7 +20,7 @@ public class EmailService {
     private final AwsSesEmailMapper awsSesEmailMapper;
 
     public void sendEmail(final String emailReceiver, final String memberUuid, final String verificationCode) {
-        SendEmailRequest request = awsSesEmailMapper.buildEmailRequest(emailReceiver, memberUuid, verificationCode);
+        SendEmailRequest request = awsSesEmailMapper.buildEmailRequestForSignUp(emailReceiver, memberUuid, verificationCode);
         send(request, emailReceiver, memberUuid);
     }
 

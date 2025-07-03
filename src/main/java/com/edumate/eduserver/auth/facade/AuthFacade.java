@@ -95,6 +95,7 @@ public class AuthFacade {
         String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
         memberService.updateRefreshToken(member, refreshToken);
         String authCode = authService.issueVerificationCode(member);
+
         eventPublisher.publishEvent(MemberSignedUpEvent.of(member.getEmail(), member.getMemberUuid(), authCode));
         return MemberSignUpResponse.of(accessToken, refreshToken);
     }

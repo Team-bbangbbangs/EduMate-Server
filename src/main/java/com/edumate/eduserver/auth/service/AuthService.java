@@ -39,12 +39,6 @@ public class AuthService {
     }
 
     @Transactional
-    public void saveCode(final Member member, final String code) {
-        AuthorizationCode authorizationCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
-        authorizationCodeRepository.save(authorizationCode);
-    }
-
-    @Transactional
     public void logout(final Member member) {
         member.updateRefreshToken(EMPTY_REFRESH_TOKEN);
     }
@@ -60,7 +54,8 @@ public class AuthService {
     @Transactional
     public String issueVerificationCode(final Member member) {
         String code = randomCodeGenerator.generate();
-        saveCode(member, code);
+        AuthorizationCode authorizationCode = AuthorizationCode.create(member, code, AuthorizeStatus.PENDING);
+        authorizationCodeRepository.save(authorizationCode);
         return code;
     }
 
