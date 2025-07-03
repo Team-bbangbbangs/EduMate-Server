@@ -69,7 +69,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-compose
-          path: ${{ github.workspace }}/docker-compose.prod.yml
+          path: |
+            ${{ github.workspace }}/docker-compose.dev.yml
+            ${{ github.workspace }}/promtail-config.yml
 
     outputs:
       BUILD_VERSION: ${{ steps.datetime.outputs.datetime }}
@@ -91,6 +93,7 @@ jobs:
           cat <<EOF > .env
           DOCKER_REPO_NAME=${{ secrets.DOCKER_REPO_NAME }}
           DOCKER_IMAGE_VERSION_TAG=prod-${{ needs.build.outputs.BUILD_VERSION }}
+          MONITORING_INSTANCE_LOKI=${{ secrets.MONITORING_INSTANCE_LOKI }}
           EOF
 
       - name: Stop and remove existing application container
