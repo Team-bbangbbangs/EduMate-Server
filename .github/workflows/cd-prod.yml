@@ -70,7 +70,7 @@ jobs:
         with:
           name: docker-compose
           path: |
-            ${{ github.workspace }}/docker-compose.dev.yml
+            ${{ github.workspace }}/docker-compose.prod.yml
             ${{ github.workspace }}/promtail-config.yml
 
     outputs:
