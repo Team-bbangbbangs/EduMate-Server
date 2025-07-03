@@ -16,7 +16,7 @@ services:
     image: grafana/promtail:latest
     environment:
       TZ: Asia/Seoul
-      MONITORING_INSTANCE_ADDR_LOKI_PORT: ${MONITORING_INSTANCE_LOKI}
+      MONITORING_INSTANCE_LOKI: ${MONITORING_INSTANCE_LOKI}
       ENVIRONMENT: dev
     volumes:
       - ./promtail-config.yml:/etc/promtail/config.yml
