@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordCreateInfo;
 import com.edumate.eduserver.studentrecord.controller.request.vo.StudentRecordInfo;
 import com.edumate.eduserver.studentrecord.domain.RecordMetadata;
@@ -140,9 +143,11 @@ class StudentRecordServiceTest extends ServiceTest {
         StudentRecordCreateInfo studentRecordCreateInfo = StudentRecordCreateInfo.of(
                 studentNumber, studentName, description, byteCount
         );
+        Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
 
         // when
-        StudentRecordDetail studentRecord = studentRecordService.createStudentRecord(memberId, recordType, semester,
+        StudentRecordDetail studentRecord = studentRecordService.createStudentRecord(member, recordType, semester,
                 studentRecordCreateInfo);
 
         // then
@@ -170,11 +175,13 @@ class StudentRecordServiceTest extends ServiceTest {
         String originalStudentName = "유태근";
         String originalDescription = "기존 내용";
         int originalByteCount = 22;
+        Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
 
         StudentRecordCreateInfo createInfo = StudentRecordCreateInfo.of(
                 originalStudentNumber, originalStudentName, originalDescription, originalByteCount
         );
-        StudentRecordDetail savedRecord = studentRecordService.createStudentRecord(memberId, recordType, semester, createInfo);
+        StudentRecordDetail savedRecord = studentRecordService.createStudentRecord(member, recordType, semester, createInfo);
         long recordId = savedRecord.getId();
 
         String updatedStudentNumber = "2023111";
@@ -205,7 +212,7 @@ class StudentRecordServiceTest extends ServiceTest {
         StudentRecordType recordType = StudentRecordType.BEHAVIOR_OPINION;
         String semester = "2025-2";
 
-        RecordMetadata recordMetadata = studentRecordService.createSemesterRecord(
+        RecordMetadata recordMetadata = studentRecordService.createOrGetSemesterRecord(
                 defaultTeacher, recordType, semester);
 
         List<StudentRecordInfo> studentRecordInfos = List.of(
@@ -242,8 +249,10 @@ class StudentRecordServiceTest extends ServiceTest {
         StudentRecordType recordType = StudentRecordType.ABILITY_DETAIL;
         String semester = "2025-1";
         StudentRecordCreateInfo info = StudentRecordCreateInfo.of("2023002", "유태근", "삭제될 생기부", 22);
+        Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
 
-        StudentRecordDetail created = studentRecordService.createStudentRecord(memberId, recordType, semester, info);
+        StudentRecordDetail created = studentRecordService.createStudentRecord(member, recordType, semester, info);
         long recordId = created.getId();
 
         // when

@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.service.MemberService;
@@ -111,7 +112,7 @@ class StudentRecordFacadeTest {
         RecordMetadata mockRecord = mock(RecordMetadata.class);
 
         given(memberService.getMemberById(memberId)).willReturn(mockMember);
-        given(studentRecordService.createSemesterRecord(mockMember, type, semester)).willReturn(mockRecord);
+        given(studentRecordService.createOrGetSemesterRecord(mockMember, type, semester)).willReturn(mockRecord);
         willDoNothing().given(studentRecordService).createStudentRecords(mockRecord, studentRecordInfos);
 
         // when
@@ -119,7 +120,7 @@ class StudentRecordFacadeTest {
 
         // then
         verify(memberService).getMemberById(memberId);
-        verify(studentRecordService).createSemesterRecord(mockMember, type, semester);
+        verify(studentRecordService).createOrGetSemesterRecord(mockMember, type, semester);
         verify(studentRecordService).createStudentRecords(mockRecord, studentRecordInfos);
     }
 
@@ -130,10 +131,13 @@ class StudentRecordFacadeTest {
         StudentRecordType type = StudentRecordType.ABILITY_DETAIL;
         String semester = "2024-2";
         StudentRecordCreateInfo info = mock(StudentRecordCreateInfo.class);
+        Member member = mock(Member.class);
+        when(member.getId()).thenReturn(memberId);
+        given(memberService.getMemberById(memberId)).willReturn(member);
 
         studentRecordFacade.createStudentRecord(memberId, type, semester, info);
 
-        verify(studentRecordService).createStudentRecord(memberId, type, semester, info);
+        verify(studentRecordService).createStudentRecord(member, type, semester, info);
     }
 
     @Test

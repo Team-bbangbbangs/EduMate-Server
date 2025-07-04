@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>이메일 변경 인증</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        .verification-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #0d6efd;
+            color: #fff !important;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .verification-button:hover {
+            background-color: #0b5ed7 !important;
+        }
+    </style>
+</head>
+<body style="font-family: 'Noto Sans KR', sans-serif; background-color: #f1f3f5; padding: 30px;">
+<div style="
+    max-width: 600px;
+    margin: auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+">
+    <h2 style="color: #212529; margin-bottom: 10px;">📧 이메일 변경 확인</h2>
+    <p style="color: #495057; margin-top: 0;">안녕하세요, 선생님.</p>
+    <p style="color: #495057;">
+        새로운 이메일로 변경이 완료되었습니다.
+    </p>
+    <p style="color: #495057;">
+        새로운 이메일로 교사 인증을 위해 아래 <strong>‘이메일 인증하기’</strong> 버튼을 눌러 인증을 진행해 주세요.
+    </p>
+
+    <a th:href="${verificationLink}" class="verification-button">이메일 인증하기</a>
+</div>
+</body>
+</html>

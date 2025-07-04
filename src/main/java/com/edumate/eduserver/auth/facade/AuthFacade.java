@@ -11,7 +11,6 @@ import com.edumate.eduserver.auth.facade.response.MemberSignUpResponse;
 import com.edumate.eduserver.auth.jwt.TokenType;
 import com.edumate.eduserver.auth.service.AuthService;
 import com.edumate.eduserver.auth.service.PasswordValidator;
-import com.edumate.eduserver.auth.service.RandomCodeGenerator;
 import com.edumate.eduserver.auth.service.TokenService;
 import com.edumate.eduserver.external.aws.mail.EmailService;
 import com.edumate.eduserver.member.domain.Member;
@@ -35,13 +34,11 @@ public class AuthFacade {
     private final SubjectService subjectService;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
-    private final RandomCodeGenerator randomCodeGenerator;
     private final ApplicationEventPublisher eventPublisher;
 
     public void sendVerificationEmail(final long memberId) {
         Member member = memberService.getMemberById(memberId);
-        String verificationCode = randomCodeGenerator.generate();
-        authService.saveCode(member, verificationCode);
+        String verificationCode = authService.issueVerificationCode(member);
         emailService.sendEmail(member.getEmail(), member.getMemberUuid(), verificationCode);
     }
 
@@ -97,7 +94,8 @@ public class AuthFacade {
         String accessToken = tokenService.generateTokens(member, TokenType.ACCESS);
         String refreshToken = tokenService.generateTokens(member, TokenType.REFRESH);
         memberService.updateRefreshToken(member, refreshToken);
-        String authCode = issueVerificationCode(member);
+        String authCode = authService.issueVerificationCode(member);
+
         eventPublisher.publishEvent(MemberSignedUpEvent.of(member.getEmail(), member.getMemberUuid(), authCode));
         return MemberSignUpResponse.of(accessToken, refreshToken);
     }
@@ -115,12 +113,6 @@ public class AuthFacade {
         } catch (DataIntegrityViolationException e) {
             throw new MemberAlreadyRegisteredException(AuthErrorCode.MEMBER_ALREADY_REGISTERED);
         }
-    }
-
-    private String issueVerificationCode(final Member member) {
-        String code = randomCodeGenerator.generate();
-        authService.saveCode(member, code);
-        return code;
     }
 
     @Transactional

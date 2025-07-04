@@ -3,11 +3,15 @@ package com.edumate.eduserver.member.service;
 import com.edumate.eduserver.member.domain.Member;
 import com.edumate.eduserver.member.domain.Role;
 import com.edumate.eduserver.member.domain.School;
+import com.edumate.eduserver.member.exception.MemberNicknameDuplicateException;
+import com.edumate.eduserver.member.exception.MemberNicknameInvalidException;
 import com.edumate.eduserver.member.exception.MemberNotFoundException;
 import com.edumate.eduserver.member.exception.code.MemberErrorCode;
 import com.edumate.eduserver.member.repository.MemberRepository;
+import com.edumate.eduserver.member.repository.NicknameBannedWordRepository;
 import com.edumate.eduserver.subject.domain.Subject;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final NicknameBannedWordRepository nicknameBannedWordRepository;
 
     private static final Role INITIAL_ROLE = Role.PENDING_TEACHER;
     private static final String DEFAULT_NICKNAME = "선생님";
     private static final boolean NOT_DELETED = false;
     private static final boolean DELETED = true;
+    private static final Pattern NICKNAME_PATTERN = Pattern.compile("^[가-힣a-zA-Z0-9]{2,16}$");
 
     @Transactional
     public void updateEmailVerified(final Member member) {
@@ -88,5 +94,40 @@ public class MemberService {
 
     public boolean isAdmin(final Member member) {
         return member.getRole() == Role.ADMIN;
+    }
+
+    @Transactional
+    public void updateMemberProfile(final Member member, final Subject subject, final School school, final String nickname) {
+        validateNickname(member, nickname);
+        member.updateProfile(subject, school, nickname);
+    }
+
+    private void validateNickname(final Member member, final String nickname) {
+        if (isNicknameInvalid(nickname)) {
+            throw new MemberNicknameInvalidException(MemberErrorCode.INVALID_NICKNAME, nickname);
+        }
+        if (isNicknameDuplicated(member, nickname)) {
+            throw new MemberNicknameDuplicateException(MemberErrorCode.DUPLICATED_NICKNAME, nickname);
+        }
+    }
+
+    public boolean isNicknameInvalid(final String nickname) {
+        return nickname.isBlank()
+                || !NICKNAME_PATTERN.matcher(nickname).matches()
+                || nicknameBannedWordRepository.existsBannedWordIn(nickname);
+    }
+
+    public boolean isNicknameDuplicated(final Member member, final String nickname) {
+        return memberRepository.existsByIdNotAndNicknameIgnoreCaseAndIsDeleted(member.getId(), nickname, NOT_DELETED);
+    }
+
+    @Transactional
+    public void updateEmail(final Member member, String email) {
+        member.updateEmail(email);
+    }
+
+    @Transactional
+    public void setRolePendingTeacher(final Member member) {
+        member.updateRole(Role.PENDING_TEACHER);
     }
 }

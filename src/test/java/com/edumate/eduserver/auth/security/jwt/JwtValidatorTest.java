@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.edumate.eduserver.auth.exception.ExpiredTokenException;
-import com.edumate.eduserver.auth.exception.IllegalTokenTypeException;
+import com.edumate.eduserver.auth.exception.IllegalTokenException;
 import com.edumate.eduserver.auth.exception.InvalidSignatureTokenException;
 import com.edumate.eduserver.auth.jwt.JwtGenerator;
 import com.edumate.eduserver.auth.jwt.JwtProperties;
@@ -59,7 +59,7 @@ class JwtValidatorTest {
 
         // when & then
         assertThatThrownBy(() -> jwtValidator.validateToken(token, TokenType.ACCESS))
-                .isInstanceOf(IllegalTokenTypeException.class);
+                .isInstanceOf(IllegalTokenException.class);
     }
 
     @Test

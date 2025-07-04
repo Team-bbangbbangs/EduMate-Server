@@ -12,6 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtParser jwtParser;
     private final String[] WHITELIST;
     private final AntPathMatcher pathMatcher;
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected boolean shouldNotFilter(final HttpServletRequest request) throws ServletException {
@@ -51,6 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         MemberAuthentication authentication = MemberAuthentication.create(memberId, userDetails.getAuthorities());
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        MDC.put("userId", String.valueOf(memberId));
+        log.info("[API] {} {} 요청 시작", request.getMethod(), request.getRequestURI());
         filterChain.doFilter(request, response);
     }
 }
