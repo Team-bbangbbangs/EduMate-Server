@@ -72,7 +72,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
     // SENTRY
-    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:6.30.0'
+    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:8.16.0'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
