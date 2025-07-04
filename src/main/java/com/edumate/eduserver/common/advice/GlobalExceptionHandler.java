@@ -2,6 +2,7 @@ package com.edumate.eduserver.common.advice;
 
 import com.edumate.eduserver.common.ApiResponse;
 import com.edumate.eduserver.common.exception.EduMateCustomException;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -49,7 +50,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SdkException.class)
     public ApiResponse<Void> handleSdkException(final SdkException e) {
-        log.error("AWS SDK Exception: {}", getDeepCause(e).getMessage(), e);
+        Throwable root = getDeepCause(e);
+        log.error("AWS SDK Exception: {}", root.getMessage(), e);
+        Sentry.captureException(root);
         return ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "EDMT-50201", e.getMessage());
     }
 
@@ -57,6 +60,7 @@ public class GlobalExceptionHandler {
     public ApiResponse<Void> handleUnexpectedException(Exception e) {
         e = (Exception) getDeepCause(e);
         log.error("Unhandled Exception: {}", e.getMessage(), e);
+        Sentry.captureException(e);
         return ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "EDMT-500", e.getMessage());
     }
 
