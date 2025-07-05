@@ -24,7 +24,7 @@ operation::member/update-password-fail/same-password[snippets="http-request,http
 
 ==== 성공
 
-operation::member/update-profile-success[snippets="request-headers,request-fields,http-response"]
+operation::member/update-profile-success[snippets="http-request,request-headers,request-fields,http-response"]
 
 ==== 실패: 유효하지 않은 닉네임
 
@@ -38,13 +38,13 @@ operation::member/update-profile-fail/duplicated-nickname[snippets="http-respons
 
 ==== 성공
 
-operation::member/validate-nickname[snippets="request-headers,query-parameters,http-response,response-fields"]
+operation::member/validate-nickname[snippets="http-request,request-headers,query-parameters,http-response,response-fields"]
 
 === 이메일 수정
 
 ==== 성공
 
-operation::member/update-email-success[snippets="request-headers,request-fields,http-response"]
+operation::member/update-email-success[snippets="http-request,request-headers,request-fields,http-response"]
 
 ==== 실패: 유효하지 않은 이메일 형식
 
