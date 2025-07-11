@@ -29,8 +29,9 @@
             <pattern>${JSON_LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
         </encoder>
+        <file>./log/info/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-             <fileNamePattern>./log/info/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+             <fileNamePattern>./log/info/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
@@ -48,8 +49,9 @@
             <pattern>${JSON_LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
         </encoder>
+        <file>./log/warn/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>./log/warn/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>./log/warn/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
@@ -67,8 +69,9 @@
             <pattern>${JSON_LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
         </encoder>
+        <file>./log/error/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>./log/error/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>./log/error/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>

@@ -16,7 +16,7 @@ scrape_configs:
         labels:
           job: error_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/error/*.log
+          __path__: /log/error/app.log
     pipeline_stages:
       - json:
           expressions:
@@ -63,7 +63,7 @@ scrape_configs:
         labels:
           job: info_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/info/*.log
+          __path__: /log/info/app.log
     pipeline_stages:
       - json:
           expressions:
@@ -110,7 +110,7 @@ scrape_configs:
         labels:
           job: warn_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/warn/*.log
+          __path__: /log/warn/app.log
     pipeline_stages:
       - json:
           expressions:
