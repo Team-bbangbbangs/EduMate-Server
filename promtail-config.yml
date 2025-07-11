@@ -16,13 +16,12 @@ scrape_configs:
         labels:
           job: error_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/error/app.log
+          __path__: /log/error/*.log
     pipeline_stages:
       - json:
           expressions:
             timestamp: timestamp
             level: level
-            logger: logger
             logType: logType
             requestId: requestId
             userId: userId
@@ -38,7 +37,6 @@ scrape_configs:
             message: message
       - labels:
           level:
-          logger:
           logType:
           requestId:
           userId:
@@ -63,13 +61,12 @@ scrape_configs:
         labels:
           job: info_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/info/app.log
+          __path__: /log/info/*.log
     pipeline_stages:
       - json:
           expressions:
             timestamp: timestamp
             level: level
-            logger: logger
             logType: logType
             requestId: requestId
             userId: userId
@@ -85,7 +82,6 @@ scrape_configs:
             message: message
       - labels:
           level:
-          logger:
           logType:
           requestId:
           userId:
@@ -110,13 +106,12 @@ scrape_configs:
         labels:
           job: warn_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/warn/app.log
+          __path__: /log/warn/*.log
     pipeline_stages:
       - json:
           expressions:
             timestamp: timestamp
             level: level
-            logger: logger
             logType: logType
             requestId: requestId
             userId: userId
@@ -132,7 +127,6 @@ scrape_configs:
             message: message
       - labels:
           level:
-          logger:
           logType:
           requestId:
           userId:
