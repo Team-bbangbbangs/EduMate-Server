@@ -6,7 +6,9 @@
 
     <!-- 패턴 정의 -->
     <property name="CONSOLE_LOG_PATTERN" value="[%clr(%-5level)] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%X{logType:-none}] [requestId=%X{requestId:-none}] [userId=%X{userId:-anonymous}] %msg%n"/>
-    <property name="LOG_PATTERN" value="[%level] [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%X{logType:-none}] [requestId=%X{requestId:-none}] [userId=%X{userId:-anonymous}] %msg%n"/>
+    
+    <!-- JSON 패턴 정의 -->
+    <property name="JSON_LOG_PATTERN" value='{"timestamp":"%d{yyyy-MM-ddTHH:mm:ss.SSS}","level":"%level","logger":"%logger","thread":"%thread","logType":"%X{logType:-}","requestId":"%X{requestId:-}","userId":"%X{userId:-}","httpMethod":"%X{httpMethod:-}","requestUri":"%X{requestUri:-}","statusCode":"%X{statusCode:-}","sourceClass":"%X{sourceClass:-}","sourceMethod":"%X{sourceMethod:-}","exceptionClass":"%X{exceptionClass:-}","exceptionMessage":"%replace(%X{exceptionMessage:-}){'\"','\\\"'}","module":"edumate-server","environment":"${PROFILE:-unknown}","message":"%replace(%msg){'\"','\\\"'}"}%n'/>
 
     <!-- Console Appender -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -24,11 +26,11 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
+            <pattern>${JSON_LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-             <fileNamePattern>./log/info/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+             <fileNamePattern>./log/info/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
@@ -43,11 +45,11 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
+            <pattern>${JSON_LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>./log/warn/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>./log/warn/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
@@ -62,11 +64,11 @@
             <onMismatch>DENY</onMismatch>
         </filter>
         <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
+            <pattern>${JSON_LOG_PATTERN}</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>./log/error/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>./log/error/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
