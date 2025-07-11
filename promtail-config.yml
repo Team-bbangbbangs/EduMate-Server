@@ -53,7 +53,7 @@ scrape_configs:
           environment:
       - timestamp:
           source: timestamp
-          format: 2006-01-02T15:04:05.000
+          format: 2006-01-02T15:04:05.000Z07:00
           location: "Asia/Seoul"
 
   - job_name: info_logs
@@ -100,7 +100,7 @@ scrape_configs:
           environment:
       - timestamp:
           source: timestamp
-          format: 2006-01-02T15:04:05.000
+          format: 2006-01-02T15:04:05.000Z07:00
           location: "Asia/Seoul"
 
   - job_name: warn_logs
@@ -147,5 +147,5 @@ scrape_configs:
           environment:
       - timestamp:
           source: timestamp
-          format: 2006-01-02T15:04:05.000
+          format: 2006-01-02T15:04:05.000Z07:00
           location: "Asia/Seoul" 
