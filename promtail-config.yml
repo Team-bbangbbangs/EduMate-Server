@@ -16,13 +16,16 @@ scrape_configs:
         labels:
           job: error_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/error/*.log
+          __path__: /log/error/app.log
     pipeline_stages:
       - json:
           expressions:
             timestamp: timestamp
             level: level
             logger: logger
+            logType: logType
+            requestId: requestId
+            userId: userId
             httpMethod: httpMethod
             requestUri: requestUri
             statusCode: statusCode
@@ -32,9 +35,13 @@ scrape_configs:
             exceptionMessage: exceptionMessage
             module: module
             environment: environment
+            message: message
       - labels:
           level:
           logger:
+          logType:
+          requestId:
+          userId:
           httpMethod:
           requestUri:
           statusCode:
@@ -46,7 +53,7 @@ scrape_configs:
           environment:
       - timestamp:
           source: timestamp
-          format: 2006-01-02T15:04:05.000
+          format: 2006-01-02T15:04:05.000Z07:00
           location: "Asia/Seoul"
 
   - job_name: info_logs
@@ -56,13 +63,16 @@ scrape_configs:
         labels:
           job: info_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/info/*.log
+          __path__: /log/info/app.log
     pipeline_stages:
       - json:
           expressions:
             timestamp: timestamp
             level: level
             logger: logger
+            logType: logType
+            requestId: requestId
+            userId: userId
             httpMethod: httpMethod
             requestUri: requestUri
             statusCode: statusCode
@@ -72,9 +82,13 @@ scrape_configs:
             exceptionMessage: exceptionMessage
             module: module
             environment: environment
+            message: message
       - labels:
           level:
           logger:
+          logType:
+          requestId:
+          userId:
           httpMethod:
           requestUri:
           statusCode:
@@ -86,7 +100,7 @@ scrape_configs:
           environment:
       - timestamp:
           source: timestamp
-          format: 2006-01-02T15:04:05.000
+          format: 2006-01-02T15:04:05.000Z07:00
           location: "Asia/Seoul"
 
   - job_name: warn_logs
@@ -96,13 +110,16 @@ scrape_configs:
         labels:
           job: warn_logs
           environment: ${ENVIRONMENT}
-          __path__: /log/warn/*.log
+          __path__: /log/warn/app.log
     pipeline_stages:
       - json:
           expressions:
             timestamp: timestamp
             level: level
             logger: logger
+            logType: logType
+            requestId: requestId
+            userId: userId
             httpMethod: httpMethod
             requestUri: requestUri
             statusCode: statusCode
@@ -112,9 +129,13 @@ scrape_configs:
             exceptionMessage: exceptionMessage
             module: module
             environment: environment
+            message: message
       - labels:
           level:
           logger:
+          logType:
+          requestId:
+          userId:
           httpMethod:
           requestUri:
           statusCode:
@@ -126,5 +147,5 @@ scrape_configs:
           environment:
       - timestamp:
           source: timestamp
-          format: 2006-01-02T15:04:05.000
+          format: 2006-01-02T15:04:05.000Z07:00
           location: "Asia/Seoul" 
