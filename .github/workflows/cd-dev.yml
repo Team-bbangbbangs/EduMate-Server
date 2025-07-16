@@ -164,7 +164,7 @@ jobs:
 
       - name: Restart promtail
         run: |
-          sudo docker-compose -f docker-compose.dev.yml up -d promtail
+          sudo docker-compose -f docker-compose.dev.yml up -d --force-recreate promtail
 
       - name: Remove unused Docker images
         run: sudo docker image prune -a -f

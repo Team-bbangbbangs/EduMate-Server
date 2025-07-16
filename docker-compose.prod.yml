@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   app:
     image: ${DOCKER_REPO_NAME}:${DOCKER_IMAGE_VERSION_TAG}
