@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - develop
+      - feat/EDMT-288
 
 jobs:
   build:
@@ -96,11 +97,68 @@ jobs:
           MONITORING_INSTANCE_LOKI=${{ secrets.MONITORING_INSTANCE_LOKI }}
           EOF
 
-      - name: Stop and remove existing application container
-        run: sudo docker-compose -f docker-compose.dev.yml down --rmi all
+      - name: Determine current active app
+        id: current
+        run: |
+          if sudo docker ps | grep -q app-blue; then
+            echo "CURRENT=blue" >> "$GITHUB_OUTPUT"
+          else
+            echo "CURRENT=green" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Remove all unused Docker images
+      - name: Deploy to inactive container
+        id: deploy
+        run: |
+          if [ "${{ steps.current.outputs.CURRENT }}" = "blue" ]; then
+            TARGET=green
+            PORT=8081
+            NGINX_CONF=green.conf
+          else
+            TARGET=blue
+            PORT=8080
+            NGINX_CONF=blue.conf
+          fi
+          
+          echo "TARGET=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "PORT=$PORT" >> "$GITHUB_OUTPUT"
+          echo "NGINX_CONF=$NGINX_CONF" >> "$GITHUB_OUTPUT"
+
+          sudo docker-compose -f docker-compose.dev.yml up -d app-$TARGET
+
+      - name: Health check on new container
+        run: |
+          for i in {1..10}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:${{ steps.deploy.outputs.PORT }}/actuator/health || true)
+            if [ "$STATUS" = "200" ]; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
+
+      - name: Switch nginx config and reload
+        run: |
+          cp nginx-conf/${{ steps.deploy.outputs.NGINX_CONF }} nginx-conf/app.conf
+          sudo docker exec nginx nginx -s reload
+
+      - name: Stop and remove old container
+        run: |
+          if [ "${{ steps.current.outputs.CURRENT }}" = "blue" ]; then
+            OLD=blue
+          elif [ "${{ steps.current.outputs.CURRENT }}" = "green" ]; then
+            OLD=green
+          else
+            OLD=none
+          fi
+
+          if [ "$OLD" != "none" ]; then
+            sudo docker-compose -f docker-compose.dev.yml stop app-$OLD
+            sudo docker-compose -f docker-compose.dev.yml rm -f app-$OLD
+          fi
+
+      - name: Restart promtail
+        run: |
+          sudo docker-compose -f docker-compose.dev.yml up -d promtail
+
+      - name: Remove unused Docker images
         run: sudo docker image prune -a -f
-
-      - name: Run application Server container
-        run: sudo docker-compose -f docker-compose.dev.yml up -d
