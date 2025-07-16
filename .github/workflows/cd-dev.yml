@@ -44,7 +44,7 @@ jobs:
         shell: bash
 
       - name: Build Spring Boot Jar
-        run: ./gradlew bootJar -x test
+        run: ./gradlew bootJar
 
       - name: Get current date and time
         id: datetime
