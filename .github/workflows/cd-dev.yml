@@ -139,7 +139,7 @@ jobs:
       - name: Switch nginx upstream and reload
         run: |
           if [ "${{ steps.current.outputs.CURRENT }}" = "blue" ]; then
-            NEW_TARGET="app-green:8081"
+            NEW_TARGET="app-green:8080"
           else
             NEW_TARGET="app-blue:8080"
           fi
