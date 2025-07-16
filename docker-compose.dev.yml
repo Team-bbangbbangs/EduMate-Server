@@ -1,6 +1,7 @@
 version: '3.8'
 services:
-  app:
+  app-blue:
+    container_name: app-blue
     image: ${DOCKER_REPO_NAME}:${DOCKER_IMAGE_VERSION_TAG}
     environment:
       PROFILE: dev
@@ -12,6 +13,35 @@ services:
     restart: always
     volumes:
       - ./log:/log
+    networks:
+      - app-network
+
+  app-green:
+    container_name: app-green
+    image: ${DOCKER_REPO_NAME}:${DOCKER_IMAGE_VERSION_TAG}
+    environment:
+      PROFILE: dev
+      TZ: Asia/Seoul
+    ports:
+      - "8081:8080"
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - ./log:/log
+    networks:
+      - app-network
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ~/nginx-conf/app.conf:/etc/nginx/conf.d/app.conf
+    restart: always
+    networks:
+      - app-network
 
   promtail:
     container_name: promtail
@@ -25,3 +55,7 @@ services:
       - ./log:/log
     command: -config.expand-env=true -config.file=/etc/promtail/config.yml
     restart: always
+
+networks:
+  app-network:
+    driver: bridge
