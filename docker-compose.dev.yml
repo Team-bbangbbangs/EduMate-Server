@@ -38,7 +38,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ~/nginx-conf/app.conf:/etc/nginx/conf.d/app.conf
+      - ~/nginx-conf/app.conf:/etc/nginx/conf.d/app.conf:ro
+      - ~/nginx-conf/service-url.inc:/etc/nginx/conf.d/service-url.inc
     restart: always
     networks:
       - app-network

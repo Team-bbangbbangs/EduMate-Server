@@ -44,7 +44,7 @@ jobs:
         shell: bash
 
       - name: Build Spring Boot Jar
-        run: ./gradlew bootJar
+        run: ./gradlew bootJar -x test
 
       - name: Get current date and time
         id: datetime
@@ -136,10 +136,16 @@ jobs:
           done
           exit 1
 
-      - name: Switch nginx config and reload
+      - name: Switch nginx upstream and reload
         run: |
-          cp nginx-conf/${{ steps.deploy.outputs.NGINX_CONF }} nginx-conf/app.conf
-          sudo docker exec nginx nginx -s reload
+          if [ "${{ steps.current.outputs.CURRENT }}" = "blue" ]; then
+            NEW_TARGET="app-green:8081"
+          else
+            NEW_TARGET="app-blue:8080"
+          fi
+
+          sudo docker exec nginx bash -c \
+            "echo 'set \$service_url $NEW_TARGET;' > /etc/nginx/conf.d/service-url.inc && nginx -t && nginx -s reload"
 
       - name: Stop and remove old container
         run: |
