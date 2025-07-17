@@ -1,23 +1,23 @@
 package com.edumate.eduserver.external.ai.service;
 
-import com.edumate.eduserver.external.ai.exception.OpenAiQuotaExceededException;
-import com.edumate.eduserver.external.ai.exception.OpenAiRateLimitExceededException;
 import com.edumate.eduserver.external.ai.exception.OpenAiUnknownException;
 import com.edumate.eduserver.external.ai.exception.code.OpenAiErrorCode;
 import com.edumate.eduserver.external.ai.facade.response.StudentRecordAICreateResponse;
+import com.edumate.eduserver.external.ai.service.dto.OpenAiRequest;
+import com.edumate.eduserver.external.ai.service.dto.OpenAiResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final ChatClient chatClient;
+    private final OpenAiClient openAiClient;
+    private final ObjectMapper objectMapper;
 
     private static final String SYSTEM_INSTRUCTIONS = """
             당신은 중고등학교 생활기록부 작성을 보조하는 AI 어시스턴트입니다.
@@ -30,29 +30,36 @@ public class ChatService {
 
     private StudentRecordAICreateResponse getMultipleChatResponses(final String prompt) {
         try {
-            StudentRecordAICreateResponse response = chatClient.prompt()
-                    .system(SYSTEM_INSTRUCTIONS)
-                    .user(prompt)
-                    .call()
-                    .entity(StudentRecordAICreateResponse.class);
-            log.info("[OpenAI] API 호출 성공");
-            return response;
-        } catch (HttpStatusCodeException e) {
-            HttpStatus status = HttpStatus.resolve(e.getStatusCode().value());
-            String body = e.getResponseBodyAsString();
-            if (status == HttpStatus.TOO_MANY_REQUESTS) {
-                if (body.contains("rate_limit_exceeded")) {
-                    log.error("[OpenAI] Rate Limit 초과: {}", e.getMessage());
-                    throw new OpenAiRateLimitExceededException(OpenAiErrorCode.RATE_LIMIT_EXCEEDED);
-                } else if (body.contains("insufficient_quota")) {
-                    log.error("[OpenAI] Credit 소진: {}", e.getMessage());
-                    throw new OpenAiQuotaExceededException(OpenAiErrorCode.QUOTA_EXCEEDED);
-                }
+            OpenAiRequest request = OpenAiRequest.createChatRequest(SYSTEM_INSTRUCTIONS, prompt);
+            OpenAiResponse response = openAiClient.chatCompletion(request);
+
+            if (response.choices() == null || response.choices().isEmpty()) {
+                log.error("[OpenAI] 응답에서 choices가 비어있음");
+                throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
             }
-            log.error("[OpenAI] API 응답 에러 처리되지 않음: {}", body);
-            throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
+
+            String content = response.choices().get(0).message().content();
+            StudentRecordAICreateResponse parsedResponse = parseJsonResponse(content);
+            
+            log.info("[OpenAI] API 호출 및 파싱 성공");
+            return parsedResponse;
+            
         } catch (Exception e) {
-            log.error("[OpenAI] API 호출 중 오류 발생: {}", e.getMessage());
+            if (e instanceof OpenAiUnknownException || 
+                e.getClass().getSimpleName().startsWith("OpenAi")) {
+                throw e; // OpenAI 관련 예외는 그대로 재발생
+            }
+            log.error("[OpenAI] API 호출 중 예상치 못한 오류 발생: {}", e.getMessage());
+            throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
+        }
+    }
+
+    private StudentRecordAICreateResponse parseJsonResponse(String content) {
+        try {
+            return objectMapper.readValue(content, StudentRecordAICreateResponse.class);
+        } catch (JsonProcessingException e) {
+            log.error("[OpenAI] JSON 파싱 실패: {}", e.getMessage());
+            log.debug("[OpenAI] 응답 내용: {}", content);
             throw new OpenAiUnknownException(OpenAiErrorCode.UNKNOWN_ERROR);
         }
     }

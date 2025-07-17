@@ -1,15 +1,30 @@
 package com.edumate.eduserver.external.ai.config;
 
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
+@EnableConfigurationProperties(OpenAiProperties.class)
 public class ChatConfig {
 
     @Bean
-    public ChatClient chatClient(final ChatModel chatModel) {
-        return ChatClient.builder(chatModel).build();
+    public RestTemplate restTemplate(RestTemplateBuilder builder, OpenAiProperties openAiProperties) {
+        return builder
+                .connectTimeout(Duration.ofSeconds(openAiProperties.timeoutSeconds()))
+                .readTimeout(Duration.ofSeconds(openAiProperties.timeoutSeconds()))
+                .build();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
+        return mapper;
     }
 }
