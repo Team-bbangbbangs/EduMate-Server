@@ -15,8 +15,8 @@ public class ChatConfig {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder, OpenAiProperties openAiProperties) {
         return builder
-                .connectTimeout(Duration.ofSeconds(openAiProperties.timeoutSeconds()))
-                .readTimeout(Duration.ofSeconds(openAiProperties.timeoutSeconds()))
+                .connectTimeout(Duration.ofSeconds(openAiProperties.connectTimeoutSeconds()))
+                .readTimeout(Duration.ofSeconds(openAiProperties.readTimeoutSeconds()))
                 .build();
     }
 
