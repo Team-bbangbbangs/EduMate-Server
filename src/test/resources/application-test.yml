@@ -18,9 +18,12 @@ spring:
       ddl-auto: create-drop
     defer-datasource-initialization: false
 
-  ai:
-    openai:
-      api-key: testApiKeyForOpenAI
+ai:
+  openai:
+    api-key: testApiKeyForOpenAI
+    base-url: "https://openAI"  # OpenAI API 베이스 URL (기본값)
+    connectTimeoutSeconds: 3
+    readTimeoutSeconds: 3  # 타임아웃 설정 (초, 기본값)
 
 security:
   jwt:
