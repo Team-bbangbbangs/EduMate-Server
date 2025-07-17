@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
 
+    <logger name="org.springframework.boot.actuate.endpoint.web.servlet" level="OFF"/>
+    <logger name="org.springframework.web.servlet.DispatcherServlet" level="INFO"/>
+
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <springProperty name="PROFILE" source="monitoring-profile" />
 
